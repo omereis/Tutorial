@@ -34,8 +34,10 @@ BINOP_SYMBOLS[ast.BitAnd] = '&'
 BINOP_SYMBOLS[ast.FloorDiv] = '//'
 
 BOOLOP_SYMBOLS = {}
-BOOLOP_SYMBOLS[ast.And] = 'and'
-BOOLOP_SYMBOLS[ast.Or] = 'or'
+#BOOLOP_SYMBOLS[ast.And] = 'and'
+#BOOLOP_SYMBOLS[ast.Or] = 'or'
+BOOLOP_SYMBOLS[ast.And] = '&&'
+BOOLOP_SYMBOLS[ast.Or]  = '||'
 
 CMPOP_SYMBOLS = {}
 CMPOP_SYMBOLS[ast.Eq] = '=='
@@ -262,8 +264,9 @@ class SourceGenerator(NodeVisitor):
             s += str(self.C_Vars[n])
             if n < len(self.C_Vars) - 1:
                 s += ", "
-        self.c_proc.insert (start_var, "    double " + s + ";\n")
-        self.c_proc.insert (start_var + 1, "\n")
+        if (len(s) > 0):
+            self.c_proc.insert (start_var, "    double " + s + ";\n")
+            self.c_proc.insert (start_var + 1, "\n")
         self.C_Vars = []
 
     def writeInclude (self):
@@ -286,7 +289,7 @@ class SourceGenerator(NodeVisitor):
         self.arguments = []
         self.name = node.name
         args_str = ""
-        if (self.name == 'Iq13'):
+        if (self.name == 'Iq4'):
             args_str = "13"
             args_str = ""
 

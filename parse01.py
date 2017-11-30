@@ -272,6 +272,7 @@ class SourceGenerator(NodeVisitor):
     def writeInclude (self):
         if (self.MathIncludeed == False):
             self.add_c_line("#include <math.h>\n")
+            self.add_c_line("static double pi = 3.14159265359;\n")
             self.MathIncludeed = True
 
     def getMethodSignature (self):
@@ -289,7 +290,7 @@ class SourceGenerator(NodeVisitor):
         self.arguments = []
         self.name = node.name
         args_str = ""
-        if (self.name == 'Iq4'):
+        if (self.name == 'Iq14'):
             args_str = "13"
             args_str = ""
 
@@ -491,6 +492,9 @@ class SourceGenerator(NodeVisitor):
     # Expressions
 
     def visit_Attribute(self, node):
+        errStr = "Conversion Error in function " + self.name + ", Line #" + str (node.value.lineno)
+        errStr += "\nPython expression not supported: '" + node.value.id + "." + node.attr + "'"
+        raise Exception(errStr)
         self.visit(node.value)
         self.write_python('.' + node.attr)
 

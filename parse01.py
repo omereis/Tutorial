@@ -501,6 +501,8 @@ class SourceGenerator(NodeVisitor):
         if (hasattr (node.func, 'id')):
             if (node.func.id == 'abs'):
                 self.write_c ("fabs ")
+            elif (node.func.il == 'int'):
+                pass    
             else:
                 self.visit(node.func)
         else:

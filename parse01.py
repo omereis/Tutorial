@@ -232,7 +232,7 @@ class SourceGenerator(NodeVisitor):
 
     def visit_AugAssign(self, node):
         if (node.target.id not in self.C_Vars):
-            self.C_Vars.append (target.id)
+            self.C_Vars.append (node.target.id)
         self.visit(node.target)
         self.write_c(' ' + BINOP_SYMBOLS[type(node.op)] + '= ')
         self.visit(node.value)
@@ -341,7 +341,6 @@ class SourceGenerator(NodeVisitor):
         self.body(node.body)
 
     def visit_If(self, node):
-#       self.newline(node)
         self.write_c('if ')
         self.visit(node.test)
         self.write_c(' {')
@@ -349,9 +348,6 @@ class SourceGenerator(NodeVisitor):
         self.add_c_line('}')
         while True:
             else_ = node.orelse
-#            if (len(else_) > 0):
-#                d_else = enumerate(else_)
-#                hasattr (else_, 'orelse')
             if len(else_) == 0:
                 break
 #            elif hasattr (else_, 'orelse'):
@@ -372,14 +368,46 @@ class SourceGenerator(NodeVisitor):
                 self.add_c_line('}')
                 break
 
+    def getNodeLineNo (self, node):
+        line_number = -1
+        if (hasattr (node,'value')):
+            line_number = node.value.lineno
+        elif hasattr(node,'iter'):
+            if hasattr(node.iter,'lineno'):
+                line_number = node.iter.lineno
+        return (line_number)
+
     def visit_For(self, node):
-        self.newline(node)
-        self.write_c('for ')
-        self.visit(node.target)
-        self.write_c(' in ')
-        self.visit(node.iter)
-        self.write_c(':')
-        self.body_or_else(node)
+        fForDone = False
+        if (hasattr(node.iter,'func')):
+            if (hasattr (node.iter.func,'id')):
+                if (node.iter.func.id == 'range'):
+                    self.write_c ("for (i=0 ; i < len(")
+#                    self.visit(node.iter)
+                    for arg in node.iter.args:
+#                        self.write_comma()
+                        self.visit(arg)
+                    self.write_c (") ; i++) {")
+                    self.body_or_else(node)
+                    self.write_c ("}")
+                    fForDone = True
+        if (fForDone == False):
+            line_number = self.getNodeLineNo (node)
+            self.current_statement = ''
+            self.write_c('for ')
+            self.visit(node.target)
+            self.write_c(' in ')
+            self.visit(node.iter)
+            self.write_c(':')
+            errStr = "Conversion Error in function " + self.name + ", Line #" + str (line_number)
+            errStr += "\nPython for expression not supported: '" + self.current_statement + "'"
+            raise Exception(errStr)
+#            self.write_c('for ')
+#            self.visit(node.target)
+#            self.write_c(' in ')
+#            self.visit(node.iter)
+#            self.write_c(':')
+#            self.body_or_else(node)
 
     def visit_While(self, node):
         self.newline(node)
@@ -403,7 +431,7 @@ class SourceGenerator(NodeVisitor):
         self.write_python('pass')
 
     def visit_Print(self, node):
-        # XXX: python 2.6 only
+# XXX: python 2.6 only 
         self.newline(node)
         self.write_c('print ')
         want_comma = False

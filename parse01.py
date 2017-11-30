@@ -283,6 +283,7 @@ class SourceGenerator(NodeVisitor):
         self.newline(extra=1)
         self.decorators(node)
         self.newline(node)
+        self.arguments = []
         self.name = node.name
         args_str = ""
         if (self.name == 'Iq13'):
@@ -501,8 +502,8 @@ class SourceGenerator(NodeVisitor):
         if (hasattr (node.func, 'id')):
             if (node.func.id == 'abs'):
                 self.write_c ("fabs ")
-            elif (node.func.il == 'int'):
-                pass    
+            elif (node.func.id == 'int'):
+                self.write_c('(int) ')
             else:
                 self.visit(node.func)
         else:

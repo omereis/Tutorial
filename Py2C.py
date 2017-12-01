@@ -96,6 +96,7 @@ class SourceGenerator(NodeVisitor):
         self.new_lines = 0
         self.c_proc = []
 # for C
+        self.signature_line = 0
         self.arguments = []
         self.name = ""
         self.warnings = []
@@ -105,6 +106,7 @@ class SourceGenerator(NodeVisitor):
         self.C_Vars = []
         self.C_IntVars = []
         self.MathIncludeed = False
+        self.C_Pointers = []
 
     def write_python(self, x):
         if self.new_lines:
@@ -221,9 +223,17 @@ class SourceGenerator(NodeVisitor):
         for idx, target in enumerate(node.targets):
             if idx:
                 self.write_c(' = ')
-            self.visit(target)
+#            self.visit(target)
             if (target.id not in self.C_Vars):
-                self.C_Vars.append (target.id)
+                if (target.id in self.arguments):
+                    idx = self.arguments.index (target.id)
+                    new_target = self.arguments[idx] + "[0]"
+                    if (new_target not in self.C_Pointers):
+                        target.id = new_target
+                        self.C_Pointers.append (self.arguments[idx])
+                else:
+                    self.C_Vars.append (target.id)
+            self.visit(target)
         self.write_c(' = ')
         self.visit(node.value)
         self.write_c(';')
@@ -265,7 +275,7 @@ class SourceGenerator(NodeVisitor):
             if n < (len(Vars) - 1):
                 s += ", "
         return (s)
-#C_IntVars
+
     def insert_C_Vars (self, start_var):
 #        start_vars = self.c_proc.index ("{\n") + 1
         fLine = False
@@ -299,13 +309,43 @@ class SourceGenerator(NodeVisitor):
             self.add_c_line("static double pi = 3.14159265359;\n")
             self.MathIncludeed = True
 
+    def ListToString (self, strings):
+        s = ''
+        for n in range(len(strings)):
+            s += strings[n]
+            if (n < (len(strings) - 1)):
+                s += ", "
+        return (s)
+
     def getMethodSignature (self):
-        args_str = ""
+#        args_str = ListToString (self.arguments)
+        args_str = ''
         for n in range(len(self.arguments)):
             args_str += "double " + self.arguments[n]
             if (n < (len(self.arguments) - 1)):
                 args_str += ", "
+        return (args_str)
+#        self.strMethodSignature = 'double ' + self.name + ' (' + args_str + ")"
+
+    def InsertSignature (self):
+        args_str = ''
+        for n in range(len(self.arguments)):
+            args_str += "double " + self.arguments[n]
+            if (self.arguments[n] in self.C_Pointers):
+                args_str += "[]"
+            if (n < (len(self.arguments) - 1)):
+                args_str += ", "
         self.strMethodSignature = 'double ' + self.name + ' (' + args_str + ")"
+        if (self.signature_line > 0):
+            self.c_proc.insert (self.signature_line, self.strMethodSignature)
+
+#    def getMethodSignature (self):
+#        args_str = ""
+#        for n in range(len(self.arguments)):
+#            args_str += "double " + self.arguments[n]
+#            if (n < (len(self.arguments) - 1)):
+#                args_str += ", "
+#        self.strMethodSignature = 'double ' + self.name + ' (' + args_str + ")"
 
     def visit_FunctionDef(self, node):
         self.newline(extra=1)
@@ -313,6 +353,7 @@ class SourceGenerator(NodeVisitor):
         self.newline(node)
         self.arguments = []
         self.name = node.name
+        print("Parsing '" + self.name + "'")
         args_str = ""
         if (self.name == 'Iq14'):
             args_str = "13"
@@ -323,12 +364,15 @@ class SourceGenerator(NodeVisitor):
         self.writeInclude()
         self.getMethodSignature ()
 # for C
-        self.add_c_line(self.strMethodSignature)
-        self.add_c_line("{")
-        start_vars = len(self.c_proc)
+        self.signature_line = len(self.c_proc)
+#        self.add_c_line(self.strMethodSignature)
+        self.add_c_line("\n{")
+        start_vars = len(self.c_proc) + 1
         self.body(node.body)
         self.add_c_line("}\n")
+        self.InsertSignature ()
         self.insert_C_Vars (start_vars)
+        self.C_Pointers = []
 
     def visit_ClassDef(self, node):
         have_args = []
@@ -431,12 +475,6 @@ class SourceGenerator(NodeVisitor):
             errStr = "Conversion Error in function " + self.name + ", Line #" + str (line_number)
             errStr += "\nPython for expression not supported: '" + self.current_statement + "'"
             raise Exception(errStr)
-#            self.write_c('for ')
-#            self.visit(node.target)
-#            self.write_c(' in ')
-#            self.visit(node.iter)
-#            self.write_c(':')
-#            self.body_or_else(node)
 
     def visit_While(self, node):
         self.newline(node)
@@ -594,6 +632,8 @@ class SourceGenerator(NodeVisitor):
 
     def visit_Name(self, node):
         self.write_c(node.id)
+        if (node.id in self.C_Pointers):
+            self.write_c("[0]")
 
     def visit_Str(self, node):
         self.write_c(repr(node.s))
@@ -679,6 +719,8 @@ class SourceGenerator(NodeVisitor):
         self.write_c(')')
 
     def visit_Subscript(self, node):
+        if (node.value.id not in self.C_Pointers):
+            self.C_Pointers.append (node.value.id)
         self.visit(node.value)
         self.write_c('[')
         self.visit(node.slice)

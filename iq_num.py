@@ -142,7 +142,8 @@ def Iq13(q, volfraction_a, sld_a, sld_b, d, xi):
     c1 = 2.0*xi**2 * (1.0 - k**2)
     c2 = xi**4
     prefactor = 8.0*pi * volfraction_a*(1.0 - volfraction_a) * drho**2 * c2/xi
-    return 1.0e-4*prefactor / np.polyval([c2, c1, a2], q**2)
+    return 1.0e-4*prefactor / np_polyval([c2, c1, a2], q**2)
+#    return 1.0e-4*prefactor / np.polyval([c2, c1, a2], q**2)
 
 
 #==== unified_power_Rg ====
@@ -155,6 +156,8 @@ def Iq14(q, level, rg, power, B, G):
 
     result = 0.
     if q == 0:
+        for i in range(foo(j, k)):
+            q += 2
         for i in range(level):
             result += G[i]
     else:

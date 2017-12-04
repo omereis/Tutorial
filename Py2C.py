@@ -107,6 +107,7 @@ class SourceGenerator(NodeVisitor):
         self.C_IntVars = []
         self.MathIncludeed = False
         self.C_Pointers = []
+        self.C_Functions = []
 
     def write_python(self, x):
         if self.new_lines:
@@ -243,7 +244,8 @@ class SourceGenerator(NodeVisitor):
 
     def visit_AugAssign(self, node):
         if (node.target.id not in self.C_Vars):
-            self.C_Vars.append (node.target.id)
+            if (node.target.id not in self.arguments):
+                self.C_Vars.append (node.target.id)
         self.visit(node.target)
         self.write_c(' ' + BINOP_SYMBOLS[type(node.op)] + '= ')
         self.visit(node.value)
@@ -602,6 +604,8 @@ class SourceGenerator(NodeVisitor):
                 want_comma.append(True)
 
         if (hasattr (node.func, 'id')):
+            if (node.func.id not in self.C_Functions):
+                self.C_Functions.append (node.func.id)
             if (node.func.id == 'abs'):
                 self.write_c ("fabs ")
             elif (node.func.id == 'int'):
@@ -610,6 +614,7 @@ class SourceGenerator(NodeVisitor):
                 self.visit(node.func)
         else:
             self.visit(node.func)
+#self.C_Functions
         self.write_c('(')
         for arg in node.args:
             write_comma()
@@ -634,6 +639,15 @@ class SourceGenerator(NodeVisitor):
         self.write_c(node.id)
         if (node.id in self.C_Pointers):
             self.write_c("[0]")
+        name = ""
+        sub = node.id.find("[")
+        if (sub > 0):
+            name = node.id[0:sub].strip()
+        else:
+            name = node.id
+#        if ((node.id not in self.C_Functions) or (node.id not in self.C_Vars) or (node.id not in self.C_IntVars) or (node.id not in self.arguments)):
+        if ((name not in self.C_Functions) and (name not in self.C_Vars) and (name not in self.C_IntVars) and (name not in self.arguments) and (name.isnumeric () == False)):
+            self.C_Vars.append (node.id)
 
     def visit_Str(self, node):
         self.write_c(repr(node.s))

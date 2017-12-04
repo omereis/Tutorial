@@ -1,3 +1,28 @@
+#==== unified_power_Rg ====
+# rg, power, B and G are vector parameters, which we know from the model definition file,
+# but can only guess at by looking at the code
+def Iq41(q, level, rg, power, B, G):
+    level = int(level + 0.5)
+    if level == 0:
+        return 1./q
+
+    result = 0.
+    if q == 0:
+        for i in range(foo(j, k)):
+            q += 2
+        for i in range(level):
+            result += G[i]
+    else:
+        for i in range(level):
+            exp_now = exp(-(q*rg[i])**2/3.)
+            pow_now = (erf(q*rg[i]/sqrt(6.))**3/q)**power[i]
+            if i < level-1:
+                exp_next = exp(-(q*rg[i+1])**2/3.)
+            else:
+                exp_next = 1
+            result += G[i]*exp_now + B[i]*exp_next*pow_now
+    return result
+
 #==== broad_peak ====
 def Iq1(q, porod_scale, porod_exp, lorentz_scale, lorentz_length, peak_pos, lorentz_exp):
     z = abs(q - peak_pos) * lorentz_length

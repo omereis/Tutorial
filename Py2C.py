@@ -34,8 +34,6 @@ BINOP_SYMBOLS[ast.BitAnd] = '&'
 BINOP_SYMBOLS[ast.FloorDiv] = '//'
 
 BOOLOP_SYMBOLS = {}
-#BOOLOP_SYMBOLS[ast.And] = 'and'
-#BOOLOP_SYMBOLS[ast.Or] = 'or'
 BOOLOP_SYMBOLS[ast.And] = '&&'
 BOOLOP_SYMBOLS[ast.Or]  = '||'
 
@@ -108,6 +106,7 @@ class SourceGenerator(NodeVisitor):
         self.MathIncludeed = False
         self.C_Pointers = []
         self.C_Functions = []
+        self.C_Vectors = []
         self.SubRef = False
         self.InSubscript = False
 
@@ -118,7 +117,6 @@ class SourceGenerator(NodeVisitor):
             self.result.append(self.indent_with * self.indentation)
             self.new_lines = 0
         self.result.append(x)
-#       self.current_statement += x
 
     def write_c(self, x):
         self.current_statement += x
@@ -147,8 +145,6 @@ class SourceGenerator(NodeVisitor):
     def body(self, statements):
         if (len(self.current_statement)):
             self.add_current_line ()
-#            self.add_c_line(self.current_statement)
-#            self.current_statement = ''
         self.new_line = True
         self.indentation += 1
         for stmt in statements:
@@ -186,19 +182,6 @@ class SourceGenerator(NodeVisitor):
 #                self.write_python('=')
 #                self.visit(default)
 
-#        for arg, default in zip(node.args, padding + node.defaults):
-#            write_comma()
-#            self.visit(arg)
-#            if default is not None:
-#                self.write_c('=')
-#                self.visit(default)
-#        if node.vararg is not None:
-#            write_comma()
-#            self.write_python('*' + node.vararg)
-#        if node.kwarg is not None:
-#            write_comma()
-#            self.write_python('**' + node.kwarg)
-
     def decorators(self, node):
         for decorator in node.decorator_list:
             self.newline(decorator)
@@ -216,17 +199,9 @@ class SourceGenerator(NodeVisitor):
            self.visit(node.msg)
 
     def visit_Assign(self, node):
-#        try:
-#        self.insert_leading_blanks (self, indentation)
-#        except Exception as e:
-#            print ("Error:\n" + e.__str__)
-#        for i in range (self.indentation):
-#            self.write_c("    ")
-#       self.newline(node)
         for idx, target in enumerate(node.targets):
             if idx:
                 self.write_c(' = ')
-#            self.visit(target)
             if (target.id not in self.C_Vars):
                 if (target.id in self.arguments):
                     idx = self.arguments.index (target.id)
@@ -240,7 +215,6 @@ class SourceGenerator(NodeVisitor):
         self.write_c(' = ')
         self.visit(node.value)
         self.write_c(';')
-#       self.c_proc.append (self.current_statement)
         self.add_c_line(self.current_statement)
         self.current_statement = ''
 
@@ -281,8 +255,8 @@ class SourceGenerator(NodeVisitor):
         return (s)
 
     def insert_C_Vars (self, start_var):
-#        start_vars = self.c_proc.index ("{\n") + 1
         fLine = False
+        
         if (len(self.C_Vars) > 0):
             s = self.listToDeclare(self.C_Vars)
             self.c_proc.insert (start_var, "    double " + s + ";\n")
@@ -293,8 +267,15 @@ class SourceGenerator(NodeVisitor):
             self.c_proc.insert (start_var, "    int " + s + ";\n")
             fLine = True
             start_var += 1
+        if (len (self.C_Vectors) > 0):
+            for n in range(len(self.C_Vectors)):
+                name = "vec" + str(n+1)
+                c_dcl = "    double " + name + "[] = {" + self.C_Vectors[n] + "};"
+                self.c_proc.insert (start_var, c_dcl + "\n")
+                start_var += 1
         self.C_Vars = []
         self.C_IntVars = []
+        self.C_Vectors = []
         if (fLine == True):
             self.c_proc.insert (start_var, "\n")
         return
@@ -342,14 +323,6 @@ class SourceGenerator(NodeVisitor):
         self.strMethodSignature = 'double ' + self.name + ' (' + args_str + ")"
         if (self.signature_line > 0):
             self.c_proc.insert (self.signature_line, self.strMethodSignature)
-
-#    def getMethodSignature (self):
-#        args_str = ""
-#        for n in range(len(self.arguments)):
-#            args_str += "double " + self.arguments[n]
-#            if (n < (len(self.arguments) - 1)):
-#                args_str += ", "
-#        self.strMethodSignature = 'double ' + self.name + ' (' + args_str + ")"
 
     def visit_FunctionDef(self, node):
         self.newline(extra=1)
@@ -460,9 +433,7 @@ class SourceGenerator(NodeVisitor):
                     if ('n' not in self.C_IntVars):
                         self.C_IntVars.append ('n')
                     self.write_c ("for (n=0 ; n < len(")
-#                    self.visit(node.iter)
                     for arg in node.iter.args:
-#                        self.write_comma()
                         self.visit(arg)
                     self.write_c (") ; n++) {")
                     self.body_or_else(node)
@@ -674,12 +645,23 @@ class SourceGenerator(NodeVisitor):
 
     def sequence_visit(left, right):
         def visit(self, node):
-            self.write_c(left)
+            s = ""
             for idx, item in enumerate(node.elts):
                 if idx:
-                    self.write_c(', ')
-                self.visit(item)
-            self.write_c(right)
+                    s += ', '
+                s += item.id
+            self.C_Vectors.append (s)
+            vec_name = "vec"  + str(len(self.C_Vectors))
+            self.write_c(vec_name)
+            vec_name += "#"
+#
+#            self.write_c(left)
+#            for idx, item in enumerate(node.elts):
+#                if idx:
+#                    self.write_c(', ')
+#                self.visit(item)
+#            self.write_c(right)
+#
         return visit
 
     visit_List = sequence_visit('[', ']')

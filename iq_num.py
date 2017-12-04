@@ -1,16 +1,17 @@
 #==== unified_power_Rg ====
 # rg, power, B and G are vector parameters, which we know from the model definition file,
 # but can only guess at by looking at the code
-def Iq41(q, level, rg, power, B, G):
+def Iq41(q, level, rg, power, B, G, c2, c1, a2):
+#    double v[] = {c2, c1, a2};
     level = int(level + 0.5)
     if level == 0:
         return 1./q
 
     result = 0.
-    result = G[i]
+    p_val = np_polyval([c2, c1, a2], q**2)
     if q == 0:
-        for i in range(foo(j, k)):
-            q += 2
+#        for i in range(foo(j, k)):
+#            q += 2
         for i in range(level):
             result += G[i]
     else:
@@ -182,8 +183,8 @@ def Iq14(q, level, rg, power, B, G):
 
     result = 0.
     if q == 0:
-        for i in range(foo(j, k)):
-            q += 2
+#        for i in range(foo(j, k)):
+#            q += 2
         for i in range(level):
             result += G[i]
     else:

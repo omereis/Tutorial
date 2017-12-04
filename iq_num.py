@@ -7,6 +7,7 @@ def Iq41(q, level, rg, power, B, G):
         return 1./q
 
     result = 0.
+    result = G[i]
     if q == 0:
         for i in range(foo(j, k)):
             q += 2

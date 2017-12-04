@@ -108,6 +108,8 @@ class SourceGenerator(NodeVisitor):
         self.MathIncludeed = False
         self.C_Pointers = []
         self.C_Functions = []
+        self.SubRef = False
+        self.InSubscript = False
 
     def write_python(self, x):
         if self.new_lines:
@@ -637,7 +639,7 @@ class SourceGenerator(NodeVisitor):
 
     def visit_Name(self, node):
         self.write_c(node.id)
-        if (node.id in self.C_Pointers):
+        if ((node.id in self.C_Pointers) and (not self.SubRef)):
             self.write_c("[0]")
         name = ""
         sub = node.id.find("[")
@@ -645,9 +647,12 @@ class SourceGenerator(NodeVisitor):
             name = node.id[0:sub].strip()
         else:
             name = node.id
-#        if ((node.id not in self.C_Functions) or (node.id not in self.C_Vars) or (node.id not in self.C_IntVars) or (node.id not in self.arguments)):
+#       add variable to C_Vars if it ins't there yet, not an argument and not a number
         if ((name not in self.C_Functions) and (name not in self.C_Vars) and (name not in self.C_IntVars) and (name not in self.arguments) and (name.isnumeric () == False)):
-            self.C_Vars.append (node.id)
+            if (self.InSubscript):
+                self.C_IntVars.append (node.id)
+            else:
+                self.C_Vars.append (node.id)
 
     def visit_Str(self, node):
         self.write_c(repr(node.s))
@@ -735,9 +740,13 @@ class SourceGenerator(NodeVisitor):
     def visit_Subscript(self, node):
         if (node.value.id not in self.C_Pointers):
             self.C_Pointers.append (node.value.id)
+        self.SubRef = True
         self.visit(node.value)
+        self.SubRef = False
         self.write_c('[')
+        self.InSubscript = True
         self.visit(node.slice)
+        self.InSubscript = False
         self.write_c(']')
 
     def visit_Slice(self, node):

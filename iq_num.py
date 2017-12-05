@@ -1,13 +1,23 @@
+import sys
+
+def MultAsgn(a, b):
+    c = a * b
+    d = c / b
+    c, d = a + b, a - b
+
 #==== unified_power_Rg ====
 # rg, power, B and G are vector parameters, which we know from the model definition file,
 # but can only guess at by looking at the code
 def Iq41(q, level, rg, power, B, G, c2, c1, a2):
-#    double v[] = {c2, c1, a2};
     level = int(level + 0.5)
     if level == 0:
         return 1./q
 
-    result = 0.
+    result = 0.0
+    x = 0
+    y = 1
+    a, b = x, y
+#    abc, cba = 5, 6
     p_val = np_polyval([c2, c1, a2], q**2)
     if q == 0:
 #        for i in range(foo(j, k)):

@@ -109,6 +109,7 @@ class SourceGenerator(NodeVisitor):
         self.C_Vectors = []
         self.SubRef = False
         self.InSubscript = False
+        self.Tuples = []
 
     def write_python(self, x):
         if self.new_lines:
@@ -127,6 +128,7 @@ class SourceGenerator(NodeVisitor):
             string += ("    ")
         string += str(x)
         self.c_proc.append (str(string + "\n"))
+        x = ''
 
     def add_current_line (self):
         if (len(self.current_statement) > 0):
@@ -150,7 +152,8 @@ class SourceGenerator(NodeVisitor):
         for stmt in statements:
             target_name = ''
             if (hasattr (stmt, 'targets')):
-                target_name = stmt.targets[0].id # target name needed for debug only
+                if (hasattr(stmt.targets[0],'id')):
+                    target_name = stmt.targets[0].id # target name needed for debug only
             self.visit(stmt)
         self.add_current_line ()
         self.indentation -= 1
@@ -202,21 +205,32 @@ class SourceGenerator(NodeVisitor):
         for idx, target in enumerate(node.targets):
             if idx:
                 self.write_c(' = ')
-            if (target.id not in self.C_Vars):
-                if (target.id in self.arguments):
-                    idx = self.arguments.index (target.id)
-                    new_target = self.arguments[idx] + "[0]"
-                    if (new_target not in self.C_Pointers):
-                        target.id = new_target
-                        self.C_Pointers.append (self.arguments[idx])
-                else:
-                    self.C_Vars.append (target.id)
+            if (hasattr (target, 'id')):
+                if (target.id not in self.C_Vars):
+                    if (target.id in self.arguments):
+                        idx = self.arguments.index (target.id)
+                        new_target = self.arguments[idx] + "[0]"
+                        if (new_target not in self.C_Pointers):
+                            target.id = new_target
+                            self.C_Pointers.append (self.arguments[idx])
+                    else:
+                        self.C_Vars.append (target.id)
             self.visit(target)
+        if (len(self.Tuples) > 0):
+            tplTargets = list (self.Tuples)
+            self.Tuples.clear()
         self.write_c(' = ')
         self.visit(node.value)
         self.write_c(';')
         self.add_c_line(self.current_statement)
         self.current_statement = ''
+        for n,item in enumerate (self.Tuples):
+            self.visit(tplTargets[n])
+            self.write_c(' = ')
+            self.visit(item)
+            self.write_c(';')
+            self.add_c_line(self.current_statement)
+            self.current_statement = ''
 
     def visit_AugAssign(self, node):
         if (node.target.id not in self.C_Vars):
@@ -635,13 +649,15 @@ class SourceGenerator(NodeVisitor):
         self.write_c(repr(node.n))
 
     def visit_Tuple(self, node):
-        self.write_c('(')
-        idx = -1
+#        self.write_c('(')
+#        idx = -1
         for idx, item in enumerate(node.elts):
             if idx:
-                self.write_python(', ')
-            self.visit(item)
-        self.write_python(idx and ')' or ',)')
+                self.Tuples.append(item)
+            else:
+#                self.write_c(', ')
+                self.visit(item)
+#        self.write_c(idx and ')' or ',)')
 
     def sequence_visit(left, right):
         def visit(self, node):
@@ -874,7 +890,7 @@ def print_function(f=None):
 
 if __name__ == "__main__":
     import os
-    print("Parsing...")
+    print("Parsing...using Python" + sys.version)
     try:
         fname_in = ""
         fname_out = ""

@@ -135,6 +135,10 @@ class SourceGenerator(NodeVisitor):
             self.add_c_line (self.current_statement)
             self.current_statement = ''
 
+    def AddUniqueVar (self, new_var):
+        if ((new_var not in self.C_Vars)):
+            self.C_Vars.append (str (new_var))
+
     def newline(self, node=None, extra=0):
         self.new_lines = max(self.new_lines, 1 + extra)
         if node is not None and self.add_line_information:
@@ -597,6 +601,15 @@ class SourceGenerator(NodeVisitor):
                 self.write_c ("fabs ")
             elif (node.func.id == 'int'):
                 self.write_c('(int) ')
+            elif (node.func.id == "SINCOS"):
+                angle = str(node.args[0].id)
+                self.write_c (node.args[1].id + " = sin (" + angle + ");")
+                self.add_current_line()
+                self.write_c (node.args[2].id + " = cos (" + angle + ");")
+                self.add_current_line()
+                for arg in node.args:
+                    self.AddUniqueVar (arg.id)
+                return
             else:
                 self.visit(node.func)
         else:

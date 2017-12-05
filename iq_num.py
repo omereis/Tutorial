@@ -1,9 +1,13 @@
 import sys
+import math
+import numpy as np
 
 def MultAsgn(a, b):
     c = a * b
     d = c / b
     c, d = a + b, a - b
+    alpha = 30 * pi / 180.0
+    SINCOS (alpha, beta, s, c)
 
 #==== unified_power_Rg ====
 # rg, power, B and G are vector parameters, which we know from the model definition file,

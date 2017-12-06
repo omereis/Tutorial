@@ -6,6 +6,12 @@ def MultAsgn(a, b):
     c = a * b
     d = c / b
     c, d = a + b, a - b
+    d = a ** b
+    c = d ** 2
+    c = b ** 3
+    e = d ** (1/2)
+    w = d ** 0.5
+    r = d ** (-2)
     alpha = 30 * pi / 180.0
     SINCOS (alpha, beta, s, c)
 

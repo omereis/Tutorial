@@ -20,7 +20,7 @@ def Iq41(q, level, rg, power, B, G, c2, c1, a2):
     result = 0.0
     x = 0
     y = 1
-    a, b = x, y
+    x1, x2, x3 = x, y, 17.0
 #    abc, cba = 5, 6
     p_val = np_polyval([c2, c1, a2], q**2)
     if q == 0:

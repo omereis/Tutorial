@@ -180,6 +180,7 @@ class SourceGenerator(NodeVisitor):
                     target_name = stmt.targets[0].id # target name needed for debug only
             self.visit(stmt)
         self.add_current_line () # just for breaking point. to be deleted. 
+        self.indentation -= 1
 
     def body_or_else(self, node):
         self.body(node.body)
@@ -263,14 +264,14 @@ class SourceGenerator(NodeVisitor):
             self.visit(item)
             self.write_c(';')
             self.add_current_line ()
-        if (self.is_sequence):
-            for target  in node.targets:
-                if (hasattr (target, 'id')):
-                    if ((target.id in self.C_Vars) and (target.id not in self.C_Vectors)):
-                        if (target.id not in self.C_Pointers):
-                            self.C_Pointers.append (target.id)
-                            if (target.id in self.C_Vars):
-                                self.C_Vars.remove(target.id)
+#        if (self.is_sequence):
+#            for target  in node.targets:
+#                if (hasattr (target, 'id')):
+#                    if ((target.id in self.C_Vars) and (target.id not in self.C_Vectors)):
+#                        if (target.id not in self.C_Pointers):
+#                            self.C_Pointers.append (target.id)
+#                            if (target.id in self.C_Vars):
+#                                self.C_Vars.remove(target.id)
         self.current_statement = ''
 
     def visit_AugAssign(self, node):
@@ -329,15 +330,17 @@ class SourceGenerator(NodeVisitor):
         if (len (self.C_Pointers) > 0):
             vars = ""
             for n in range(len(self.C_Pointers)):
-                if (n > 0):
+                if (len(vars) > 0):
                     vars += ", "
-                vars += "*" + self.C_Pointers[n]
-            c_dcl = "    double " + vars + ";"
-            self.c_proc.insert (start_var, c_dcl + "\n")
-            start_var += 1
-        self.C_Vars.clear()# = []
-        self.C_IntVars.clear()# = []
-        self.C_Vectors.clear()# = []
+                if (self.C_Pointers[n] not in self.arguments):
+                    vars += "*" + self.C_Pointers[n]
+            if (len(vars) > 0):
+                c_dcl = "    double " + vars + ";"
+                self.c_proc.insert (start_var, c_dcl + "\n")
+                start_var += 1
+        self.C_Vars.clear()
+        self.C_IntVars.clear()
+        self.C_Vectors.clear()
         self.C_Pointers.clear()
         if (fLine == True):
             self.c_proc.insert (start_var, "\n")

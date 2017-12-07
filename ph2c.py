@@ -13,7 +13,14 @@ Update Notes
 ============
 11/22 14:15, O.E.   Each 'visit_*' method is to build a C statement string. It shold insert 4 blanks per indentation level.
                     The 'body' method will combine all the strings, by adding the 'current_statement' to the c_proc string list
-11/27 17:29, OE: 'if', 'pow' basicly working
+   11/2017, OE: variables, argument definition implemented.
+   Note: An argument is considered an array if it is the target of an assignment. In that case it is translated to <var>[0]
+11/27/2017, OE: 'pow' basicly working
+  /12/2017, OE: Multiple assignment: a1,a2,...,an=b1,b2,...bn implemented
+  /12/2017, OE: Power function, including special cases of square(x) (pow(x,2)) and cube(x) (pow(x,3)), implemented in translate_power,
+                called from visit_BinOp
+12/07/2017, OE: Translation of integer division, '\\' in python, implemented in translate_integer_divide, called from visit_BinOp
+12/07/2017, OE: C variable definition handled in 'define_C_Vars'
 """
 import ast
 import sys
@@ -113,6 +120,7 @@ class SourceGenerator(NodeVisitor):
         self.InSubscript = False
         self.Tuples = []
         self.required_functions = []
+        self.is_sequence = False
 
     def write_python(self, x):
         if self.new_lines:
@@ -171,8 +179,7 @@ class SourceGenerator(NodeVisitor):
                 if (hasattr(stmt.targets[0],'id')):
                     target_name = stmt.targets[0].id # target name needed for debug only
             self.visit(stmt)
-        self.add_current_line ()
-        self.indentation -= 1
+        self.add_current_line () # just for breaking point. to be deleted. 
 
     def body_or_else(self, node):
         self.body(node.body)
@@ -217,11 +224,8 @@ class SourceGenerator(NodeVisitor):
            self.write_python(', ')
            self.visit(node.msg)
 
-    def visit_Assign(self, node):
-        for idx, target in enumerate(node.targets):
-            if idx:
-                self.write_c(' = ')
-            if (hasattr (target, 'id')):
+    def define_C_Vars (self, target):
+        if (hasattr (target, 'id')):
 # a variable is considered an array if it apears in the agrument list
 # and being assigned to. For example, the variable p in the following
 # sniplet is a pointer, while q is not
@@ -229,31 +233,45 @@ class SourceGenerator(NodeVisitor):
 #  p = q + 1
 #  return
 #
-                if (target.id not in self.C_Vars):
-                    if (target.id in self.arguments):
-                        idx = self.arguments.index (target.id)
-                        new_target = self.arguments[idx] + "[0]"
-                        if (new_target not in self.C_Pointers):
-                            target.id = new_target
-                            self.C_Pointers.append (self.arguments[idx])
-                    else:
-                        self.C_Vars.append (target.id)
+            if (target.id not in self.C_Vars):
+                if (target.id in self.arguments):
+                    idx = self.arguments.index (target.id)
+                    new_target = self.arguments[idx] + "[0]"
+                    if (new_target not in self.C_Pointers):
+                        target.id = new_target
+                        self.C_Pointers.append (self.arguments[idx])
+                else:
+                    self.C_Vars.append (target.id)
+
+    def visit_Assign(self, node):
+        for idx, target in enumerate(node.targets): # multi assign, as in 'a = b = c = 7'
+            if idx:
+                self.write_c(' = ')
+            self.define_C_Vars (target)
             self.visit(target)
         if (len(self.Tuples) > 0):
             tplTargets = list (self.Tuples)
             self.Tuples.clear()
         self.write_c(' = ')
+        self.is_sequence = False
         self.visit(node.value)
         self.write_c(';')
-        self.add_c_line(self.current_statement)
-        self.current_statement = ''
+        self.add_current_line ()
         for n,item in enumerate (self.Tuples):
             self.visit(tplTargets[n])
             self.write_c(' = ')
             self.visit(item)
             self.write_c(';')
-            self.add_c_line(self.current_statement)
-            self.current_statement = ''
+            self.add_current_line ()
+        if (self.is_sequence):
+            for target  in node.targets:
+                if (hasattr (target, 'id')):
+                    if ((target.id in self.C_Vars) and (target.id not in self.C_Vectors)):
+                        if (target.id not in self.C_Pointers):
+                            self.C_Pointers.append (target.id)
+                            if (target.id in self.C_Vars):
+                                self.C_Vars.remove(target.id)
+        self.current_statement = ''
 
     def visit_AugAssign(self, node):
         if (node.target.id not in self.C_Vars):
@@ -285,15 +303,12 @@ class SourceGenerator(NodeVisitor):
 
     def listToDeclare(self, Vars):
         s = ''
-        for n in range(len(Vars)):
-            s += str(Vars[n])
-            if n < (len(Vars) - 1):
-                s += ", "
+        if (len(Vars) > 0):
+            s = ",".join (Vars)
         return (s)
 
     def insert_C_Vars (self, start_var):
         fLine = False
-        
         if (len(self.C_Vars) > 0):
             s = self.listToDeclare(self.C_Vars)
             self.c_proc.insert (start_var, "    double " + s + ";\n")
@@ -305,14 +320,25 @@ class SourceGenerator(NodeVisitor):
             fLine = True
             start_var += 1
         if (len (self.C_Vectors) > 0):
+            s = self.listToDeclare(self.C_Vectors)
             for n in range(len(self.C_Vectors)):
                 name = "vec" + str(n+1)
                 c_dcl = "    double " + name + "[] = {" + self.C_Vectors[n] + "};"
                 self.c_proc.insert (start_var, c_dcl + "\n")
                 start_var += 1
-        self.C_Vars = []
-        self.C_IntVars = []
-        self.C_Vectors = []
+        if (len (self.C_Pointers) > 0):
+            vars = ""
+            for n in range(len(self.C_Pointers)):
+                if (n > 0):
+                    vars += ", "
+                vars += "*" + self.C_Pointers[n]
+            c_dcl = "    double " + vars + ";"
+            self.c_proc.insert (start_var, c_dcl + "\n")
+            start_var += 1
+        self.C_Vars.clear()# = []
+        self.C_IntVars.clear()# = []
+        self.C_Vectors.clear()# = []
+        self.C_Pointers.clear()
         if (fLine == True):
             self.c_proc.insert (start_var, "\n")
         return
@@ -685,15 +711,20 @@ class SourceGenerator(NodeVisitor):
 
     def sequence_visit(left, right):
         def visit(self, node):
+            self.is_sequence = True
             s = ""
             for idx, item in enumerate(node.elts):
-                if idx:
+                if ((idx > 0) and (len(s) > 0)):
                     s += ', '
-                s += item.id
-            self.C_Vectors.append (s)
-            vec_name = "vec"  + str(len(self.C_Vectors))
-            self.write_c(vec_name)
-            vec_name += "#"
+                if (hasattr (item, 'id')):
+                    s += item.id
+                elif (hasattr(item,'n')):
+                    s += str(item.n)
+            if (len(s) > 0):
+                self.C_Vectors.append (s)
+                vec_name = "vec"  + str(len(self.C_Vectors))
+                self.write_c(vec_name)
+                vec_name += "#"
 #
 #            self.write_c(left)
 #            for idx, item in enumerate(node.elts):
@@ -737,6 +768,8 @@ class SourceGenerator(NodeVisitor):
                 function_name = "cube"
             elif (exponent == 0.5):
                 function_name = "sqrt"
+        elif (exponent == "1/2"):
+                function_name = "sqrt"
         self.write_c (function_name + " (")
         self.visit(node.left)
         if (function_name == "pow"):
@@ -744,10 +777,18 @@ class SourceGenerator(NodeVisitor):
             self.visit(node.right)
         self.write_c(")")
 
+    def translate_integer_divide (self, node):
+        self.write_c ("(int) (")
+        self.visit(node.left)
+        self.write_c (") / (int) (")
+        self.visit(node.right)
+        self.write_c (")")
 
     def visit_BinOp(self, node):
         if ('%s' % BINOP_SYMBOLS[type(node.op)] == BINOP_SYMBOLS[ast.Pow]):
             self.translate_power (node)
+        elif ('%s' % BINOP_SYMBOLS[type(node.op)] == BINOP_SYMBOLS[ast.FloorDiv]):
+            self.translate_integer_divide (node)
         else:
             self.visit(node.left)
             self.write_c(' %s ' % BINOP_SYMBOLS[type(node.op)])

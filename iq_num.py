@@ -3,10 +3,14 @@ import math
 import numpy as np
 
 def MultAsgn(a, b):
+    ar = [1,2,3]
+    ar2 = [4, 5, 6]
     c = a * b
     d = c / b
+    e = b // a
     c, d = a + b, a - b
     d = a ** b
+    r = d ** (-2)
     c = d ** 2
     c = b ** 3
     e = d ** (1/2)

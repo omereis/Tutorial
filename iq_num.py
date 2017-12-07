@@ -7,6 +7,7 @@ import numpy as np
 # but can only guess at by looking at the code
 def Iq41(q, level, rg, power, B, G, c2, c1, a2):
     result = G[7]
+    p_val = np_polyval([c2, c1, a2], q**2)
     level = int(level + 0.5)
     if level == 0:
         return 1./q
@@ -16,7 +17,6 @@ def Iq41(q, level, rg, power, B, G, c2, c1, a2):
     y = 1
     x1, x2, x3 = x, y, 17.0
 #    abc, cba = 5, 6
-    p_val = np_polyval([c2, c1, a2], q**2)
     if q == 0:
 #        for i in range(foo(j, k)):
 #            q += 2
@@ -34,8 +34,8 @@ def Iq41(q, level, rg, power, B, G, c2, c1, a2):
     return result
 
 def MultAsgn(a, b):
-#    ar = [1,2,3]
-#    ar2 = [4, 5, 6]
+    ar = [1,2,3]
+    ar2 = [4, 5, 6]
     c = a * b
     d = c / b
     e = b // a

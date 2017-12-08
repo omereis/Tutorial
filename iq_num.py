@@ -2,6 +2,31 @@ import sys
 import math
 import numpy as np
 
+def MultAsgn(a, b):
+    sqr1 = d ** 2.5
+    sqr = d ** 2
+    sqr1 = d ** -2
+    sqr1 = d ** a
+
+    cub = d ** 3
+    rut = d ** (1/2)
+    cut = d ** (1/3)
+    cut_n = d ** -(1/3)
+    rut = d ** 0.5
+    ar = [1,2,3]
+    ar2 = [4, 5, 6]
+    c = a * b
+    d = c / b
+    e = b // a
+    c, d = a + b, a - b
+    d = a ** b
+    r = d ** (-2)
+    c = d ** 2
+    c = b ** 3
+    r = d ** (-2)
+    alpha = 30 * pi / 180.0
+    SINCOS (alpha, beta, s, c)
+
 #==== unified_power_Rg ====
 # rg, power, B and G are vector parameters, which we know from the model definition file,
 # but can only guess at by looking at the code
@@ -32,23 +57,6 @@ def Iq41(q, level, rg, power, B, G, c2, c1, a2):
                 exp_next = 1
             result += G[i]*exp_now + B[i]*exp_next*pow_now
     return result
-
-def MultAsgn(a, b):
-    ar = [1,2,3]
-    ar2 = [4, 5, 6]
-    c = a * b
-    d = c / b
-    e = b // a
-    c, d = a + b, a - b
-    d = a ** b
-    r = d ** (-2)
-    c = d ** 2
-    c = b ** 3
-    e = d ** (1/2)
-    w = d ** 0.5
-    r = d ** (-2)
-    alpha = 30 * pi / 180.0
-    SINCOS (alpha, beta, s, c)
 
 #==== broad_peak ====
 def Iq1(q, porod_scale, porod_exp, lorentz_scale, lorentz_length, peak_pos, lorentz_exp):

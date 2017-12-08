@@ -9,6 +9,29 @@
     :license: BSD.
 """
 """
+    Variables definition in C
+    -------------------------
+    Defining variables within the Translate function is a bit of a guess work, using following rules.
+    *   By default, a variable is a 'double'.
+    *   Variable in a for loop is an int.
+    *   Variable that is references with brackets is an array of doubles. The variable within the brackets
+        is integer. For example, in the reference 'var1[var2]', var1 is a double array, and var2 is an integer.
+    *   Assignment to an argument makes that argument an array, and the index in that assignment is 0.
+        For example, the following python code
+            def func (arg1, arg2):
+                arg2 = 17.
+        is translated to the following C code
+            double func (double arg1)
+            {
+                arg2[0] = 17.0;
+            }
+        For example, the following python code is translated to the following C code
+            def func (arg1, arg2):          double func (double arg1) {
+                arg2 = 17.                      arg2[0] = 17.0;
+                                            }
+    *   All functions are defined as double, even if there is no return statement.
+
+
 Update Notes
 ============
 11/22 14:15, O.E.   Each 'visit_*' method is to build a C statement string. It shold insert 4 blanks per indentation level.
@@ -89,6 +112,13 @@ def to_source(node, func_name):
 #    return ''.join(generator.result)
     return ''.join(generator.c_proc)
 
+def isevaluable(s):
+    try:
+        eval(s)
+        return True
+    except:
+        return False
+    
 class SourceGenerator(NodeVisitor):
     """This visitor is able to transform a well formed syntax tree into python
     sourcecode.  For more details have a look at the docstring of the
@@ -716,15 +746,11 @@ class SourceGenerator(NodeVisitor):
         self.write_c(repr(node.n))
 
     def visit_Tuple(self, node):
-#        self.write_c('(')
-#        idx = -1
         for idx, item in enumerate(node.elts):
             if idx:
                 self.Tuples.append(item)
             else:
-#                self.write_c(', ')
                 self.visit(item)
-#        self.write_c(idx and ')' or ',)')
 
     def sequence_visit(left, right):
         def visit(self, node):
@@ -742,14 +768,6 @@ class SourceGenerator(NodeVisitor):
                 vec_name = "vec"  + str(len(self.C_Vectors))
                 self.write_c(vec_name)
                 vec_name += "#"
-#
-#            self.write_c(left)
-#            for idx, item in enumerate(node.elts):
-#                if idx:
-#                    self.write_c(', ')
-#                self.visit(item)
-#            self.write_c(right)
-#
         return visit
 
     visit_List = sequence_visit('[', ']')
@@ -766,33 +784,48 @@ class SourceGenerator(NodeVisitor):
             self.visit(value)
         self.write_python('}')
 
+    def get_special_power (self, string):
+        function_name = ''
+        is_negative_exp = False
+        if (isevaluable(str(self.current_statement))):
+            exponent = eval(string)
+            is_negative_exp = exponent < 0
+            abs_exponent = abs(exponent)
+            if (abs_exponent == 2):
+                function_name = "square"
+            elif (abs_exponent == 3):
+                function_name = "cube"
+            elif (abs_exponent == 0.5):
+                function_name = "sqrt"
+            elif (abs_exponent == 1.0/3.0):
+                function_name = "cbrt"
+        if (function_name == ''):
+            function_name = "pow"
+        return function_name, is_negative_exp
+
     def translate_power (self, node):
 # get exponent by visiting the right hand argument.
         function_name = "pow"
         temp_statement = self.current_statement
+# 'visit' functions write the results to the 'current_statement' class memnber
+# Here, a temporary variable, 'temp_statement', is used, that enables the
+# use of the 'visit' function
         self.current_statement = ''
         self.visit(node.right)
         exponent = self.current_statement.replace(' ','')
-        exponent = exponent.replace('(','')
-        exponent = exponent.replace(')','')
+        function_name, is_negative_exp = self.get_special_power (self.current_statement)
         self.current_statement = temp_statement
-# is the right hand argument, the exponent, a number?
-        if (hasattr(node.right, 'n')): # power of constand
-            exponent = node.right.n
-            if (exponent == 2):
-                function_name = "square"
-            elif (exponent == 3):
-                function_name = "cube"
-            elif (exponent == 0.5):
-                function_name = "sqrt"
-        elif (exponent == "1/2"):
-                function_name = "sqrt"
+        if (is_negative_exp):
+            self.write_c ("1.0 / (")
         self.write_c (function_name + " (")
         self.visit(node.left)
         if (function_name == "pow"):
             self.write_c(", ")
             self.visit(node.right)
         self.write_c(")")
+        if (is_negative_exp):
+            self.write_c(")")
+        self.write_c(" ")
 
     def translate_integer_divide (self, node):
         self.write_c ("(int) (")

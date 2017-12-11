@@ -44,6 +44,7 @@ Update Notes
                 called from visit_BinOp
 12/07/2017, OE: Translation of integer division, '\\' in python, implemented in translate_integer_divide, called from visit_BinOp
 12/07/2017, OE: C variable definition handled in 'define_C_Vars'
+              : Python integer division, '//', translated to C in 'translate_integer_divide'
 """
 import ast
 import sys
@@ -106,7 +107,7 @@ def to_source(node, func_name):
     number information of statement nodes.
     """
     generator = SourceGenerator(' ' * 4, False)
-    generator.required_functions = func_name
+#    generator.required_functions = func_name
     generator.visit(node)
 
 #    return ''.join(generator.result)
@@ -298,7 +299,7 @@ class SourceGenerator(NodeVisitor):
             self.write_c(';')
             self.add_current_line ()
         if ((self.is_sequence) and (not self.visited_args)):
-            for target  in node.targets:
+            for target in node.targets:
                 if (hasattr (target, 'id')):
                     if ((target.id in self.C_Vars) and (target.id not in self.C_DclPointers)):
                         if (target.id not in self.C_DclPointers):
@@ -341,8 +342,26 @@ class SourceGenerator(NodeVisitor):
             s = ",".join (Vars)
         return (s)
 
+    def write_C_Pointers (self, start_var):
+        if (len (self.C_DclPointers) > 0):
+            vars = ""
+            for c_ptr in self.C_DclPointers:
+                if (len(vars) > 0):
+                    vars += ", "
+                if (c_ptr not in self.arguments):
+                    vars += "*" + c_ptr
+                if (c_ptr in self.C_Vars):
+                    if (c_ptr in self.C_Vars):
+                        self.C_Vars.remove (c_ptr)
+            if (len(vars) > 0):
+                c_dcl = "    double " + vars + ";"
+                self.c_proc.insert (start_var, c_dcl + "\n")
+                start_var += 1
+        return start_var
+
     def insert_C_Vars (self, start_var):
         fLine = False
+        start_var = self.write_C_Pointers (start_var)
         if (len(self.C_Vars) > 0):
             s = self.listToDeclare(self.C_Vars)
             self.c_proc.insert (start_var, "    double " + s + ";\n")
@@ -360,31 +379,11 @@ class SourceGenerator(NodeVisitor):
                 c_dcl = "    double " + name + "[] = {" + self.C_Vectors[n] + "};"
                 self.c_proc.insert (start_var, c_dcl + "\n")
                 start_var += 1
-        if (len (self.C_Pointers) > 0):
-            vars = ""
-            for n in range(len(self.C_Pointers)):
-                if (len(vars) > 0):
-                    vars += ", "
-                if (self.C_Pointers[n] not in self.arguments):
-                    vars += "*" + self.C_Pointers[n]
-            if (len(vars) > 0):
-                c_dcl = "    double " + vars + ";"
-                self.c_proc.insert (start_var, c_dcl + "\n")
-                start_var += 1
-        if (len (self.C_DclPointers) > 0):
-            vars = ''
-            for n in range(len(self.C_DclPointers)):
-                if (len(vars) > 0):
-                    vars += ', '
-                vars += "*" + self.C_DclPointers[n]
-            if (len(vars) > 0):
-                c_dcl = "    double " + vars + ";"
-                self.c_proc.insert (start_var, c_dcl + "\n")
-                start_var += 1
         self.C_Vars.clear()
         self.C_IntVars.clear()
         self.C_Vectors.clear()
         self.C_Pointers.clear()
+        self.C_DclPointers
         if (fLine == True):
             self.c_proc.insert (start_var, "\n")
         return
@@ -430,7 +429,7 @@ class SourceGenerator(NodeVisitor):
             if (n < (len(self.arguments) - 1)):
                 args_str += ", "
         self.strMethodSignature = 'double ' + self.name + ' (' + args_str + ")"
-        if (self.signature_line > 0):
+        if (self.signature_line >= 0):
             self.c_proc.insert (self.signature_line, self.strMethodSignature)
 
     def visit_FunctionDef(self, node):
@@ -439,8 +438,8 @@ class SourceGenerator(NodeVisitor):
         self.newline(node)
         self.arguments = []
         self.name = node.name
-        if self.name not in self.required_functions[0]:
-            return
+#        if self.name not in self.required_functions[0]:
+#           return
         print("Parsing '" + self.name + "'")
         args_str = ""
 
@@ -914,10 +913,12 @@ class SourceGenerator(NodeVisitor):
     def generator_visit(left, right):
         def visit(self, node):
             self.write_python(left)
+            self.write_c(left)
             self.visit(node.elt)
             for comprehension in node.generators:
                 self.visit(comprehension)
-            self.write_python(right)
+            self.write_c(right)
+#            self.write_python(right)
         return visit
 
     visit_ListComp = generator_visit('[', ']')
@@ -961,7 +962,8 @@ class SourceGenerator(NodeVisitor):
     def visit_comprehension(self, node):
         self.write_c(' for ')
         self.visit(node.target)
-        self.write_python(' in ')
+        self.write_C(' in ')
+#        self.write_python(' in ')
         self.visit(node.iter)
         if node.ifs:
             for if_ in node.ifs:

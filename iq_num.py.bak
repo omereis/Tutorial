@@ -3,43 +3,6 @@ import sys
 import math
 import numpy as np
 
-#==== poly_gauss_coil ====
-# Includes a taylor series with polynomial evaluation. 
-# There are a lot of these in the C code, so this could be pretty common,
-# and it may be worth supporting it.  Short term, better to not do anything
-# fancy and instead have the user write:
-#    p2 = ...
-#    p1 = ...
-#    p0 = ...
-#    result = ((p2*z + p1)*z + p0
-def Iq12(q, i_zero, rg, polydispersity):
-    u = polydispersity - 1.0
-    z = q**2 * (rg**2 / (1.0 + 2.0*u))
-
-    # need to trap the case of the polydispersity being 1 (ie, monodisperse!)
-    if polydispersity == 1.0:
-        if q != 0:
-            result = 2.0 * (expm1(-z) + z)
-            result /= z**2
-        else:
-            result = 1.0
-    else:
-        # Taylor series around z=0 of (2*(1+uz)^(-1/u) + z - 1) / (z^2(u+1))
-        p = [
-            #(-1 - 20*u - 155*u**2 - 580*u**3 - 1044*u**4 - 720*u**5) / 2520.,
-            #(+1 + 14*u + 71*u**2 + 154*u**3 + 120*u**4) / 360.,
-            #(-1 - 9*u - 26*u**2 - 24*u**3) / 60.,
-            (+1 + 5*u + 6*u**2) / 12.,
-            (-1 - 2*u) / 3.,
-            (+1),
-            ]
-        if z > 1e-4:
-            result = 2.0 * (power(1.0 + u*z, -1.0/u) + z - 1.0) / (1.0 + u)
-            result /= z**2
-        else:
-            result = np.polyval(p, z)
-    return i_zero * result
-
 #==== broad_peak ====
 def Iq1(q, porod_scale, porod_exp, lorentz_scale, lorentz_length, peak_pos, lorentz_exp):
     z = abs(q - peak_pos) * lorentz_length
@@ -194,6 +157,43 @@ def Iq11(q,
     else:
         result = coefficent_2 * power(q, -power_2)
     return result
+
+#==== poly_gauss_coil ====
+# Includes a taylor series with polynomial evaluation. 
+# There are a lot of these in the C code, so this could be pretty common,
+# and it may be worth supporting it.  Short term, better to not do anything
+# fancy and instead have the user write:
+#    p2 = ...
+#    p1 = ...
+#    p0 = ...
+#    result = ((p2*z + p1)*z + p0
+def Iq12(q, i_zero, rg, polydispersity):
+    u = polydispersity - 1.0
+    z = q**2 * (rg**2 / (1.0 + 2.0*u))
+
+    # need to trap the case of the polydispersity being 1 (ie, monodisperse!)
+    if polydispersity == 1.0:
+        if q != 0:
+            result = 2.0 * (expm1(-z) + z)
+            result /= z**2
+        else:
+            result = 1.0
+    else:
+        # Taylor series around z=0 of (2*(1+uz)^(-1/u) + z - 1) / (z^2(u+1))
+        p = [
+            #(-1 - 20*u - 155*u**2 - 580*u**3 - 1044*u**4 - 720*u**5) / 2520.,
+            #(+1 + 14*u + 71*u**2 + 154*u**3 + 120*u**4) / 360.,
+            #(-1 - 9*u - 26*u**2 - 24*u**3) / 60.,
+            (+1 + 5*u + 6*u**2) / 12.,
+            (-1 - 2*u) / 3.,
+            (+1),
+            ]
+        if z > 1e-4:
+            result = 2.0 * (power(1.0 + u*z, -1.0/u) + z - 1.0) / (1.0 + u)
+            result /= z**2
+        else:
+            result = np.polyval(p, z)
+    return i_zero * result
 
 #==== teubner_strey ====
 # another call to np.polyval, but this would be pretty easy to replace with

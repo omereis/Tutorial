@@ -277,7 +277,13 @@ class SourceGenerator(NodeVisitor):
                 else:
                     self.C_Vars.append (target.id)
 
+    def add_semi_colon (self):
+        semi_pos = self.current_statement.find(';')
+        if (semi_pos < 0):
+            self.write_c(';')
+
     def visit_Assign(self, node):
+        self.add_current_line ()
         for idx, target in enumerate(node.targets): # multi assign, as in 'a = b = c = 7'
             if idx:
                 self.write_c(' = ')
@@ -290,13 +296,14 @@ class SourceGenerator(NodeVisitor):
         self.is_sequence = False
         self.visited_args = False
         self.visit(node.value)
-        self.write_c(';')
+        self.add_semi_colon ()
+#        self.write_c(';')
         self.add_current_line ()
         for n,item in enumerate (self.Tuples):
             self.visit(tplTargets[n])
             self.write_c(' = ')
             self.visit(item)
-            self.write_c(';')
+            self.add_semi_colon ()
             self.add_current_line ()
         if ((self.is_sequence) and (not self.visited_args)):
             for target in node.targets:
@@ -315,7 +322,8 @@ class SourceGenerator(NodeVisitor):
         self.visit(node.target)
         self.write_c(' ' + BINOP_SYMBOLS[type(node.op)] + '= ')
         self.visit(node.value)
-        self.write_c(';')
+        self.add_semi_colon ()
+#        self.write_c(';')
         self.add_current_line ()
 
     def visit_ImportFrom(self, node):
@@ -362,16 +370,25 @@ class SourceGenerator(NodeVisitor):
     def insert_C_Vars (self, start_var):
         fLine = False
         start_var = self.write_C_Pointers (start_var)
+        if (len(self.C_IntVars) > 0):
+            for var in self.C_IntVars:
+                if (var in self.C_Vars):
+                    self.C_Vars.remove(var)
+            s = self.listToDeclare(self.C_IntVars)
+            self.c_proc.insert (start_var, "    int " + s + ";\n")
+            fLine = True
+            start_var += 1
+            
         if (len(self.C_Vars) > 0):
             s = self.listToDeclare(self.C_Vars)
             self.c_proc.insert (start_var, "    double " + s + ";\n")
             fLine = True
             start_var += 1
-        if (len(self.C_IntVars) > 0):
-            s = self.listToDeclare(self.C_IntVars)
-            self.c_proc.insert (start_var, "    int " + s + ";\n")
-            fLine = True
-            start_var += 1
+#        if (len(self.C_IntVars) > 0):
+#            s = self.listToDeclare(self.C_IntVars)
+#            self.c_proc.insert (start_var, "    int " + s + ";\n")
+#            fLine = True
+#            start_var += 1
         if (len (self.C_Vectors) > 0):
             s = self.listToDeclare(self.C_Vectors)
             for n in range(len(self.C_Vectors)):
@@ -529,20 +546,60 @@ class SourceGenerator(NodeVisitor):
                 line_number = node.iter.lineno
         return (line_number)
 
-    def visit_For(self, node):
-        if (len(self.current_statement) > 0):
-            self.add_c_line(self.current_statement)
+    def GetNodeAsString (self, node):
+        res = ''
+        if (hasattr(node,'n')):
+            res = str(node.n)
+        elif (hasattr(node,'id')):
+            res = node.id
+        return (res)
+
+    def GetForRange(self, node):
+        stop = ""
+        start = '0'
+        step = '1'
+        for_args = []
+        temp_statement = self.current_statement
+        self.current_statement = ''
+        for arg in node.iter.args:
+            self.visit(arg)
+            for_args.append(self.current_statement)
             self.current_statement = ''
+        self.current_statement = temp_statement
+        if (len(for_args) == 1):
+            stop = for_args[0]
+        elif (len(for_args) == 2):
+            start = for_args[0]
+            stop = for_args[1]
+        elif (len(for_args) == 3):
+            start = for_args[0]
+            stop = for_args[1]
+            start = for_args[2]
+        else:
+            raise("Ilegal for loop parameters")
+        return (start, stop, step)
+
+    def visit_For(self, node):
+# node: for iterator is stored in node.target.
+# Iterator name is in node.target.id.
+        self.add_current_line()
+#        if (len(self.current_statement) > 0):
+#            self.add_c_line(self.current_statement)
+#            self.current_statement = ''
         fForDone = False
+        self.current_statement = ''
         if (hasattr(node.iter,'func')):
             if (hasattr (node.iter.func,'id')):
                 if (node.iter.func.id == 'range'):
-                    if ('n' not in self.C_IntVars):
-                        self.C_IntVars.append ('n')
-                    self.write_c ("for (n=0 ; n < len(")
-                    for arg in node.iter.args:
-                        self.visit(arg)
-                    self.write_c (") ; n++) {")
+                    self.visit(node.target)
+                    iterator = self.current_statement
+                    self.current_statement = ''
+                    if (iterator not in self.C_IntVars):
+                        self.C_IntVars.append (iterator)
+                    start, stop, step = self.GetForRange(node)
+                    self.write_c ("for (" + iterator + "=" + str(start) + \
+                                  " ; " + iterator + " < " + str(stop) + \
+                                  " ; " + iterator + " += " + str(step) + ") {")
                     self.body_or_else(node)
                     self.write_c ("}")
                     fForDone = True
@@ -716,7 +773,7 @@ class SourceGenerator(NodeVisitor):
                 write_comma()
                 self.write_c('**')
                 self.visit(node.kwargs)
-        self.write_c(')')
+        self.write_c(');')
 
     def visit_Name(self, node):
         self.write_c(node.id)
@@ -834,6 +891,7 @@ class SourceGenerator(NodeVisitor):
         self.write_c (")")
 
     def visit_BinOp(self, node):
+        self.write_c("(")
         if ('%s' % BINOP_SYMBOLS[type(node.op)] == BINOP_SYMBOLS[ast.Pow]):
             self.translate_power (node)
         elif ('%s' % BINOP_SYMBOLS[type(node.op)] == BINOP_SYMBOLS[ast.FloorDiv]):
@@ -842,6 +900,8 @@ class SourceGenerator(NodeVisitor):
             self.visit(node.left)
             self.write_c(' %s ' % BINOP_SYMBOLS[type(node.op)])
             self.visit(node.right)
+        self.write_c(")")
+
 #       for C
     def visit_BoolOp(self, node):
         self.write_c('(')
@@ -1053,7 +1113,7 @@ def get_file_names ():
 
 if __name__ == "__main__":
     import os
-    print("Parsing...using Python" + sys.version)
+    print("Parsing with AST...using Python" + sys.version)
     try:
         fname_in = ""
         fname_out = ""

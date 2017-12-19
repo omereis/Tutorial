@@ -3,6 +3,50 @@ import sys
 import math
 import numpy as np
 
+#==== correlation_length ====
+def Iq2(q, lorentz_scale, porod_scale, cor_length, porod_exp, lorentz_exp):
+    p = (q + 2) / 3
+    p = q + 2 / 3
+    porod = porod_scale / q**porod_exp
+    lorentz = lorentz_scale / (1.0 + (q * cor_length)**lorentz_exp)
+    inten = porod + lorentz
+    return inten
+
+#==== unified_power_Rg ====
+# rg, power, B and G are vector parameters, which we know from the model definition file,
+# but can only guess at by looking at the code
+def Iq41(q, level, rg, power, B, G, c2, c1, a2):
+#    result = G[7]
+    iStart=2
+    iEnd=200
+    iStep=5
+    for i in range(1,10,2):
+        print(i)
+    for n in range(iStart,iEnd,iStep):
+        print(n)
+    p_val = np_polyval([c2, c1, a2], q**2)
+    level = int(level + 0.5)
+    if level == 0:
+        return 1./q
+
+    result = 0.0
+#    x = 0
+#    y = 1
+    x1, x2, x3 = x, y, 17.0
+    if q == 0:
+        for i in range(level):
+            result += G[i]
+    else:
+        for i in range(1,level,2):
+            exp_now = exp(-(q*rg[i])**2/3.)
+            pow_now = (erf(q*rg[i]/sqrt(6.))**3/q)**power[i]
+            if i < level-1:
+                exp_next = exp(-(q*rg[i+1])**2/3.)
+            else:
+                exp_next = 1
+            result += G[i]*exp_now + B[i]*exp_next*pow_now
+    return result
+
 #==== poly_gauss_coil ====
 # Includes a taylor series with polynomial evaluation. 
 # There are a lot of these in the C code, so this could be pretty common,
@@ -76,44 +120,6 @@ def MultAsgn(a, b):
     r = d ** (-2)
     alpha = 30 * pi / 180.0
     SINCOS (alpha, beta, s, c)
-
-#==== unified_power_Rg ====
-# rg, power, B and G are vector parameters, which we know from the model definition file,
-# but can only guess at by looking at the code
-def Iq41(q, level, rg, power, B, G, c2, c1, a2):
-    result = G[7]
-    p_val = np_polyval([c2, c1, a2], q**2)
-    level = int(level + 0.5)
-    if level == 0:
-        return 1./q
-
-    result = 0.0
-    x = 0
-    y = 1
-    x1, x2, x3 = x, y, 17.0
-#    abc, cba = 5, 6
-    if q == 0:
-#        for i in range(foo(j, k)):
-#            q += 2
-        for i in range(level):
-            result += G[i]
-    else:
-        for i in range(level):
-            exp_now = exp(-(q*rg[i])**2/3.)
-            pow_now = (erf(q*rg[i]/sqrt(6.))**3/q)**power[i]
-            if i < level-1:
-                exp_next = exp(-(q*rg[i+1])**2/3.)
-            else:
-                exp_next = 1
-            result += G[i]*exp_now + B[i]*exp_next*pow_now
-    return result
-
-#==== correlation_length ====
-def Iq2(q, lorentz_scale, porod_scale, cor_length, porod_exp, lorentz_exp):
-    porod = porod_scale / q**porod_exp
-    lorentz = lorentz_scale / (1.0 + (q * cor_length)**lorentz_exp)
-    inten = porod + lorentz
-    return inten
 
 #==== gauss_lorentz_gel ====
 def Iq3(q, gauss_scale, cor_length_static, lorentz_scale, cor_length_dynamic):

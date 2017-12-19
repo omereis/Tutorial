@@ -82,6 +82,7 @@ class SourceGenerator(NodeVisitor):
         self.add_line_information = add_line_information
         self.indentation = 0
         self.new_lines = 0
+        self.current_line = ''
 
     def write(self, x):
         if self.new_lines:
@@ -89,6 +90,7 @@ class SourceGenerator(NodeVisitor):
                 self.result.append('\n' * self.new_lines)
             self.result.append(self.indent_with * self.indentation)
             self.new_lines = 0
+        self.current_line = x # for debug
         self.result.append(x)
 
     def newline(self, node=None, extra=0):
@@ -388,14 +390,16 @@ class SourceGenerator(NodeVisitor):
             write_comma()
             self.write(keyword.arg + '=')
             self.visit(keyword.value)
-        if node.starargs is not None:
-            write_comma()
-            self.write('*')
-            self.visit(node.starargs)
-        if node.kwargs is not None:
-            write_comma()
-            self.write('**')
-            self.visit(node.kwargs)
+        if (hasattr(node,'starargs')):
+            if node.starargs is not None:
+                write_comma()
+                self.write('*')
+                self.visit(node.starargs)
+        if (hasattr(node,'kwargs')):
+            if node.kwargs is not None:
+                write_comma()
+                self.write('**')
+                self.visit(node.kwargs)
         self.write(')')
 
     def visit_Name(self, node):
@@ -603,4 +607,7 @@ def print_function(f=None):
 if __name__ == "__main__":
     print("Parsing...")
 #    print_function(print_function)
-    print_function(Iq)
+    try:
+        print_function(Iq)
+    except Exception as excp:
+        print ("Error:\n" + str(excp.args))

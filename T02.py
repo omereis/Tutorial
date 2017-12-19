@@ -1,18 +1,15 @@
-class MyClass:
-    some_var = "blah"
+#
+# Pylint tutorial
+#
 
-    def function (self):
-        print ("This is a message from inside the class")
+class car:
+    def __init__(self,color):
+        self.color = color
 
-    def f2(self, txt, txt2):
-        print(self.some_var + "\n" + txt + "\n2:\t" + txt2)
+my_car = car('blue')
 
-    def f1(self, txt1):
-        self.f2("From f1", "2nd param")
-    
-print ("Hello, Python!, v0.2")
+def crash (car1, car2):
+    car.color = 'burnt'
 
-myobj = MyClass()
-print(myobj.some_var)
-myobj.f1("jjk")
-myobj.function()
+
+crash(car('red'),my_car)

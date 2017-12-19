@@ -1,6 +1,12 @@
 #!/usr/bin/python
 
+import ast
+import inspect
 print ("Hello, Python!")
+t1 = ast.parse("q = a + b / 2")
+t2 = ast.parse("q = (a + b) / 2")
+f = t1 == t2
+
 print ("Where can I see this string?")
 print('Here\'s a string with a single "\'"')
 print ("Here's a comment: \n#comment")

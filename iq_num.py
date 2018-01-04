@@ -3,6 +3,18 @@ import sys
 import math
 import numpy as np
 
+#==== polymer_excl_volume ====
+def Iq6(q, rg=60.0, porod_exp=3.0):
+    usub = (q*rg)**2 * (2.0/porod_exp + 1.0) * (2.0/porod_exp + 2.0)/6.0
+    if q <= 0:
+        result = 1.0
+    else:
+        upow = power(usub, -0.5*porod_exp)
+        result= (porod_exp*upow *
+                (gamma(0.5*porod_exp)*gammainc(0.5*porod_exp, usub) -
+                  upow*gamma(porod_exp)*gammainc(porod_exp, usub)))
+    return result
+
 #==== correlation_length ====
 def Iq2(q, lorentz_scale, porod_scale, cor_length, porod_exp, lorentz_exp):
     p = (q + 2) / 3
@@ -150,18 +162,6 @@ def Iq4(q, rg, s, porod_exp):
 def Iq5(q, intercept, slope):
     inten = intercept + slope*q
     return inten
-
-#==== polymer_excl_volume ====
-def Iq6(q, rg=60.0, porod_exp=3.0):
-    usub = (q*rg)**2 * (2.0/porod_exp + 1.0) * (2.0/porod_exp + 2.0)/6.0
-    if q <= 0:
-        result = 1.0
-    else:
-        upow = power(usub, -0.5*porod_exp)
-        result= (porod_exp*upow *
-                (gamma(0.5*porod_exp)*gammainc(0.5*porod_exp, usub) -
-                  upow*gamma(porod_exp)*gammainc(porod_exp, usub)))
-    return result
 
 #==== porod ====
 def Iq7(q):

@@ -1,0 +1,9 @@
+kernel_iq.c:60:5: error: expected specifier-qualifier-list before 'PARAMETER_TABLE'
+     PARAMETER_TABLE
+     ^
+kernel_iq.c:64:23: error: 'NUM_PARS' undeclared here (not in a function)
+     double vector[4*((NUM_PARS+3)/4)];
+                       ^
+kernel_iq.c:267:1: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'void'
+ void KERNEL_NAME(
+ ^

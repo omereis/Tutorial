@@ -1,0 +1,8 @@
+iq_num.py: In function 'check':
+iq_num.py:493:11: error: expected ';' before 'if'
+iq_num.py:499:18: error: expected expression before ':' token
+iq_num.py:505:12: warning: character constant too long for its type
+iq_num.py:505:29: error: invalid operands to binary % (have 'int' and 'double')
+iq_num.py: At top level:
+iq_num.py:512:1: error: expected identifier or '(' before 'if'
+iq_num.py:512:17: warning: character constant too long for its type

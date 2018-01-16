@@ -1,27 +1,19 @@
-from __future__ import print_function
-
 import sys
 import sys
 import math
 import numpy as np
-from numpy import polyval, sqrt, exp
-from scipy.special import erf
 
-#==== guinier_porod ====
-def Iq4(q, rg, s, porod_exp):
-    n = 3.0 - s
-    ms = 0.5*(porod_exp-s) # =(n-3+porod_exp)/2
-
-    # Take care of the singular points
-    if rg <= 0.0 or ms <= 0.0:
-        return 0
-
-    # Do the calculation and return the function value
-    if q < sqrt(n*ms)/rg:
-        iq = q**-s * exp(-(q*rg)**2/n)
+#==== polymer_excl_volume ====
+def Iq6(q, rg=60.0, porod_exp=3.0):
+    usub = (q*rg)**2 * (2.0/porod_exp + 1.0) * (2.0/porod_exp + 2.0)/6.0
+    if q <= 0:
+        result = 1.0
     else:
-        iq = q**-porod_exp * (exp(-ms) * (n*ms/rg**2)**ms)
-    return iq
+        upow = power(usub, -0.5*porod_exp)
+        result= (porod_exp*upow *
+                (gamma(0.5*porod_exp)*gammainc(0.5*porod_exp, usub) -
+                  upow*gamma(porod_exp)*gammainc(porod_exp, usub)))
+    return result
 
 #==== correlation_length ====
 def Iq2(q, lorentz_scale, porod_scale, cor_length, porod_exp, lorentz_exp):
@@ -40,18 +32,18 @@ def Iq41(q, level, rg, power, B, G, c2, c1, a2):
     iStart=2
     iEnd=200
     iStep=5
-    #for i in range(1,10,2):
-    #    print(i)
-    #for n in range(iStart,iEnd,iStep):
-    #    print(n)
-    p_val = polyval([c2, c1, a2], q**2, 3)
+    for i in range(1,10,2):
+        print(i)
+    for n in range(iStart,iEnd,iStep):
+        print(n)
+    p_val = np_polyval([c2, c1, a2], q**2)
     level = int(level + 0.5)
     if level == 0:
         return 1./q
 
     result = 0.0
-    x = 0
-    y = 1
+#    x = 0
+#    y = 1
     x1, x2, x3 = x, y, 17.0
     if q == 0:
         for i in range(level):
@@ -68,7 +60,7 @@ def Iq41(q, level, rg, power, B, G, c2, c1, a2):
     return result
 
 #==== poly_gauss_coil ====
-# Includes a taylor series with polynomial evaluation.
+# Includes a taylor series with polynomial evaluation. 
 # There are a lot of these in the C code, so this could be pretty common,
 # and it may be worth supporting it.  Short term, better to not do anything
 # fancy and instead have the user write:
@@ -98,10 +90,10 @@ def Iq12(q, i_zero, rg, polydispersity):
             (+1),
             ]
         if z > 1e-4:
-            result = 2.0 * (pow(1.0 + u*z, -1.0/u) + z - 1.0) / (1.0 + u)
+            result = 2.0 * (power(1.0 + u*z, -1.0/u) + z - 1.0) / (1.0 + u)
             result /= z**2
         else:
-            result = polyval(p, z, 3)
+            result = np.polyval(p, z)
     return i_zero * result
 
 #==== broad_peak ====
@@ -114,8 +106,8 @@ def Iq1(q, porod_scale, porod_exp, lorentz_scale, lorentz_length, peak_pos, lore
 def MultAsgn(a, b):
 #    m = [i for i in range(10)]
     p = [1,2,3,4,5]
-    #z = [1,2]
-    #result = polyval(p, z)#np.polyval(p, z)
+    z = [1,2]
+    result = polyval(p, z)#np.polyval(p, z)
 
     sqr1 = d ** 2.5
     sqr = d ** 2
@@ -139,9 +131,7 @@ def MultAsgn(a, b):
     c = b ** 3
     r = d ** (-2)
     alpha = 30 * pi / 180.0
-    #s, c = SINCOS(alpha)
-    s, c = sin(alpha), cos(alpha)
-    return s**2 + c**2
+    SINCOS (alpha, beta, s, c)
 
 #==== gauss_lorentz_gel ====
 def Iq3(q, gauss_scale, cor_length_static, lorentz_scale, cor_length_dynamic):
@@ -152,22 +142,26 @@ def Iq3(q, gauss_scale, cor_length_static, lorentz_scale, cor_length_dynamic):
 
     return term1 + term2
 
+#==== guinier_porod ====
+def Iq4(q, rg, s, porod_exp):
+    n = 3.0 - s
+    ms = 0.5*(porod_exp-s) # =(n-3+porod_exp)/2
+
+    # Take care of the singular points
+    if rg <= 0.0 or ms <= 0.0:
+        return 0
+
+    # Do the calculation and return the function value
+    if q < sqrt(n*ms)/rg:
+        iq = q**-s * exp(-(q*rg)**2/n)
+    else:
+        iq = q**-porod_exp * (exp(-ms) * (n*ms/rg**2)**ms)
+    return iq
+
 #==== line ====
 def Iq5(q, intercept, slope):
     inten = intercept + slope*q
     return inten
-
-#==== polymer_excl_volume ====
-def Iq6(q, rg=60.0, porod_exp=3.0):
-    usub = (q*rg)**2 * (2.0/porod_exp + 1.0) * (2.0/porod_exp + 2.0)/6.0
-    if q <= 0:
-        result = 1.0
-    else:
-        upow = pow(usub, -0.5*porod_exp)
-        result= (porod_exp*upow *
-                (gamma(0.5*porod_exp)*gammainc(0.5*porod_exp, usub) -
-                  upow*gamma(porod_exp)*gammainc(porod_exp, usub)))
-    return result
 
 #==== porod ====
 def Iq7(q):
@@ -187,9 +181,9 @@ def Iq9(q, gamma, q_0):
 #==== two_lorentzian ====
 def Iq10(q, lorentz_scale_1, lorentz_length_1, lorentz_exp_1, lorentz_scale_2, lorentz_length_2, lorentz_exp_2):
     intensity  = lorentz_scale_1/(1.0 +
-                                  pow(q*lorentz_length_1, lorentz_exp_1))
+                                  power(q*lorentz_length_1, lorentz_exp_1))
     intensity += lorentz_scale_2/(1.0 +
-                                  pow(q*lorentz_length_2, lorentz_exp_2))
+                                  power(q*lorentz_length_2, lorentz_exp_2))
     return intensity
 
 
@@ -200,11 +194,11 @@ def Iq11(q,
       power_1=1.0,
       power_2=4.0,
       ):
-    coefficent_2 = coefficent_1 * pow(crossover, power_2 - power_1)
+    coefficent_2 = coefficent_1 * power(crossover, power_2 - power_1)
     if q <= crossover:
-        result = coefficent_1 * pow(q, -power_1)
+        result = coefficent_1 * power(q, -power_1)
     else:
-        result = coefficent_2 * pow(q, -power_2)
+        result = coefficent_2 * power(q, -power_2)
     return result
 
 #==== teubner_strey ====
@@ -219,7 +213,7 @@ def Iq13(q, volfraction_a, sld_a, sld_b, d, xi):
     c1 = 2.0*xi**2 * (1.0 - k**2)
     c2 = xi**4
     prefactor = 8.0*pi * volfraction_a*(1.0 - volfraction_a) * drho**2 * c2/xi
-    return 1.0e-4*prefactor / polyval([c2, c1, a2], q**2, 3)
+    return 1.0e-4*prefactor / np_polyval([c2, c1, a2], q**2)
 #    return 1.0e-4*prefactor / np.polyval([c2, c1, a2], q**2)
 
 
@@ -248,18 +242,3 @@ def Iq14(q, level, rg, power, B, G):
             result += G[i]*exp_now + B[i]*exp_next*pow_now
     return result
 
-
-def check():
-    y = 3 if True else 0 if False else 1
-
-    k = 1
-    total = 0.
-    while k < 3:
-        total += k**3
-        k += 1
-    print("check total %g"%(total))
-
-    return total
-
-if __name__ == "__main__":
-    check()

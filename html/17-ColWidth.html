@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+"http://www.w3.org/TR/html4/loose.dtd">
+<html lang='en'>
+<head>
+<meta http-equiv='Content-type' content='text/html;charset=UTF-8'>
+<title>Textarea Width</title>
+</head>
+<body>
+<h1>Textarea Width</h1>
+<textarea rows="5" cols="10" id="ta10"></textarea><br>
+<textarea rows="5" cols="20" id="ta20"></textarea><br>
+<textarea rows="5" cols="30" id="ta30"></textarea><br>
+<div id="results"></div>
+<script type="text/javascript">
+var ta10width = document.getElementById( 'ta10' ).offsetWidth;
+var ta20width = document.getElementById( 'ta20' ).offsetWidth;
+var ta30width = document.getElementById( 'ta30' ).offsetWidth;
+var msg = "<table border='1'><tr><th>cols<\/th><th>width<\/th><\/tr>";
+msg += "<tr><td>10<\/td><td>"+ta10width+"px<\/td><\/tr>";
+msg += "<tr><td>20<\/td><td>"+ta20width+"px<\/td><\/tr>";
+msg += "<tr><td>30<\/td><td>"+ta30width+"px<\/td><\/tr><\/table>";
+var pxpercol = (ta20width - ta10width) / 10;
+var extrapx = ta10width - pxpercol * 10;
+msg += "<p>This browser appears to use "+pxpercol+"px per column plus an extra "+extrapx+"px.";
+document.getElementById( 'results' ).innerHTML = msg;
+</script>
+</body>
+</html>

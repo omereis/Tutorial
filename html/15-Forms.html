@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+   <head>
+      <title>HTML Forms</title>
+   </head>
+	
+    <body>
+        <h2><center>HTML Forms</center></h2>
+        <table border="1">
+            <tr>
+                <td>
+                    Single line input text
+                </td>
+                <td>
+                    Multiline input text
+                </td>
+                <td>
+                    Checkbox
+                </td>
+                <td>
+                    Radio buttuns
+                </td>
+                <td>
+                    Select / Combobox
+                </td>
+                <td>
+                    File Upload
+                </td>
+                <td>
+                    Buttons
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    First Name: <input type="text" name="first_name"/><br>
+                    Last Name: <input type="text" name="last_name" value="Pass"/><br>
+                    User Name: <input type="text" name="first_name"/><br>
+                    Password: <input type="password" name="last_name" value="Pass"/>
+                </td>
+                <td>
+                    <form>
+                        Description <br>
+                        <textarea rows="10" cols="50" name="first_name">
+                        </textarea>
+                    </form>
+                </td>
+                <td>
+                    <form>
+                        <input type="checkbox" name="cb1" value="checked1" checked>Check #1.1<br>
+                        <input type="checkbox" name="cb2" value="checked2">Check #1.2
+                        </textarea>
+                    </form>
+                </td>
+                <td>
+                    <form>
+                        <input type="radio" name="radio_grp1" value="1.1">Check #2.1<br>
+                        <input type="radio" name="radio_grp2" value="1.2">Check #2.2<br>
+                        <input type="radio" name="radio_grp1" value="1.1">Check #2.3<br>
+                        <input type="radio" name="radio_grp2" value="1.2">Check #2.4<br>
+                        </textarea>
+                    </form>
+                </td>
+                <td>
+                    <form>
+                        <select name="combo">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3" selected>March</option>
+                            <option value="4">April</option>
+                            <option value="5" label="maybe">מאי</option>
+                        </select>
+                    </form>
+                </td>
+                <td>
+                    <form>
+                        <input type="file" name="upload" accept="image/*" />
+                    </form>
+                </td>
+                <td>
+                    <form>
+                        <input type = "submit" name = "submit" value = "Press" /><br>
+                        <input type = "reset" name = "reset"  value = "Reset" /><br>
+                        <input type = "button" name = "ok" value = "OK" /><br>
+                        <input type = "image" name = "imagebutton" src = "http://gosouth.nbn.org.il/wp-content/uploads/2013/05/arad.jpg" width="100"/>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </body>
+	
+</html>

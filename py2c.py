@@ -63,6 +63,12 @@ Update Notes
                 parenthesesm '(',')', in procedure 'visit_BinOp'.
 12/18/2017, OE: Added call to 'add_current_line()' at the beginning
                 of visit_Return
+01/4/2018, O.E. Added functions 'get_files_names()', , 'print_usage()'. The get_files_names()
+                function retrieves the in/out file names form the command line, and returns
+                true/false if the number of parameters is valid. In case of no input
+                parameters, usage is prompt and the program terminates.
+01/4/2018, O.E. 'translate(functions, constants=None)' returns string, instaed of a list
+
 
 """
 import ast
@@ -113,6 +119,7 @@ def to_source(tree, constants=None, fname=None, lineno=0):
     generator = SourceGenerator(constants=constants, fname=fname, lineno=lineno)
     generator.visit(tree)
     c_code = "\n".join(generator.c_proc)
+    return (c_code)
 
 def isevaluable(s):
     try:
@@ -159,6 +166,7 @@ class SourceGenerator(NodeVisitor):
         self.required_functions = []
         self.is_sequence = False
         self.visited_args = False
+        self.inside_if = False
 
     def write_python(self, x):
         if self.new_lines:
@@ -471,6 +479,8 @@ class SourceGenerator(NodeVisitor):
         self.body(node.body)
 
     def visit_If(self, node):
+        self.add_current_line()
+        self.inside_if = True
         self.write_c('if ')
         self.visit(node.test)
         self.write_c(' {')
@@ -497,6 +507,7 @@ class SourceGenerator(NodeVisitor):
                 self.body(node.body)
                 self.add_c_line('}')
                 break
+        self.inside_if = False
 
     def get_for_range(self, node):
         stop = ""
@@ -718,7 +729,9 @@ class SourceGenerator(NodeVisitor):
                 write_comma()
                 self.write_c('**')
                 self.visit(node.kwargs)
-        self.write_c(');')
+        self.write_c(')')
+        if (self.inside_if == False):
+            self.write_c(';')
 
     def visit_Name(self, node):
         self.write_c(node.id)
@@ -1096,33 +1109,44 @@ def translate(functions, constants=None):
     Convert a set of functions
     """
     snippets = []
-    #snippets.append("#include <math.h>")
-    #snippets.append("")
+    snippets.append("#include <math.h>")
+    snippets.append("")
     for source, fname, lineno in functions:
         line_directive = '#line %d "%s"'%(lineno, fname.replace('\\', '\\\\'))
         snippets.append(line_directive)
         tree = ast.parse(source)
         c_code = to_source(tree, constants=constants, fname=fname, lineno=lineno)
         snippets.append(c_code)
-    return snippets
+    return "\n".join(snippets)
+#    return snippets
+
+def print_usage ():
+        print("""\
+            Usage: python py2c.py <infile> [<outfile>]
+            if outfile is omitted, output file is '<infile>.c'
+        """)
+
+def get_files_names ():
+    import os
+    fname_in = fname_out = ""
+    valid_params =  len(sys.argv) > 1
+    if (valid_params == False):
+        print_usage()
+    else:
+        fname_in = sys.argv[1]
+        if len(sys.argv) == 2:
+            fname_base = os.path.splitext(fname_in)[0]
+            fname_out = str(fname_base) + '.c'
+        else:
+            fname_out = sys.argv[2]
+    return valid_params, fname_in,fname_out
 
 def main():
-    import os
     print("Parsing...using Python" + sys.version)
-    if len(sys.argv) == 1:
-        print("""\
-Usage: python py2c.py <infile> [<outfile>]
-
-if outfile is omitted, output file is '<infile>.c'
-""")
+    valid_params, fname_in, fname_out = get_files_names ()
+    if (valid_params == False):
+        print("Input parameters error.\nExiting")
         return
-
-    fname_in = sys.argv[1]
-    if len(sys.argv) == 2:
-        fname_base = os.path.splitext(fname_in)[0]
-        fname_out = str(fname_base) + '.c'
-    else:
-        fname_out = sys.argv[2]
 
     with open(fname_in, "r") as python_file:
         code = python_file.read()
@@ -1132,7 +1156,7 @@ if outfile is omitted, output file is '<infile>.c'
             .replace(name+'.z', 'GAUSS_Z')
             .replace(name+'.w', 'GAUSS_W'))
 
-    translation = translate([(code, fname_in, 1)])#[0]
+    translation = translate([(code, fname_in, 1)])
 
     with open(fname_out, "w") as file_out:
         file_out.write(str(translation))

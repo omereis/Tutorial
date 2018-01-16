@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+   <head>
+      <title>HTML Frames</title>
+   </head>
+	
+<!--        <h2><center>Frames</center></h2>
+        <h3><center>Not Recommended, but still...</center></h3> -->
+   <frameset rows = "10%,80%,10%">
+        <frameset cols = "25%,50%,25%">
+            <frame name = "left" src = "/html/top_frame.htm" />
+            <frame name = "center" src = "/html/main_frame.htm" />
+            <frame name = "right" src = "/html/bottom_frame.htm" />
+        </frameset>
+      <frame name = "top" src = "/html/top_frame.htm" />
+      <frame name = "main" src = "/html/main_frame.htm" />
+      <frame name = "bottom" src = "/html/bottom_frame.htm" />
+   
+      <noframes>
+         <body>Your browser does not support frames.</body>
+      </noframes>
+      
+   </frameset>
+   
+</html>

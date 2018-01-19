@@ -1,0 +1,33 @@
+<!doctype html>
+
+<title>Test</title> 
+<meta charset=utf-8> 
+<html>
+    <body>
+        <h2><center>Test 1.4</center></h2>
+        <h3 align="center">{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}</h3>
+            <table border="1">
+                <tr>
+                    <td>Click me (my-link)</a></td>
+                    <td><input type="text" name="html_text" value="html text" style="background-color:blue;color:white;"></td>
+                </tr>
+                <tr>
+                    <td>page result</td>
+                </tr>
+                <tr>
+                    <form action="" method="POST">
+                        <td><input type="text" id="fname" name="firstname" placeholder="Your name.."></td>
+                        <td><a href="">click here</a></td>
+                        <td>
+                            </td>
+                        {% if click_result == 'clicked' %}
+                            <td>click result not null</td>
+                        {% else %}
+                            <td>cell result <b>is null</b></td>
+                        {% endif %}
+                    </form>
+                </tr>
+            </table>
+    </body>
+</html>
+

@@ -4,8 +4,13 @@ import ast
 import inspect
 import math
 import click
+from selenium import webdriver
+
 print ("Hello, Python!")
 
+browser = webdriver.Firefox()
+browser.get('http://yahoo.com')
+j = 1
 def get_g (L, T, th):
     theta = th * math.pi / 180.0
     par = (1 + 1.0 / 4.0 * math.sin(theta/2)**2)

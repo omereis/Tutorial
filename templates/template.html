@@ -1,34 +1,53 @@
 <!doctype html>
-
 <title>Test</title> 
 <meta charset=utf-8> 
+<head>
+	<scsript>
+		let d = new date()
+		alert ("today's date is " + d)
+	</scsript>
+</head>
 <html>
-    <body>
-        <h2><center>Test 1.3</center></h2>
-            <table border="1">
-                <tr>
-                    <td><a href="/my-link/">Click me (my-link)</a></td>
-                    <td><input type="text" name="html_text" value="html text" style="background-color:blue;color:white;"></td>
-                </tr>
-                <tr>
-                    <td><a href="{{ url_for ('my_page',user='jilda') }}" id="page">Page</a></td>
-                    <td>page result</td>
-                </tr>
-                <tr>
-                    <form action="" method="POST">
-                        <td><input type="text" id="fname" name="firstname" placeholder="Your name.."></td>
-                        <td>
-                            <a href="{{ url_for ('my_table_row') }}" id="cell">Table Click</a>
-<!--        -->
-                            </td>
-                        {% if click_result == 'clicked' %}
-                            <td>click result not null</td>
-                        {% else %}
-                            <td>cell result <b>is null</b></td>
-                        {% endif %}
-                    </form>
-                </tr>
-            </table>
-    </body>
-</html>
-
+	<body>
+			<form action="{{ url_for('add_entry') }}" method=post class=add-entry> <!-- class definition in CSS -->
+				<table width="100%" border="0">
+				<tr>
+					<td align="right">Title</td>
+					<td><input type=text size=30 name=title></td>
+				</tr>
+				<tr>
+					<td align="right">Text</td>
+					<td><textarea name=blog_text rows=5 cols=40></textarea></td>
+				</tr>
+						<td><a href="#" id ="bkmrk" onclick="bkmrk()">Share</a></td>
+						<td><input type=submit value=Share></td>
+				<tr>
+				</tr>
+			</table>
+		</form>
+				<h2><center>Test 1.<span color="red">4</span></center></h2>
+			<h3 align="center">{% if message %}<p class=error><strong>Messags:</strong> {{ message }}{% endif %}</h3>
+				<table border="1">
+						<tr>
+							<td>Click me (my-link)</a></td>
+						</tr>
+						<tr>
+							<td>page result</td>
+						</tr>
+						<tr>
+							<form method="POST">
+								<td><input type="text" id="fname" name="firstname" placeholder="Your name.."></td>
+								<td><a href="{{ url_for('my_table_row')}}">click here</a></td>
+								<td>
+									</td>
+								{% if click_result == 'clicked' %}
+									<td>click result not null</td>
+								{% else %}
+									<td>cell result <b>is null</b></td>
+								{% endif %}
+							</form>
+						</tr>
+					</table>
+			
+	</body>
+</html>	

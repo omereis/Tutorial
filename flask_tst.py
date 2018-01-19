@@ -50,22 +50,22 @@ def show_db_entries():
         blog_entries = cur.fetchall()
     print("show_db_entries")
     strLink = "'show_entries.html', entries=blog_entries"
-    print ("show_db_entris: %s" % strLink)
     return render_template('template.html', message=strLink)
 #    return render_template('show_entries.html', entries=blog_entries)
 #    return render_template(strLink)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
-    if not session.get('logged_in'):
-        abort(401)
-    db = get_db()
+    print("add_entry()")
+#    if not session.get('logged_in'):
+#        abort(401)
+#    db = get_db()
     strSql = "insert into entries (title, entry_text) values ('%s', '%s');" % \
                 (request.form['title'], request.form['blog_text'])
-    db.execute(strSql)
-    db.commit()
-    flash('New entry was successfully posted')
-    print("add_entry")
+#    db.execute(strSql)
+#    db.commit()
+#    flash('New entry was successfully posted')
+    print("add_entry: sql insert: " + strSql)
     return redirect(url_for('show_db_entries'))
 
 @app.route('/on_title_click/<string:param>')
@@ -120,9 +120,17 @@ app.config.update(dict(
 
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-@app.route('/table_row')
+@app.route('/table_row', methods=['POST'])
 def my_table_row():
     print ('my_table_row()')
+#    firstname
+    if (request.method == 'POST'):
+        print("POST method")
+    else:
+        print("NOT POST method")
+    print ('my_table_row(): request=:' + request)
+    print ('my_table_row(): request.form=:' + request.form)
+#    print ('my_table_row(): len(request.form)=: + len(request.form))
     return redirect (url_for('show_db_entries'))
 
 if __name__ == "__main__":

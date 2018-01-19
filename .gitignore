@@ -1,4 +1,5 @@
 *.whl
 *.c
 *.O
+*.pyc
 err.txt

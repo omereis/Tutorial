@@ -8,6 +8,13 @@ from selenium import webdriver
 
 print ("Hello, Python!")
 
+w = ['abc']
+x = ['efgh']
+y = ['qwerty']
+
+z = zip(w, x, y)
+x1,y1=zip(*z)
+
 browser = webdriver.Firefox()
 browser.get('http://yahoo.com')
 j = 1

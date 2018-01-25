@@ -135,6 +135,8 @@ def my_table_row():
 
 if __name__ == "__main__":
     try:
+        x = app.config.get('JWT_ACCESS_TOKEN_EXPIRES')
+        y = 1
         app.run (debug=True)
     except Exception as excp:
         print ("Error:\n" + str(excp.args))

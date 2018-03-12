@@ -1,0 +1,53 @@
+-----------------------------
+api.py-__name__ is __main
+-----------------------------
+api.py-TodoSimple.post()
+-----------------------------
+api.py-TodoSimple.get()
+-----------------------------
+api.py-TodoSimple.post()
+-----------------------------
+api.py-__name__ is __main
+-----------------------------
+api.py-TodoSimple.post()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-__name__ is __main
+-----------------------------
+api.py-TodoSimple.get()
+-----------------------------
+api.py-__name__ is __main
+-----------------------------
+api.py-TodoSimple.post()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-__name__ is __main

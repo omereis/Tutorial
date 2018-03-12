@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Select a new car from the list.</p>
+
+<select id="mySelect" onchange="myFunction()">
+  <option value="Audi">Audi
+  <option value="BMW">BMW
+  <option value="Mercedes">Mercedes
+  <option value="Volvo">Volvo
+</select>
+<br>
+<!--
+    First name: <input type="text" name="fname" id="first_name" onchange="myOtherFunction()"><br>
+-->
+
+First name: <input type="text" name="fname" id="first_name" onkeyup="myOtherFunction()"><br>
+First name Echo: <input type="text" name="echo" id="first_name_echo" onchange="myOtherFunction()"><br>
+<br>
+<input type="submit" value="Test" id="myButton">
+<p>When you select a new car, a function is triggered which outputs the value of the selected car.</p>
+
+<p id="demo"></p>
+<br>
+<big>
+    <p id="debug"><b>debug</b></p>
+</big><br>
+<p id="btn_status">button status</p>
+</p>
+
+<script>
+function myFunction() {
+    var x = document.getElementById("mySelect").value;
+    console.log(x)
+    document.getElementById("demo").innerHTML = "You selected: " + x;
+}
+function myOtherFunction() {
+    var x = document.getElementById("first_name").value;
+    var fDisable;
+    console.log('x=' + x)
+    if (x == 'rpg')
+        fDisabley = true;
+    else
+        fDisabley = false;
+    document.getElementById("debug").innerHTML = 'fDisabley: ' + fDisabley;
+    document.getElementById("myButton").enabled = !fDisabley;
+    document.getElementById("myButton").disabled = fDisabley;
+    document.getElementById("demo").innerHTML = x;
+    document.getElementById("first_name_echo").value = "You selected: " + x;
+    document.getElementById("btn_status").innerHTML = 'button enabled: ' + document.getElementById("myButton").enabled;
+}
+</script>
+
+</body>
+</html>
+

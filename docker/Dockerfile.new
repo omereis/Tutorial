@@ -1,0 +1,3 @@
+# Using the latest long-term-support Ubuntu OS
+FROM ubuntu:16.04
+WORKDIR /home/app_user/test

@@ -1,36 +1,27 @@
 #!/usr/bin/python
 
-import ast
-import inspect
-import math
-import click
-from selenium import webdriver
 
 print ("Hello, Python!")
 
-w = ['abc']
-x = ['efgh']
-y = ['qwerty']
+#import cookielib
+from requests import Request, Session
 
-z = zip(w, x, y)
-x1,y1=zip(*z)
+s = Session()
 
-browser = webdriver.Firefox()
-browser.get('http://yahoo.com')
-j = 1
-def get_g (L, T, th):
-    theta = th * math.pi / 180.0
-    par = (1 + 1.0 / 4.0 * math.sin(theta/2)**2)
-    return ((4.0 * (math.pi ** 2) * L / T ** 2) * par)
+#Create a CookieJar object to hold the cookies
+cj = cookielib.CookieJar()
 
-@click.command()
-@click.option('--count', default=1, help='Number of greetings,')
-@click.option('--name', prompt='Your Name', help='The person to greet.')
+#Create an opener to open pages using the http protocol and to process cookies.
+opener = build_opener(HTTPCookieProcessor(cj), HTTPHandler())
 
-def hello (count, name):
-    """Simple program that greets NAME for a total of COUNT times."""
-    for x in range(count):
-        click.echo("Howdi %s :-)" % name)
+response = opener.open('http://google.com/') # <---
+response.read()
+
+#Check out the cookies
+print ("the cookies are: ")
+for cookie in cj:
+    print (cookie)
+
 if __name__ == "__main__":
     try :
         hello()

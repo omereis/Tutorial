@@ -1,0 +1,19 @@
+FROM ubuntu:14.04
+
+RUN apt-get update && apt-get -y install munge slurm-llnl
+
+RUN mkdir -p /var/run/munge && \
+chown munge:munge /var/run/munge && \
+chmod 0700 /etc/munge && \
+chmod 0711 /var/lib/munge && \
+chmod 0700 /var/log/munge && \
+chmod 0755 /var/run/munge && \
+chmod g-w /var/log
+
+RUN useradd -u 1000 alice
+
+ADD start_slurm.sh /usr/bin/start_slurm.sh
+
+EXPOSE 6818
+
+CMD ["/usr/bin/start_slurm.sh"]

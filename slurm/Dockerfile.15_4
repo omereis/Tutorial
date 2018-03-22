@@ -1,0 +1,46 @@
+FROM ubuntu:15.04
+MAINTAINER Mark Murphy <murphy.mark.w@gmail.com>
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libmunge-dev \
+    python \
+    munge
+
+# Install slurm from git.
+ADD https://github.com/SchedMD/slurm/archive/slurm-15-08-5-1.tar.gz /tmp/slurm.tgz
+RUN cd /tmp && tar -xvzf slurm.tgz && rm /tmp/slurm.tgz
+RUN cd /tmp/slurm-slurm-15-08-5-1 && ./configure && make && make install
+RUN rm -Rf /tmp/slurm-slurm-15-08-5-1
+
+# Set up MUNGE directories.
+RUN mkdir -p /var/run/munge
+RUN chown -R munge:munge /etc/munge
+RUN chown -R munge:munge /var/lib/munge
+RUN chown -R munge:munge /var/log/munge
+RUN chown -R munge:munge /var/run/munge
+RUN chmod -R 0700 /etc/munge
+RUN chmod -R 0711 /var/lib/munge
+RUN chmod -R 0700 /var/log/munge
+RUN chmod -R 0755 /var/run/munge
+
+# Set up slurm directories.
+RUN useradd -u 2001 -d /home/slurm slurm
+RUN mkdir -p /etc/slurmd
+RUN mkdir -p /var/log/slurmd
+RUN mkdir -p /var/log/slurmctld
+RUN mkdir -p /var/log/slurmsched
+RUN mkdir -p /var/spool/slurmd
+RUN chown -R slurm:slurm /etc/slurmd
+RUN chown -R slurm:slurm /var/log/slurmd
+RUN chown -R slurm:slurm /var/log/slurmctld
+RUN chown -R slurm:slurm /var/log/slurmsched
+RUN chown -R slurm:slurm /var/spool/slurmd
+
+# FIXME Touch the slurm state file to get it started...
+RUN touch /var/spool/slurmd/node_state
+RUN chown -R slurm:slurm /var/spool/slurmd/node_state
+
+VOLUME /etc/munge/
+VOLUME /etc/slurmd/
+VOLUME /etc/slurmctld

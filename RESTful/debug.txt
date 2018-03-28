@@ -1,53 +1,74 @@
 -----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'Remember the milk'}
+todos[todo_id]=Remember the milk
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo2
+todos ={'todo1': 'Remember the milk'}
+-----------------------------
 api.py-__name__ is __main
+-----------------------------
+api.py-__name__ is __main
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={}
+-----------------------------
+api.py-__name__ is __main
+-----------------------------
+api.py-__name__ is __main
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={}
+todos[todo_id]=todo1: no such value
 -----------------------------
 api.py-TodoSimple.post()
+todo_id=todo1
+todos ={'todo1': 'this is my data'}
+todos[todo_id]=this is my data
 -----------------------------
 api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'this is my data'}
+todos[todo_id]={'todo1': 'this is my data'}
 -----------------------------
-api.py-TodoSimple.post()
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={'todo1': 'this is my data'}
+todos[todo_id]={'todo1': 'this is my data'}
 -----------------------------
 api.py-__name__ is __main
 -----------------------------
-api.py-TodoSimple.post()
+api.py-__name__ is __main
+-----------------------------
+api.py-TodoSimple.get()
 todo_id=todo1
-todos ={'todo1': 'Remember the milk'}
-todos[todo_id]=Remember the milk
+todos ={}
+todos[todo_id]=todo1: no such value
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo1
+todos ={}
+todos[todo_id]=todo1: no such value
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=todo2
+todos ={}
+todos[todo_id]=todo2: no such value
+-----------------------------
+api.py-TodoSimple.get()
+todo_id=options
+todos ={}
+todos[todo_id]=options: no such value
+-----------------------------
+api.py-__name__ is __main
 -----------------------------
 api.py-__name__ is __main
 -----------------------------
 api.py-TodoSimple.get()
------------------------------
-api.py-__name__ is __main
------------------------------
-api.py-TodoSimple.post()
-todo_id=todo1
-todos ={'todo1': 'Remember the milk'}
-todos[todo_id]=Remember the milk
------------------------------
-api.py-TodoSimple.get()
-todo_id=todo1
-todos ={'todo1': 'Remember the milk'}
-todos[todo_id]=Remember the milk
------------------------------
-api.py-TodoSimple.get()
-todo_id=todo1
-todos ={'todo1': 'Remember the milk'}
-todos[todo_id]=Remember the milk
------------------------------
-api.py-TodoSimple.get()
-todo_id=todo1
-todos ={'todo1': 'Remember the milk'}
-todos[todo_id]=Remember the milk
------------------------------
-api.py-TodoSimple.get()
-todo_id=todo1
-todos ={'todo1': 'Remember the milk'}
-todos[todo_id]=Remember the milk
------------------------------
-api.py-TodoSimple.get()
-todo_id=todo1
-todos ={'todo1': 'Remember the milk'}
-todos[todo_id]=Remember the milk
------------------------------
-api.py-__name__ is __main
+todo_id=todo2
+todos ={}
+todos[todo_id]=todo2: no such value

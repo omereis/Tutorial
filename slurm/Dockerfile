@@ -37,6 +37,8 @@ RUN chown -R slurm:slurm /var/log/slurmctld
 RUN chown -R slurm:slurm /var/log/slurmsched
 RUN chown -R slurm:slurm /var/spool/slurmd
 
+RUN echo "root:Docker!" | chpasswd
+
 # FIXME Touch the slurm state file to get it started...
 RUN touch /var/spool/slurmd/node_state
 RUN chown -R slurm:slurm /var/spool/slurmd/node_state

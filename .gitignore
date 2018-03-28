@@ -3,3 +3,5 @@
 *.O
 *.pyc
 err.txt
+*.tar
+*.zip

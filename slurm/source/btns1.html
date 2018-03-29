@@ -1,0 +1,173 @@
+<HTML>
+<HEAD><TITLE>Buttons</TITLE>
+<SCRIPT type="text/javascript">
+//----------------------------------------------------------------------------
+/*
+*/
+function handleFileSelect(evt) {
+   var files = evt.target.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+   var output = [];
+   ouput.push(files.size);
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+  document.getElementById('files_list').innerHTML = '<ul>' + output.join('') + '</ul>';
+}
+//----------------------------------------------------------------------------
+function handleButtonClick(evt) {
+   var files = evt.target.files; // FileList object
+  alert (document.getElementById('files_list').nodeValue)
+}
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+  document.getElementById('file_btn').addEventListener('change', handleButtonClick, false);
+//----------------------------------------------------------------------------
+function HandleBrowseClick()
+{
+    var fileinput = document.getElementById("browse");
+    fileinput.click();
+}
+//----------------------------------------------------------------------------
+function Handlechange()
+{
+  var fileinput = document.getElementById("browse");
+  var textinput = document.getElementById("filename");
+  textinput.value = fileinput.value;
+}
+//----------------------------------------------------------------------------
+function addDoc()
+{
+  alert('here is the new addDoc');
+  var file=document.getElementById("myFile").files[0]; //for input type=file
+  alert('got the file: ' + file.name + ", " + file.size);
+
+    var reader = new FileReader();
+
+// If we use onloadend, we need to check the readyState.
+  reader.onloadend = function(evt) {
+    if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+        lines = evt.target.result;
+//        alert (lines);
+        alert ('lines read');
+        document.getElementById('byte_content').textContent = evt.target.result;
+//        document.getElementById('byte_range').textContent = ['Read bytes: ', start + 1, ' - ', stop + 1, ' of ', file.size, ' byte file'].join('');
+    }
+  };
+
+//var blob = file.slice(start, stop + 1);
+  alert ('before readAsText')
+  reader.readAsText(file);
+  alert ('After readAsText')
+}
+//----------------------------------------------------------------------------
+function addDoc1() {
+  alert('here is addDoc');
+  var file=document.getElementById("myFile").files[0]; //for input type=file
+  alert('got the file: ' + file.name + ", " + file.size);
+  var reader=new FileReader();
+  reader.onload = function(e) {}
+//  reader.readAsText(file);
+//  reader.readAsArrayBuffer (file);
+  var error = reader.error;
+  var texte=reader.result;
+  try {
+    reader.readAsText(file);
+//    reader.readAsArrayBuffer (file);
+    alert ('reader text: ' + texte);
+  }
+  catch (err) {
+    alert(err.message);
+  }
+  var paragraph;
+
+  paragraph = document.getElementById("DisplayText");
+//  alert('got the paragraph');
+//  alert('paragraph: ' + paragraph);
+//  alert ('reader error: ' + reader.error);
+  alert ('reader text: ' + texte);
+  try {
+    if (paragraph == null)
+      alert ('paragaph not found');
+    else
+      alert ('paragaph: ' + paragraph);
+    if (reader == null)
+      alert ('reader not found');
+    else {
+      alert ('Here comnes the big staff');
+      alert ('reader.result:\n' + reader.result);
+    }
+  }
+  catch (err) {
+    alert(err.message);
+  }
+  alert ('Here comnes the big staff');
+  document.getElementById("DisplayText").innerText=reader.result; /*<p id="DisplayText>*/
+}
+
+function handleFileSelect(evt)
+{
+    var files = evt.target.files; // FileList object
+
+    // Loop through the FileList and render image files as thumbnails.
+    for (var i = 0, f; f = files[i]; i++)
+    {
+
+        var reader = new FileReader();
+        reader.onload = (function(reader)
+        {
+            return function()
+            {
+                var contents = reader.result;
+                var lines = contents.split('\n');
+                //////
+                document.getElementById('container').innerHTML=contents;
+            }
+        })(reader);
+
+        reader.readAsText(f);
+    }
+}
+
+</SCRIPT>
+<!-- <div style='visibility:hidden;text-align:left;background:#ccc;border:1px solid black;position: absolute;left:100;z-index:1;padding:5;' id='out_box'></div> -->
+</HEAD>
+<BODY onload>
+
+<p id="container">container</p>
+<br><br>
+<input type="file" id="files_just_one" name="files[]" multiple />
+<!-- -->
+  <output id="files_list"></output>
+
+<br><br>
+
+<input type="file" id="file_btn" name="file_button" value="CLick Me" multiple>
+<table border="0" style="width:100%;">
+  <tr>
+    <td align="center"><button type="button" id="btnLoad"   onclick="alert('Load')">Load...</button></td>
+    <td align="center"><button type="button" id="btnSave"   onclick="alert('Save!')">Save</button></td>
+    <td align="center"><button type="button" id="btnSaveAs" onclick="alert('Save As')">Save As...</button></td>
+  </tr>
+  <tr>
+    <td>
+      <input type="file" id="browse" name="fileupload" style="display: none" onChange="Handlechange();"/>
+    </td>
+    <td>
+      <input type="text" id="filename" readonly="true"/>
+    </td>
+    <td>
+      <input type="button" value="Click to select file" id="fakeBrowse" onclick="HandleBrowseClick();"/>
+    </td>
+  </tr>
+</table>
+
+<input type="file" id="myFile">
+<button type="button" onclick="addDoc()">Add Document</button>
+<p id="DisplayText"></p>
+<div id="byte_content"></div>
+
+</BODY>

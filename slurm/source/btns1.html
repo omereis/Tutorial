@@ -41,27 +41,48 @@ function Handlechange()
 //----------------------------------------------------------------------------
 function addDoc()
 {
-  alert('here is the new addDoc');
   var file=document.getElementById("myFile").files[0]; //for input type=file
-  alert('got the file: ' + file.name + ", " + file.size);
+  var reader = new FileReader();
 
-    var reader = new FileReader();
-
+//  document.getElementById('debug').textContent = "Hello<br>World";
+  document.getElementById('debug').innerHTML = "Hello<br>World";
 // If we use onloadend, we need to check the readyState.
   reader.onloadend = function(evt) {
     if (evt.target.readyState == FileReader.DONE) { // DONE == 2
         lines = evt.target.result;
-//        alert (lines);
-        alert ('lines read');
-        document.getElementById('byte_content').textContent = evt.target.result;
-//        document.getElementById('byte_range').textContent = ['Read bytes: ', start + 1, ' - ', stop + 1, ' of ', file.size, ' byte file'].join('');
-    }
-  };
 
-//var blob = file.slice(start, stop + 1);
-  alert ('before readAsText')
-  reader.readAsText(file);
-  alert ('After readAsText')
+        try {
+          alert ('trying');
+          var str, strDisplay;
+          var arr = new Uint8Array(lines);
+          strDisplay = '<u>strDisplay</u><br>';
+          str = String.fromCharCode.apply(String, arr);
+          alert (str);
+          for (var n=0 ; n < str.length ; n++) {
+            if (str.charCodeAt(n) == 13) {
+              strDisplay += "|<br>";
+            }
+          }
+          alert (strDisplay + ", " + str.length)
+//          document.getElementById('byte_content').textContent = strDisplay;//str;
+          document.getElementById('byte_content').innerHTML = strDisplay;//str;
+/*
+          for (var n=45 ; n < 55 ; n++) {
+            alert('str[' + n + ']=' + str[n] + ", " + str.charCodeAt(n));
+          }
+*/
+        }
+        catch (e) {
+          alert (e);
+        }
+//          alert (output);
+        }
+
+//        document.getElementById('byte_content').textContent = evt.target.result;
+    }
+
+//  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
 }
 //----------------------------------------------------------------------------
 function addDoc1() {
@@ -168,6 +189,17 @@ function handleFileSelect(evt)
 <input type="file" id="myFile">
 <button type="button" onclick="addDoc()">Add Document</button>
 <p id="DisplayText"></p>
-<div id="byte_content"></div>
+
+<table border="1" style="table-layout:fixed;" width="80%">
+  <tr>
+    <td style="width:50%;">
+      <div id="byte_content"></div>
+    </td>
+    <td width="50%">
+      <div id="debug"></div>
+    </td>
+  </tr>
+</table>
+
 
 </BODY>

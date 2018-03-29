@@ -39,38 +39,55 @@ function Handlechange()
   textinput.value = fileinput.value;
 }
 //----------------------------------------------------------------------------
+function set_radio_value(form, value)
+{
+  var f;
+
+  for (var i=0; i < form.length; i++) {
+    f = form[i].value == parseInt(value);
+    form[i].checked = f;
+  }
+}
+//----------------------------------------------------------------------------
 function addDoc()
 {
   var file=document.getElementById("myFile").files[0]; //for input type=file
   var reader = new FileReader();
 
-  document.getElementById('debug').innerHTML = "Hello<br>World";
 // If we use onloadend, we need to check the readyState.
   reader.onloadend = function(evt) {
     if (evt.target.readyState == FileReader.DONE) { // DONE == 2
         lines = evt.target.result;
 
         try {
-          var str, strCell, strHtml, lines, equals, strName;
-          var cell_start = '<td style="width:50%;">';
+          var str, strCell, strHtml, strName;
           var arr = new Uint8Array(lines);
           strName = strCell = "";
-          lines = equals = 0;
           strHtml='<table border="2" style="table-layout:fixed;" width="80%"><tr>';
           str = String.fromCharCode.apply(String, arr);
-          strHtml += cell_start;
           for (var n=0 ; n < str.length ; n++) {
             if (str[n] == "=") {
-              strHtml += strCell + "</td>" + cell_start;
               if (strCell.trim() == "ControlMachine") {
                 strName = "control_machine";
               }
+              else if (strCell.trim() == "ReturnToService") {
+                strName = "return_to_service";
+              }
               strCell = "";
-              equals++;
             }
-            else if (str.charCodeAt(n) == 13) {
-              if (strName != "") {
+            else if (str.charCodeAt(n) == 13) { // new line
+              if (strName == "control_machine") {
                 document.getElementsByName(strName)[0].value = strCell;
+              }
+              else if (strName == "return_to_service") {
+                set_radio_value(document.getElementsByName(strName), strCell)
+/*
+                var f, frm = document.getElementsByName(strName);//[0];//.checked = 1;
+                for (var i=0 ; i < frm.length ; i++) {
+                  f = (frm[i].value == parseInt(strCell));
+                  frm[i].checked = f;
+                }
+*/
               }
               strHtml += "</tr>" + strCell + "</td><tr>";
               strCell = "";
@@ -82,7 +99,6 @@ function addDoc()
             }
           }
           strHtml += "</tr></table>";
-          document.getElementById('byte_content').innerHTML = strHtml;//strCell;//str;
         }
         catch (e) {
           alert (e);
@@ -111,16 +127,6 @@ function addDoc()
 <button type="button" onclick="addDoc()">Add Document</button>
 <p id="DisplayText"></p>
 
-<table border="1" style="table-layout:fixed;" width="80%">
-  <tr>
-    <td style="width:50%;">
-      <div id="byte_content"></div>
-    </td>
-    <td width="50%">
-      <div id="debug"></div>
-    </td>
-  </tr>
-</table>
 
 <H2>Control Machines</H2>
 Define the hostname of the computer on which the Slurm controller and
@@ -143,7 +149,32 @@ Controller Hostname (optional)
 Address (optional)
 <P>
 
-<div id="file_content"></div>
+  <H2>State Preservation</H2>
+  Define the location of a directory where the slurmctld daemon saves its state.
+  This should be a fully qualified pathname which can be read and written to
+  by the Slurm user on both the control machine and backup controller (if configured).
+  The location of a directory where slurmd saves state should also be defined.
+  This must be a unique directory on each compute server (local disk).
+  The use of a highly reliable file system (e.g. RAID) is recommended.
+  <P>
+  <input type="text" name="state_save_location" value="/var/spool"> <B>StateSaveLocation</B>:
+  Slurmctld state save directory <B>Must be writable by both ControlMachine and BackupController</B>
+  <P>
+  <input type="text" name="slurmd_spool_dir" value="/var/spool/slurmd"> <B>SlurmdSpoolDir</B>:
+  Slurmd state save directory
+  <P>
+  Define when a non-responding (DOWN) node is returned to service.<BR>
+  Select one value for <B>ReturnToService</B>:<BR>
+  <input type="radio" name="return_to_service" value="0">
+  <B>0</B>: When explicitly restored to service by an administrator.<BR>
+  <input type="radio" name="return_to_service" value="1" checked>
+  <B>1</B>:Upon registration with a valid configuration only if it was set DOWN
+  due to being non-responsive.<BR>
+  <input type="radio" name="return_to_service" value="2">
+  <B>2</B>:Upon registration with a valid configuration.<BR>
+  <P>
+  
+    <div id="file_content"></div>
 
 
 </BODY>

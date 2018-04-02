@@ -26,7 +26,6 @@ with Slurm; if not, write to the Free Software Foundation, Inc.,
 <SCRIPT type="text/javascript">
 //----------------------------------------------------------------------------
 var slurmConfigDefault = {};
-
 slurmConfigDefault["ControlMachine"] = "control_addr";
 slurmConfigDefault["BackupController"] = "backup_controller";
 slurmConfigDefault["ControlAddr"] = ["control_addr"];
@@ -35,6 +34,9 @@ slurmConfigDefault["BackupAddr"] = ["backup_addr"];
 slurmConfigDefault["AuthType"] = "";
 slurmConfigDefault["CheckpointType"] = "";
 slurmConfigDefault["CryptoType"] = "crypto_type";
+
+var slurmConfigRadio = {};
+enableButtons["AuthType"] = ["auth_type"];
 //----------------------------------------------------------------------------
 function enableButtons() {
 //  document.getElementById("btnSave").disabled = true;
@@ -515,42 +517,61 @@ function addDoc()
 {
 	var file=document.getElementById("myFile").files[0]; //for input type=file
 	var reader = new FileReader();
-/*
-	var cfg = {};
-
-	cfg["ControlMachine"] = "control_addr";
-	cfg["BackupController"] = "backup_controller";
-
-	var n, cfg_len, str;
-	cfg_len = Object.keys(cfg).length;
-	str = Object.keys(cfg).length.toString() + "<br>";
-	try {
-		for (n=0 ; n < cfg_len ; n++) {
-			strKey = Object.keys(cfg)[n];
-			str += cfg[strKey] + "<br>";
-//			str += cfg[cfg[n]] + "<br>";
-		}
-	}
-	catch (e) {
-		str = document.getElementById("DisplayText").innerHTML;
-	}
-	document.getElementById("DisplayText").innerHTML = str;
-*/
 // If we use onloadend, we need to check the readyState.
 	reader.onloadend = function(evt) {
 		if (evt.target.readyState == FileReader.DONE) { // DONE == 2
 			lines = evt.target.result;
 
 			try {
-				var str, strCell, strHtml, strName;
+				var str, strCell, strHtml, strValue, strName, strKey, astrLines, fForceBlank;
 				var arr = new Uint8Array(lines);
 				strName = strCell = "";
 				strHtml='<table border="2" style="table-layout:fixed;" width="80%"><tr>';
 				str = String.fromCharCode.apply(String, arr);
+//				astrLines = str.split("\n");
+				astrLines = String.fromCharCode.apply(String, arr).split("\n");
+				for (var n=0 ; n < str.length ; n++) {
+					var astrPair, strLine = astrLines[n];
+//					astrPair = strLine.split("=");
+					astrPair = astrLines[n].split("=");
+					strKey = astrPair[0].trim();
+					if (astrPair.length > 1)
+						strName = astrPair[1].trim();
+					fForceBlank = false;
+					if (strKey.length > 0) {
+						if (strKey[0] == '#') {
+							fForceBlank = true; // valid field should be blank
+							strKey = strKey.substring (1, strKey.length);
+						}
+						if (strKey in slurmConfigDefault) {
+							if (!fForceBlank)
+								strName = slurmConfigDefault[strKey].trim();
+							var element = document.getElementsByName(strName)[0];
+							if (element != 0)
+								document.getElementsByName(strName)[0].value = strCell;
+							fForceBlank = false;
+						}
+						else {
+							var strValue = "";
+							if (strKey.toLowerCase() == "AuthType".toLowerCase()) {
+								if (
+							}
+						}
+
+					}
+				}
+//				return;
 				for (var n=0 ; n < str.length ; n++) {
 					if (str[n] == "=") {
 						if (strCell.trim() == "ControlMachine") {
-							strName = "control_machine";
+							strKey = strCell.trim();
+							try {
+								strName = slurmConfigDefault[strKey];
+							}
+							catch (e) {
+								strName = "control_machine";
+								alert (e.Message);
+							}//strName = "control_machine";
 						}
 						else if (strCell.trim() == "ReturnToService") {
 							strName = "return_to_service";

@@ -54,6 +54,27 @@ function addDoc()
   var file=document.getElementById("myFile").files[0]; //for input type=file
   var reader = new FileReader();
 
+	var cfg = {};
+
+	cfg["ControlMachine"] = "control_addr";
+	cfg["BackupController"] = "backup_controller";
+
+	var n, cfg_len, str;
+	cfg_len = Object.keys(cfg).length;
+	str = Object.keys(cfg).length.toString() + "<br>";
+	try {
+		for (n=0 ; n < cfg_len ; n++) {
+			strKey = Object.keys(cfg)[n];
+			str += cfg[strKey] + "<br>";
+//			str += cfg[cfg[n]] + "<br>";
+		}
+	}
+	catch (e) {
+		str = document.getElementById("DisplayText").innerHTML;
+	}
+	document.getElementById("DisplayText").innerHTML = str;
+/**/
+
 // If we use onloadend, we need to check the readyState.
   reader.onloadend = function(evt) {
     if (evt.target.readyState == FileReader.DONE) { // DONE == 2

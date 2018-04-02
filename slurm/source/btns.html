@@ -275,11 +275,17 @@ function getSlurmConfigText()
 function saveDoc ()
 {
 	try {
-		download("d:\\Omer\\Source\\Tutorial\\slurm\\source\\debug_js.txt", getSlurmConfigText());
+		download("debug_js.txt", getSlurmConfigText());
 	}
 	catch (e) {
 		alert (e);
 	}
+}
+//----------------------------------------------------------------------------
+function addDocFromFile()
+{
+	document.getElementById('myFile').click();
+//	addDoc();
 }
 //----------------------------------------------------------------------------
 function addDoc()
@@ -371,13 +377,13 @@ function addDoc()
 <FORM name=config>
 <table border="0" style="width:100%;">
   <tr>
-    <td align="center"><button type="button" id="btnLoad"   onclick="alert('Load')">Load...</button></td>
+	<td><input type="button" id="loadFile" value="Load File..." onclick="addDocFromFile()" /></td>
     <td align="center"><button type="button" id="btnSave"   onclick="saveDoc()">Save</button></td>
     <td align="center"><button type="button" id="btnSaveAs" onclick="alert('Save As')">Save As...</button></td>
   </tr>
 </table>
 
-<input type="file" id="myFile">
+<input style="display:none;" type="file" id="myFile" onchange="addDoc()">
 <button type="button" onclick="addDoc()">Add Document</button>
 <p id="DisplayText"></p>
 

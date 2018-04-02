@@ -25,6 +25,17 @@ with Slurm; if not, write to the Free Software Foundation, Inc.,
 <HEAD><TITLE>Slurm System Configuration Tool</TITLE>
 <SCRIPT type="text/javascript">
 //----------------------------------------------------------------------------
+var slurmConfigDefault = {};
+
+slurmConfigDefault["ControlMachine"] = "control_addr";
+slurmConfigDefault["BackupController"] = "backup_controller";
+slurmConfigDefault["ControlAddr"] = ["control_addr"];
+slurmConfigDefault["BackupController"] = ["backup_controller"];
+slurmConfigDefault["BackupAddr"] = ["backup_addr"];
+slurmConfigDefault["AuthType"] = "";
+slurmConfigDefault["CheckpointType"] = "";
+slurmConfigDefault["CryptoType"] = "crypto_type";
+//----------------------------------------------------------------------------
 function enableButtons() {
 //  document.getElementById("btnSave").disabled = true;
   var msg;
@@ -499,6 +510,98 @@ function saveDoc ()
 		alert (e);
 	}
 }
+//----------------------------------------------------------------------------
+function addDoc()
+{
+	var file=document.getElementById("myFile").files[0]; //for input type=file
+	var reader = new FileReader();
+/*
+	var cfg = {};
+
+	cfg["ControlMachine"] = "control_addr";
+	cfg["BackupController"] = "backup_controller";
+
+	var n, cfg_len, str;
+	cfg_len = Object.keys(cfg).length;
+	str = Object.keys(cfg).length.toString() + "<br>";
+	try {
+		for (n=0 ; n < cfg_len ; n++) {
+			strKey = Object.keys(cfg)[n];
+			str += cfg[strKey] + "<br>";
+//			str += cfg[cfg[n]] + "<br>";
+		}
+	}
+	catch (e) {
+		str = document.getElementById("DisplayText").innerHTML;
+	}
+	document.getElementById("DisplayText").innerHTML = str;
+*/
+// If we use onloadend, we need to check the readyState.
+	reader.onloadend = function(evt) {
+		if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+			lines = evt.target.result;
+
+			try {
+				var str, strCell, strHtml, strName;
+				var arr = new Uint8Array(lines);
+				strName = strCell = "";
+				strHtml='<table border="2" style="table-layout:fixed;" width="80%"><tr>';
+				str = String.fromCharCode.apply(String, arr);
+				for (var n=0 ; n < str.length ; n++) {
+					if (str[n] == "=") {
+						if (strCell.trim() == "ControlMachine") {
+							strName = "control_machine";
+						}
+						else if (strCell.trim() == "ReturnToService") {
+							strName = "return_to_service";
+						}
+						strCell = "";
+					}
+					else if (str.charCodeAt(n) == 13) { // new line
+						if (strName == "control_machine") {
+							document.getElementsByName(strName)[0].value = strCell;
+						}
+						else if (strName == "return_to_service") {
+							set_radio_value(document.getElementsByName(strName), strCell)
+/*
+                var f, frm = document.getElementsByName(strName);//[0];//.checked = 1;
+                for (var i=0 ; i < frm.length ; i++) {
+                  f = (frm[i].value == parseInt(strCell));
+                  frm[i].checked = f;
+                }
+*/
+						}
+						strHtml += "</tr>" + strCell + "</td><tr>";
+						strCell = "";
+						strName = "";
+						lines++;
+					}
+					else {
+						strCell += str[n];
+					}
+				}
+				strHtml += "</tr></table>";
+			}
+			catch (e) {
+				alert (e);
+			}
+		}
+	}
+
+//  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
+}
+//----------------------------------------------------------------------------
+function set_radio_value(form, value)
+{
+  var f;
+
+  for (var i=0; i < form.length; i++) {
+    f = form[i].value == parseInt(value);
+    form[i].checked = f;
+  }
+}
+//----------------------------------------------------------------------------
 -->
 </SCRIPT>
 <!-- <div style='visibility:hidden;text-align:left;background:#ccc;border:1px solid black;position: absolute;left:100;z-index:1;padding:5;' id='out_box'></div> -->
@@ -540,17 +643,18 @@ as <I>slurm.conf</I> for use by Slurm.
 <A HREF="https://slurm.schedmd.com/slurm.html">https://slurm.schedmd.com/slurm.html</A>
 
 <br><br>
-<input type="file" id="files_just_one" name="files[]" single />
-<output id="files_list"></output>
-<br><br>
 
 <table style="width:100%">
   <tr>
-    <td align="center"><button type="button" id="btnLoad"   onclick="alert('Load')">Load...</button></td>
+    <td align="center"><button type="button" id="btnLoad"   onclick="getElementById('myFile').click();">Load...</button></td>
     <td align="center"><button type="button" id="btnSave"   onclick="saveDoc ()">Save</button></td>
     <td align="center"><button type="button" id="btnSaveAs" onclick="alert('Save As')">Save As...</button></td>
   </tr>
 </table>
+<!--
+-->
+<input style="display:none;" type="file" id="myFile" onchange="addDoc()">
+
 
 <H2>Control Machines</H2>
 Define the hostname of the computer on which the Slurm controller and

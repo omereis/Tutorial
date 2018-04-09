@@ -15,7 +15,21 @@ RUN mkdir /home/slurm/.ssh
 USER root
 
 # Install slurm
-#RUN yum -y install gcc gcc-g++ make munge munge-devel httpd bzip2 vim-minimal tar perl git
+RUN apt-get -y install gcc
+RUN apt-get -y install g++
+RUN apt-get -y install make
+RUN apt-get -y install munge
+#RUN ["/bin/bash", "-c", "apt-get -y install munge-devel"]
+#RUN ["/bin/bash", "-c", "apt-get -y install httpd"]
+RUN apt-get -y install bzip2
+RUN apt-get -y install vim
+RUN apt-get -y install tar
+RUN apt-get -y install perl
+RUN ["/bin/bash", "-c", "/usr/bin/apt-get -y install git"]
+# RUN apt-get -y install gcc gcc-g++ make munge munge-devel httpd bzip2 vim-minimal tar perl git
+# docker run -d -t --rm --name slurm_l agave_slurm
+# docker exec -i -t slurm_l bash
 
+RUN create-munge-key
 
 #--disabled-password

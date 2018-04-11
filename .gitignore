@@ -5,3 +5,5 @@
 err.txt
 *.tar
 *.zip
+*.tgz
+slurm_tutorial.docx

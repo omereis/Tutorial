@@ -1,6 +1,6 @@
 # docker build -f Dockerfile.2 -t agave_slurm .
-# docker run -d -t --rm --name slurm_l  agave_slurm
-# docker exec -i -t slurm_l bash
+# docker run -d -t --rm --name slurm_node -h slurm_node agave_slurm
+# docker exec -i -t slurm_node bash
 # -p 10022:22 
 FROM ubuntu:16.04
 
@@ -9,6 +9,7 @@ FROM ubuntu:16.04
 RUN apt-get update && apt-get install -y build-essential
 RUN apt-get install -y man
 RUN apt-get install -y vim
+RUN apt-get install -y net-tools
 # Add slurm user
 RUN useradd -ms /bin/bash slurm
 #RUN adduser slurm -home /home/slurm
@@ -71,7 +72,7 @@ RUN chown root:slurm /var/spool
 RUN chmod g+w /var/spool
 
 COPY slurm.conf /etc/sysconfig/slurm/slurm.conf
-COPY slurm.conf /usr/local/slurm/slurm.conf
+#COPY slurm.conf /usr/local/slurm/slurm.conf
 
 RUN useradd -ms /bin/bash testuser
 USER testuser
@@ -84,6 +85,7 @@ USER root
 #COPY supervisord.conf /etc/supervisord.conf
 #RUN mkdir /var/log/supervisor
 #RUN chmod -R 777 /var/log/supervisor
+RUN export set LINES=60
 
 EXPOSE 10389 22 6817 6818
 #CMD /usr/bin/supervisord

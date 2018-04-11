@@ -14,25 +14,34 @@
 #            --rm agaveapi/slurm
 #
 # https://bitbucket.org/taccaci/agave-environment
-#
-# https://hub.docker.com/r/agaveapi/slurm/~/dockerfile/
+# docker run -h docker.example.com -i -t -p 10022:22 -p 9618:9618 -rm agaveapi/centos-base
 ######################################################
 
-FROM ubuntu:16.04
-
+#FROM agaveapi/centos-base
+FROM centos:centos6
 
 MAINTAINER Rion Dooley <dooley@tacc.utexas.edu>
 
 # Add slurm user
 RUN adduser slurm && \
     echo "slurm:slurm" | chpasswd
-USER slurm
+#USER slurm
 RUN mkdir /home/slurm/.ssh
 #ADD ssh/id_rsa.pub /home/slurm/.ssh/authorized_keys
-USER root
+#USER root
 
 # Install slurm
-RUN yum -y install gcc gcc-g++ make munge munge-devel httpd bzip2 vim-minimal tar perl git
+#RUN yum -y install gcc gcc-g++ make munge munge-devel httpd bzip2 vim-minimal tar perl git
+RUN yum -y install gcc
+#RUN yum -y install gcc-g++
+RUN yum -y install make
+RUN yum -y install munge
+#RUN yum -y install munge-devel
+#RUN yum -y install httpd bzip2
+#RUN yum -y install vim-minimal
+#RUN yum -y install tar
+#RUN yum -y install perl
+#RUN yum -y install git
 
 # Configure munge
 RUN create-munge-key

@@ -1,0 +1,46 @@
+######################################################
+#
+# Agave DevOps Slurm Server
+# Tag: agaveapi/slurm
+#
+# This container provides a standard Slurm controller
+# and worker created on top of the agaveapi/centos-base
+# image. Nothing special here.
+#
+# Usage:
+# docker run -h docker.example.com -i -t  \
+#            -p 10022:22                  \ # SSHD, SFTP
+#            -p 9618:9618                 \ # Slurm
+#            --rm agaveapi/slurm
+#
+# https://bitbucket.org/taccaci/agave-environment
+# docker run -h docker.example.com -i -t -p 10022:22 -p 9618:9618 -rm agaveapi/centos-base
+######################################################
+
+#FROM agaveapi/centos-base
+#FROM centos:centos7
+FROM ubuntu:16.04
+
+# Add slurm user
+#RUN adduser slurm && \
+#    echo "slurm:slurm" | chpasswd
+#USER slurm
+#RUN mkdir /home/slurm/.ssh
+#ADD ssh/id_rsa.pub /home/slurm/.ssh/authorized_keys
+#USER root
+
+# Install slurm
+# RUN apt-get-y install gcc gcc-g++ make munge munge-devel httpd bzip2 vim-minimal tar perl git
+#RUN apt-get -y install gcc gcc-g++ make munge munge-devel httpd bzip2 vim-minimal tar perl git
+RUN apt-get -y update
+RUN apt-get -y install gcc
+#RUN apt-get -y install gcc-g++
+RUN apt-get -y install make
+RUN apt-get -y install munge
+#RUN apt-get -y install munge-devel
+RUN apt-get -y install apache2
+RUN apt-get -y install bzip2
+RUN apt-get -y install vim
+RUN apt-get -y install tar
+RUN apt-get -y install perl
+RUN apt-get -y install git

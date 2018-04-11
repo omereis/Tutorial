@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 MAINTAINER Ole Weidner <ole.weidner@ed.ac.uk>
-
+# modification Omer Eisenberg <omereis@yahoo.com>
 ENV SLURM_VER=16.05.3
 
 # Create users, set up SSH keys (for MPI)
@@ -33,11 +33,14 @@ RUN apt-get install -y munge curl gcc make bzip2 supervisor python python-dev \
 
 
 # Download, compile and install SLURM
-#RUN curl -fsL http://www.schedmd.com/download/total/slurm-${SLURM_VER}.tar.bz2 | tar xfj - -C /opt/ && \
-RUN curl -fsL https://download.schedmd.com/slurm/slurm-17.11.5.tar.bz2 | tar xfj - -C /opt/ && \
-    cd /opt/slurm-${SLURM_VER}/ && \
-    ./configure && make && make install
-ADD etc/slurm/slurm.conf /usr/local/etc/slurm.conf
+RUN mkdir /home/slurm
+RUN cd /home/slurm && wget https://download.schedmd.com/slurm/slurm-17.11.5.tar.bz2
+RUN tar x -f /home/slurm/slurm-17.11.5.tar.bz2 -C /home/slurm
+
+RUN cd /home/slurm/slurm-17.11.5 && ./configure && make && make install
+
+COPY usr_local_etc_slurm_conf.add /usr/local/etc/slurm.conf
+#ADD etc/slurm/slurm.conf /usr/local/etc/slurm.conf
 
 
 # Configure OpenSSH

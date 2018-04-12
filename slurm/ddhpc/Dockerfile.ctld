@@ -1,3 +1,4 @@
+# docker build --rm -f Dockerfile.ctld -t slurm_ctld .
 #FROM datadrivenhpc/slurmbase
 FROM slurm_base
 #FROM datadrivenhpc/slurmbase-local
@@ -10,5 +11,9 @@ RUN chmod +x /root/start.sh
 
 COPY etc_supervisor_conf_d_slurmctld_conf.add /etc/supervisor/conf.d/slurmctld.conf
 #ADD etc/supervisord.d/slurmctld.conf /etc/supervisor/conf.d/slurmctld.conf
+
+ENV SLURM_CLUSTER_NAME=ddhpc
+ENV SLURM_CONTROL_MACHINE=slurmctld
+ENV SLURM_NODE_NAMES=slurmd_1
 
 CMD ["/bin/bash","/root/start.sh"]

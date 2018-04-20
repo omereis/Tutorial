@@ -1,11 +1,17 @@
 # docker build --rm -f Dockerfile.ctld -t slurm_ctld .
 #FROM datadrivenhpc/slurmbase
-FROM slurm_base
+FROM omereis/slurm_ddhpc_base.man
+# FROM slurm_base
 #FROM datadrivenhpc/slurmbase-local
-
+#
+# Docker
+# docker build --rm -f Dockerfile.ctld -t slurm_ctld .
+# docker run -d --name slurm_ctld -h slurmctld slurm_ctld
+# docker run -d  --name slurmctld  -h slurmctld --link ddhpc_slurmd slurm_ctld
 MAINTAINER Ole Weidner <ole.weidner@ed.ac.uk>
 
-COPY root_start_sh.add /root/start.sh
+#COPY root_start_sh.add /root/start.sh
+COPY slurmctld_start.sh /root/start.sh
 #ADD scripts/start.sh /root/start.sh
 RUN chmod +x /root/start.sh
 
@@ -17,3 +23,16 @@ ENV SLURM_CONTROL_MACHINE=slurmctld
 ENV SLURM_NODE_NAMES=slurmd_1
 
 CMD ["/bin/bash","/root/start.sh"]
+
+
+#  SAS_OPENCL=1 sasview/fit.py sasview/src/sas/sasview/test/save_states/fitstate.fitv --store=/tmp/one4-1 --noshow --fit=dream --batch
+16:49:25 - WARNING : run: 169: Error while determining build number
+
+tar xvjf slurm-17.02.6.tar.bz2
+fpm -s dir -t deb -v 1.0 -n slurm-17.11.5 --prefix=/usr -C /tmp/slurm-build .
+dpkg -i slurm-17.11.5_1.0_amd64.deb
+Eisenberg
+Vax
+Uzan
+Shtienberg
+

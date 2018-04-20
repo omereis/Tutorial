@@ -1,0 +1,23 @@
+#FROM datadrivenhpc/slurmbase
+FROM omereis/slurm_ddhpc_base.man
+# FROM slurm_base
+#
+# Docker
+# docker build --rm -f Dockerfile.slurmd -t slurm_slurmd .
+# docker run --name ddhpc_slurmd -i -t -d -e "SLURM_CLUSTER_NAME=ddhpc" -e "SLURM_CONTROL_MACHINE=slurmctld" -e "SLURM_NODE_NAMES=slurmd_1" -h slurmctld datadrivenhpc/slurmd
+# docker run -d --name slurm_ctld -h slurmctld slurm_ctld
+# docker run -d  --name slurmctld  -e "SLURM_CLUSTER_NAME=ddhpc" -e "SLURM_CONTROL_MACHINE=slurmctld" -e "SLURM_NODE_NAMES=slurmd_1" -h slurmctld slurm_ctld
+# docker cp slurmctld.conf slurmctld:/usr/local/etc/slurm.conf
+#FROM datadrivenhpc/slurmbase
+
+MAINTAINER Ole Weidner <ole.weidner@ed.ac.uk>
+
+COPY root_start_sh.add /root/start.sh
+#ADD scripts/start.sh /root/start.sh
+RUN chmod +x /root/start.sh
+
+ADD etc/supervisord.d/slurmd.conf /etc/supervisor/conf.d/slurmd.conf
+
+CMD ["/bin/bash","/root/start.sh"]
+
+# docker run --name ddhpc_slurmd -i -t -d -h ddhpc_slurmd --link slurmctld -e "SLURM_CLUSTER_NAME=ddhpc" -e "SLURM_CONTROL_MACHINE=slurmctld" -e "SLURM_NODE_NAMES=slurmd_1" datadrivenhpc/slurmd

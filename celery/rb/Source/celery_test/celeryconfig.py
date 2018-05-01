@@ -1,6 +1,7 @@
 from datetime import timedelta
 
-BROKER_URL = "redis://redis.local:6379/0"
+BROKER_URL = "redis://redis_server"
+#BROKER_URL = "redis://redis.local:6379/0"
 BROKER_TRANSPORT_OPTIONS = {'fanout_prefix': True, 'fanout_patterns': True, 'visibility_timeout': 480}
 CELERY_RESULT_BACKEND = BROKER_URL
 

@@ -1,4 +1,5 @@
-FROM ubuntu:16.04
+FROM ubuntu:14.04
+# docker build -t richardbronosky/celery -f Dockerfile.rb .
 #MAINTAINER Richard Bronosky <bruno@bronosky.com>
 # the default image doesn't have python, so this is going to be a big install
 RUN apt-get update && apt-get install -y python-pip man vim
@@ -12,5 +13,9 @@ COPY Source\* /home/root/celery
 
 RUN pip install redis
 #USER nobody
-ENTRYPOINT bash
+#ENTRYPOINT bash
 #ENTRYPOINT celery -A celery_test.tasks worker --loglevel=info
+# celery -A tasks worker --loglevel=info
+
+# docker build -t richardbronosky/celery:v4 -f Dockerfile.rb .
+# docker run -t -i --link rabbit-server:rabbit richardbronosky/celery:v4

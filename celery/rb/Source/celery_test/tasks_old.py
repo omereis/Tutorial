@@ -1,9 +1,7 @@
 import random
 from celery import Celery
 
-app = Celery('tasks', backend='redis://redis_server', broker='pyamqp://rabbit-server')
-#app = Celery('tasks', backend='redis://redis_server', broker='pyamqp://')
-#app = Celery('celery_test') # without this explicit name Celery will list the app as "__main__"
+app = Celery('celery_test') # without this explicit name Celery will list the app as "__main__"
 
 @app.task
 def add(x, y):

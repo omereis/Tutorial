@@ -12,29 +12,23 @@ RUN apt-get update -y
 RUN apt-get install -y man vim
 RUN apt -y dist-upgrade
 RUN apt install -y python2.7 python-pip
-RUN apt-get install -y rabbitmq-server
+#RUN apt-get install -y rabbitmq-server
 RUN apt-get install -y iputils-ping
 RUN pip install celery
 RUN pip install redis
 RUN ln -s /run/shm /dev/shm
-# remove this next line when development is done
-#RUN apt-get update && apt-get install -y tmux vim git iputils-ping
-#RUN pip install -U https://github.com/RichardBronosky/celery_test/archive/master.zip
+
 RUN mkdir /home/root
 RUN mkdir /home/root/celery
 COPY Source\* /home/root/celery
 RUN chmod a+x /home/root/celery/celery_test/run_tasks.sh
+
 ENV CELERY_RESULT_BACKEND='amqp'
 ENV BROKER_URL='amqp://guest@rabbit.local//'
 
 ENV LINES=45
 ENV COLUMNS=100
  
-#RUN service rabbitmq-server start
 #CMD rabbitmq-server start
 
-#RUN pip install redis
-#USER nobody
-#ENTRYPOINT bash
-#ENTRYPOINT celery -A celery_test.tasks worker --loglevel=info
 WORKDIR /home/root/celery/celery_test

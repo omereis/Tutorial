@@ -1,0 +1,4 @@
+# docker build -t redis-server -f Dockerfile.redis .
+from library/redis
+EXPOSE 6379
+CMD ["redis-server"] ["usr/local/etc/redis/redis.conf]

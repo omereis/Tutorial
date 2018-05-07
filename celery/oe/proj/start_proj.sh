@@ -1,1 +1,1 @@
-celery multi start w1 -A proj -l info
+celery worker start w1 -A proj -l info

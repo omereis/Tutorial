@@ -1,0 +1,63 @@
+FROM ubuntu:16.04
+
+#FROM python:3.5.1-alpine
+
+# docker build --rm -t flower_totem  .
+# docker run -h flower_totem --name flower_totem --link oe_celery --link redis-server --link rabbit-server -it -d -p 5555:5555 flower_totem
+# docker run -it --rm --name flower_totem -p 5555:5555 flower_totem
+#FROM python:3.5.1-alpine
+
+# Source: https://github.com/totem/celery-flower-docker/blob/develop/Dockerfile
+
+ENV DEBIAN_FRONTEND noninteractive
+#ENV ETCDCTL_VERSION v2.2.5
+ENV DUMB_INIT_VERSION 1.0.1
+
+ENV ETCDCTL_VERSION=3.3.4
+
+RUN apt-get update -y
+RUN apt-get install -y openssl
+RUN apt-get install -y curl
+RUN apt-get install -y wget
+
+#ARG ARG_ETCDCTL_VERSION
+
+#RUN echo echo https://github.com/coreos/etcd/releases/download/$ETCDCTL_VERSION
+#RUN echo $ETCDCTL_VERSION
+
+#RUN echo https://github.com/coreos/etcd/releases/download/${ETCDCTL_VERSION}
+
+    # Etcdctl
+
+RUN curl -L https://github.com/coreos/etcd/releases/download/v3.3.4/etcd-v3.3.4-linux-amd64.tar.gz \
+	-o /tmp/etcd-v3.3.4-linux-amd64.tar.gz 
+
+RUN cd /tmp && gzip -d etcd-v3.3.4-linux-amd64.tar.gz
+RUN cd /tmp && tar -xf etcd-v3.3.4-linux-amd64.tar
+RUN cp /tmp/etcd-v3.3.4-linux-amd64/etcdctl /usr/local/bin
+#RUN cp -f /tmp/etcd-3.3.4-linux-amd64/etcdctl /usr/local/bin
+RUN wget -O /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64
+
+#		&& \
+#		wget -O /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64 %% \
+#		chmod +x /usr/bin/dumb-init && \
+
+		# Cleanup
+#		rm -rf /tmp/*
+
+
+# '/tmp/etcd-3.3.4-linux-amd64/etcdctl':
+
+RUN mkdir -p /opt/
+RUN mkdir -p /opt/celery-flower/
+RUN mkdir -p /opt/celery-flower/bin/
+ADD celeryconfig.py flowerconfig.py  /opt/celery-flower/
+ADD flower.sh /opt/celery-flower/bin/
+RUN chmod +x /opt/celery-flower/bin/flower.sh
+RUN chmod +x /usr/bin/dumb-init
+WORKDIR /opt/celery-flower
+
+EXPOSE 5555
+
+#CMD ["/usr/bin/dumb-init", "/opt/celery-flower/bin/flower.sh"]
+

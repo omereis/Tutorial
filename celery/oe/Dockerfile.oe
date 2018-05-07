@@ -7,7 +7,6 @@ MAINTAINER Omer Eisenebrg <one4@nist.gov>
 # celery -A tasks worker --loglevel=info
 RUN apt-get update && apt-get install -y python-pip man vim
 RUN pip install --upgrade pip
-RUN apt-get update -y
 #RUN apt-get install -y man vim
 RUN apt -y dist-upgrade
 RUN apt install -y python2.7 python-pip
@@ -36,4 +35,4 @@ ENV COLUMNS=100
  
 #CMD rabbitmq-server start
 
-WORKDIR /home/root/celery/celery_test
+WORKDIR /home/root/celery/

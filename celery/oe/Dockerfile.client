@@ -2,12 +2,11 @@ FROM ubuntu:16.04
 MAINTAINER Omer Eisenebrg <one4@nist.gov>
 # docker build --rm -t oe_celery -f Dockerfile.oe .
 # docker run -h oe_celery --name oe_celery --link redis_server -p 5672:5672 -it -d oe_celery
-# docker run -h oe_celery --name oe_celery --link redis_server --link rabbit-server -it -d oe_celery
+# docker run -h oe_celery --name oe_celery --link redis-server --link rabbit-server -it -d oe_celery
 # the default image doesn't have python, so this is going to be a big install
 # celery -A tasks worker --loglevel=info
 RUN apt-get update && apt-get install -y python-pip man vim
 RUN pip install --upgrade pip
-RUN apt-get update -y
 #RUN apt-get install -y man vim
 RUN apt -y dist-upgrade
 RUN apt install -y python2.7 python-pip
@@ -18,7 +17,7 @@ RUN pip install redis
 #RUN ln -s /run/shm /dev/shm
 
 RUN mkdir /home/root
-RUN mkdir /home/root/celery
+#RUN mkdir /home/root/celery
 COPY Source\* /home/root/celery
 
 RUN mkdir /home/root/celery/proj
@@ -36,4 +35,4 @@ ENV COLUMNS=100
  
 #CMD rabbitmq-server start
 
-WORKDIR /home/root/celery/celery_test
+WORKDIR /home/root/celery/

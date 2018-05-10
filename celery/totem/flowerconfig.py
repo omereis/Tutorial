@@ -8,8 +8,10 @@ AMQP_ADMIN_PORT = int(os.getenv('AMQP_ADMIN_PORT', '15672'))
 DEFAULT_BROKER_API = 'http://%s:%s@%s:%d/api/' \
                      % (AMPQ_ADMIN_USERNAME, AMPQ_ADMIN_PASSWORD,
                         AMQP_ADMIN_HOST, AMQP_ADMIN_PORT)
-USERNAME = os.getenv('USERNAME', 'root')
-PASSWORD = os.getenv('PASSWORD', 'changeit')
+#USERNAME = os.getenv('USERNAME', 'root')
+#PASSWORD = os.getenv('PASSWORD', 'changeit')
+USERNAME = os.getenv('USERNAME', 'flower')
+PASSWORD = os.getenv('PASSWORD', 'celery')
 
 port = int(os.getenv('FLOWER_PORT', '5555'))
 broker_api = os.getenv('FLOWER_BROKER_API', DEFAULT_BROKER_API)

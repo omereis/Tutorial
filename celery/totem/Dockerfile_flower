@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 #FROM python:3.5.1-alpine
 
-# docker build --rm -t flower_totem  .
+# docker build --rm -t flower_totem  -f Dockerfile_flower .
 # docker run -h flower_totem --name flower_totem --link oe_celery --link redis-server --link rabbit-server -it -d -p 5555:5555 flower_totem
 # docker run -it --rm --name flower_totem -p 5555:5555 flower_totem
 #FROM python:3.5.1-alpine
@@ -47,6 +47,8 @@ RUN wget -O /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/downlo
 
 
 # '/tmp/etcd-3.3.4-linux-amd64/etcdctl':
+
+RUN apt-get install -y iputils-ping
 
 RUN mkdir -p /opt/
 RUN mkdir -p /opt/celery-flower/

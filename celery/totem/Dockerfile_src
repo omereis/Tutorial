@@ -1,0 +1,41 @@
+FROM ubuntu:16.04
+#FROM python:3.5.1-alpine
+
+# docker build --rm -t flower_src  -f Dockerfile_src .
+# docker run -h flower_src --name flower_src --link oe_celery --link redis-server --link rabbit-server -it -d -p 5555:5555 flower_src
+
+ENV DEBIAN_FRONTEND noninteractive
+
+#RUN apk add --no-cache --update \
+RUN apt-get install -y openssl
+RUN apt-get install -y curl
+RUN curl -L https://github.com/coreos/etcd/releases/download/v3.3.4/etcd-v3.3.4-linux-amd64.tar.gz -o /tmp/etcd-3.3.4-linux-amd64.tar.gz
+
+    # Etcdctl
+RUN apk add --no-cache --update curl -L https://github.com/coreos/etcd/releases/download/v3.3.4/etcd-v3.3.4-linux-amd64.tar.gz -o /tmp/etcd-3.3.4-linux-amd64.tar.gz \
+    && cd /tmp && gzip -dc etcd-3.3.4-linux-amd64.tar.gz | tar -xof -  \
+    && cp -f /tmp/etcd-3.3.4-linux-amd64/etcdctl /usr/local/bin \
+
+    # Dumb Init
+    && wget -O /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64 \
+    && chmod +x /usr/bin/dumb-init \
+
+    # Cleanup
+    && rm -rf /tmp/*
+
+RUN pip3  install --ignore-installed  --no-cache-dir flower==0.9.0 \
+  # Cleanup (Remove all tests folder and python compiled files)
+  && find /usr/local \
+    \( -type d -a -name test -o -name tests \) -exec echo rm -rf '{}' + \
+    -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) -exec echo rm -f '{}' + \
+  && rm -rf /usr/src/python ~/.cache
+
+ADD celeryconfig.py flowerconfig.py  /opt/celery-flower/
+ADD bin/flower.sh /opt/celery-flower/bin/
+RUN chmod +x /opt/celery-flower/bin/flower.sh
+
+WORKDIR /opt/celery-flower
+
+EXPOSE 5555
+
+CMD ["/usr/bin/dumb-init", "/opt/celery-flower/bin/flower.sh"]

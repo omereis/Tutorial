@@ -1,0 +1,38 @@
+FROM ubuntu:16.04
+MAINTAINER Omer Eisenebrg <one4@nist.gov>
+# docker build --rm -t celery_client -f Dockerfile.client .
+# docker run -h celery_client --name celery_client --link redis_server -p 5672:5672 -it -d celery_client
+# docker run -h celery_client --name celery_client --link redis-server --link rabbit-server -it -d celery_client
+# the default image doesn't have python, so this is going to be a big install
+# celery -A tasks worker --loglevel=info
+RUN apt-get update && apt-get install -y python-pip man vim
+RUN pip install --upgrade pip
+#RUN apt-get install -y man vim
+RUN apt -y dist-upgrade
+RUN apt install -y python2.7 python-pip
+#RUN apt-get install -y rabbitmq-server
+RUN apt-get install -y iputils-ping
+RUN pip install celery
+RUN pip install redis
+#RUN ln -s /run/shm /dev/shm
+
+RUN mkdir /home/root
+#RUN mkdir /home/root/celery
+COPY Source\* /home/root/celery
+
+RUN mkdir /home/root/celery/proj
+COPY proj\* /home/root/celery/proj
+
+RUN chmod a+x /home/root/celery/celery_test/run_tasks.sh
+RUN chmod a+x /home/root/celery/proj/start_proj.sh
+RUN chmod a+x /home/root/celery/proj/stop_proj.sh
+
+ENV CELERY_RESULT_BACKEND='amqp'
+ENV BROKER_URL='amqp://guest@rabbit.local//'
+
+ENV LINES=45
+ENV COLUMNS=100
+ 
+#CMD rabbitmq-server start
+
+WORKDIR /home/root/celery/

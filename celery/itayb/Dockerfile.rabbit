@@ -1,5 +1,0 @@
-# docker build -t rabbit-mgmt -f Dockerfile.rabbit .
-from rabbitmq:3-management
-ENV RABBITMQ_DEFAULT_VHOST=vhost
-ENV RABBITMQ_DEFAULT_USER=guest
-ENV RABBITMQ_DEFAULT_PASS=guest

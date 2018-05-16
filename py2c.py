@@ -1142,6 +1142,12 @@ def get_files_names ():
     return valid_params, fname_in,fname_out
 
 def main():
+    try:
+        f = open('debug.txt', 'a+')
+        f.write('execute_slurm_script')
+        f.close()
+    except:
+        print("error opening file")
     print("Parsing...using Python" + sys.version)
     valid_params, fname_in, fname_out = get_files_names ()
     if (valid_params == False):

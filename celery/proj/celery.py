@@ -4,7 +4,7 @@ from celery import Celery
 app = Celery('proj',
              broker='amqp://rabbit-server',
              backend='redis://redis-server',
-             include=['proj.tasks'])
+             include=['run_job'])
 
 # Optional configuration, see the application user guide.
 app.conf.update(

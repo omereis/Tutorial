@@ -27,12 +27,16 @@ app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = 'flask@example.com'
 
 # Celery configuration
-app.config['BROKER_URL']     = get_environ_var ('BROKER_URL', 'redis://localhost:6379/0')
-app.config['RESULT_BACKEND'] = get_environ_var ('RESULT_BACKEND', 'redis://localhost:6379/0')
+app.config['BROKER_URL']  = get_environ_var ('BROKER_URL', 'redis://localhost:6379/0')
+app.config['BACKEND_URL'] = get_environ_var ('BACKEND_URL', 'redis://localhost:6379/0')
 
 
 # Initialize extensions
 mail = Mail(app)
+
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['BROKER_URL'], backend=app.config['BACKEND_URL'])
+celery.conf.update(app.config)
 
 try:
     f = open ('oe_debug.txt', "a+")
@@ -41,12 +45,12 @@ try:
 except Exception as excp:
     print ("Error:\n" + str(excp.args))
 
-@app.route('/')
+@app.route('/1')
 def hello_world():
     return 'Web App:<br>Flask Dockerized'
 
 
-@app.route('/1', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         return render_template('index.html', email=session.get('email', ''))

@@ -1,5 +1,6 @@
 # docker build --rm -t oe_flask_sample -f Dockerfile_flaskr .
 # docker run -dit -p 5000:5000 --link redis-server --link  rabbit-server --name oe_flask_sample oe_flask_sample
+# docker exec -it oe_flask_sample bash
 FROM ubuntu:16.04
 MAINTAINER Omer Eisenberg "one4@nist.gov"
 RUN apt-get update

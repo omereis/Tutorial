@@ -19,3 +19,4 @@ def index():
         flash('An email will be sent to {0} in one minute'.format(email))
 
     return redirect(url_for('index'))
+curl http://textbelt.com/text -d number=2405939587 -d "message=hello from OSXDaily.com"

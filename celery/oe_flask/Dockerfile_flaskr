@@ -23,9 +23,14 @@ RUN pip install pytz
 RUN pip install flask-babel
 RUN pip install flup
 RUN pip install celery
+# from http://docs.celeryproject.org/en/latest/getting-started/brokers/redis.html
+RUN pip install redis
+RUN pip install requests
+RUN pip install bs4
+RUN pip install lxml
 
-ENV BROKER_URL  = amqp://rabbit-server
-ENV BACKEND_URL = redis://redis-server
+ENV BROKER_URL  amqp://rabbit-server
+ENV BACKEND_URL redis://redis-server
 
 ENV LINES=45
 ENV COLUMNS=120

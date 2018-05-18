@@ -2,15 +2,10 @@ from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
 
-
 app = Flask(__name__)
-
 
 @app.route('/')
 def index():
-    f = open ('oe_debug.txt', 'a+')
-    f.write('made it to index()\n')
-    f.close()
     return render_template('index.html')
 
 
@@ -36,8 +31,5 @@ def suggestions():
 
 
 if __name__ == '__main__':
-    f = open ('oe_debug.txt', 'a+')
-    f.write('made it to main\n')
-    f.close()
     app.run(debug=True,host='0.0.0.0')
 #    app.run(debug=True)

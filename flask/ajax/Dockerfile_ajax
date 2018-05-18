@@ -1,0 +1,21 @@
+# docker build --rm -t oe_flask_ajax -f Dockerfile_ajax .
+# docker run -dit -p 5000:5000 --link redis-server --link  rabbit-server --name oe_flask_ajax oe_flask_ajax
+# docker exec -it oe_flask_ajax bash
+FROM ubuntu:16.04
+MAINTAINER Omer Eisenberg "one4@nist.gov"
+RUN apt-get update
+RUN apt-get install -y python-pip python-dev build-essential
+RUN apt-get install -y vim man lynx
+RUN pip install --upgrade pip
+
+COPY . /home/root/app
+WORKDIR /home/root/app
+
+RUN pip install --upgrade pip
+RUN pip install flask
+
+ENV LINES=45
+ENV COLUMNS=120
+
+#ENTRYPOINT ["python"]
+#CMD ["web/web_app.py"]

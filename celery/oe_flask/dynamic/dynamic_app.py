@@ -8,6 +8,9 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/send_task')
+def send_task():
+    text = request.args.get('count')
 
 @app.route('/suggestions')
 def suggestions():

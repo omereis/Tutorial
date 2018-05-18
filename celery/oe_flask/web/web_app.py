@@ -57,6 +57,11 @@ try:
     debug_msg = "celery initiated"
 except Exception as excp:
     debug_msg = str(excp.args)
+
+@app.route('/send_task')
+def send_task():
+    text = request.args.get('count')
+
 @app.route('/1')
 def hello_world():
     return 'Web App:<br>Flask Dockerized'

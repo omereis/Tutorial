@@ -1,15 +1,15 @@
 from __future__ import absolute_import, unicode_literals
 from celery import Celery
 
-app = Celery('proj',
+appCelery = Celery('proj',
              broker='amqp://rabbit-server',
              backend='redis://redis-server',
-             include=['proj.tasks'])
+             include=['bumps.run_job'])
 
 # Optional configuration, see the application user guide.
-app.conf.update(
+appCelery.conf.update(
     result_expires=3600,
 )
 
 if __name__ == '__main__':
-    app.start()
+    appCelery.start()

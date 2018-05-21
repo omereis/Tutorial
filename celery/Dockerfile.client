@@ -21,7 +21,8 @@ RUN mkdir /home/root
 COPY Source\* /home/root/celery
 
 RUN mkdir /home/root/celery/proj
-COPY proj\* /home/root/celery/proj
+COPY . /home/root/celery/
+#COPY proj\* /home/root/celery/proj
 
 RUN chmod a+x /home/root/celery/celery_test/run_tasks.sh
 RUN chmod a+x /home/root/celery/proj/start_proj.sh

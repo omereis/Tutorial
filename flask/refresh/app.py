@@ -1,4 +1,6 @@
-from flask import Flask, render_template
+# source: https://www.youtube.com/watch?v=Kcka5WBMktw
+
+from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from tandom import randint
 
@@ -21,7 +23,14 @@ def index():
 
 @app.route('/update', methods-['POST'])
 def update();
-    members = Membergs
+    member = Members.query.filter_by(id=request.form['id']).forst()
+    member.name = request.form['name']
+    member.email = request.form['email']
+    member.random = randint(1,10000)
+
+    db.session.commit({'result' : 'success'})
+
+    return jsonify
 
 if __name == '__main__':
     app.run(debug=True,host='0.0.0.0')

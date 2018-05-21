@@ -7,6 +7,12 @@ MAINTAINER Omer Eisenebrg <one4@nist.gov>
 # celery -A tasks worker --loglevel=info
 RUN apt-get update && apt-get install -y python-pip man vim
 RUN pip install --upgrade pip
+RUN pip install flask
+RUN pip install redis
+RUN pip install flask_redis
+RUN pip install flask_jwt_extended
+RUN pip install flask_restful
+RUN pip install subprocess32
 #RUN apt-get install -y man vim
 RUN apt -y dist-upgrade
 RUN apt install -y python2.7 python-pip
@@ -14,6 +20,7 @@ RUN apt install -y python2.7 python-pip
 RUN apt-get install -y iputils-ping
 RUN pip install celery
 RUN pip install redis
+RUN pip install flask_wtf
 #RUN ln -s /run/shm /dev/shm
 
 RUN mkdir /home/root
@@ -21,7 +28,8 @@ RUN mkdir /home/root/celery
 COPY Source\* /home/root/celery
 
 RUN mkdir /home/root/celery/proj
-COPY proj\* /home/root/celery/proj
+COPY . /home/root/celery/
+#COPY proj\* /home/root/celery/proj
 
 RUN chmod a+x /home/root/celery/celery_test/run_tasks.sh
 RUN chmod a+x /home/root/celery/proj/start_proj.sh

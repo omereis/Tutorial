@@ -1,4 +1,4 @@
-from tasks import appCelery
+from tasks import app
 
 """
 Celery fails to find the file when you pass "celeryconfig" as a string.
@@ -12,4 +12,4 @@ Leaving tasks unconfigured is a pattern that allow it to be extended
 later. In this example we assume that the package with be used as the
 app for Celery and only apply the coniguration in the __init__.
 """
-appCelery.config_from_object(celeryconfig)
+app.config_from_object(celeryconfig)

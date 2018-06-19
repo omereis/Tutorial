@@ -11,6 +11,16 @@ def connect():
         print(e)
     return conn
 ############################################################################### 
+def connect_bumps():
+    """ Connect to MySQL database """
+    try:
+        conn = mysql.connector.connect(host='localhost', database='bumps_db', user='bumps', password='bumps_dba')
+        if conn.is_connected():
+            print('Connected to BUMPS database')
+    except Error as e:
+        print(e)
+    return conn
+############################################################################### 
 def query_with_fetchone():
     try:
         conn = connect()
@@ -49,14 +59,10 @@ def query_with_fetchall():
 def update_blob(author_id, filename):
     # read file
     data = read_file(filename)
- 
-    # prepare update query and data
-    query = "UPDATE authors SET photo = %s WHERE id  = %s"
- 
-    args = (data, author_id)
- 
     try:
-        conn = connect()
+        query = "UPDATE tblBumpsInParams SET in_file_blob = %s WHERE file_id  = %s"
+        args = (data, author_id)
+        conn = connect_bumps()
         cursor = conn.cursor()
         cursor.execute(query, args)
         conn.commit()
@@ -74,4 +80,5 @@ def read_file(filename):
 if __name__ == '__main__':
 #    query_with_fetchone()
 #    query_with_fetchall()
-    update_blob(48, "d:\Omer\Source\Tutorial\MySQL\garth_stein.jpg")
+    update_blob(1, "d:\Omer\Source\Tutorial\MySQL\garth_stein.jpg")
+    update_blob(2, "d:\Omer\Source\Tutorial\MySQL\hdf5_job_outline.png")

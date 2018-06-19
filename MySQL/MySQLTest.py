@@ -7,25 +7,27 @@ import MySQLdb
 ###############################################################################
 def read_file(filename):
     with open(filename, 'rb') as f:
-        photo = f.read()
-    return photo
+        data = f.read()
+    return data
 ###############################################################################
 def update_blob(id, filename):
     # prepare update query and data
-    query = "UPDATE tblBumpsInParams SET in_file_blob = %s WHERE id  = %d;"
+    query = "UPDATE tblBumpsInParams SET in_file_blob = '%s' WHERE id  = %d;"
  
 #    db_config = read_db_config()
  
     try:
+        data = read_file(filename)
+        sql = "INSERT INTO tblBumpsInParams (in_file_blob) VALUES ('%s');"
+        q = (sql, (data,))
         conn = ConnectBumpsDB()
         cursor = conn.cursor()
         # read file
-        data = read_file(filename)
- 
-        args = (data, id)
+#        args = (data, id)
 #        conn = MySQLConnection(**db_config)
-        cursor = conn.cursor()
-        cursor.execute(query, args)
+#        cursor = conn.cursor()
+        cursor.execute(q)
+#        cursor.execute(query, args)
         conn.commit()
     except Error as e:
         print(e)
@@ -73,7 +75,7 @@ def insert_file(filename):
 #        query = "update tblBumpsInParams set in_file_blob=%s where in_file_name=%s;" % (MySQLdb.escape_string(data), filename)
 #        cursor.execute(query)
         conn.commit()
-        update_blob(conn,id,filename)
+#        update_blob(id,filename)
     except Error as e:
         id = -1
         print(e)
@@ -86,7 +88,7 @@ if __name__ == '__main__':
     try:
         strDir = os.getcwd()
         strFileName = 'D:\\Omer\\Source\\Tutorial\\MySQL\\hdf5_job_outline.png'
-        conn, id = insert_file(strFileName)
+        id = insert_file(strFileName)
         if (id > 0):
             update_blob (id, strFileName)
     except Error as e:

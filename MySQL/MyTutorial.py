@@ -67,7 +67,7 @@ def update_blob(author_id, filename):
         query = "select * from authors where id = %s;" % author_id
         cursor.execute(query)
         res = cursor.fetchone()
-        print ("Author %d: %s" % (author_id,str(res)))
+        print ("Author %d: %s %s" % (author_id,res[1],res[2]))
         query = "UPDATE authors SET photo = %s WHERE id  = %s"
 #        query = "UPDATE tblBumpsInParams SET in_file_blob = %s WHERE file_id  = %s"
 #        strSql = query % (data, author_id)
@@ -176,7 +176,7 @@ def select_author(id):
 #        query = "select * from tbl_authors where id = %s;" % id
         cursor.execute(query)
         res = cursor.fetchall()
-        print (("author %s: " % id) + str(res))
+        print (("author %s: " % id) + str(res[0][1] + " " + res[0][2]))
     except Error as e:
         print(e)
     finally:
@@ -205,7 +205,7 @@ def insert_result (token, job_id, zip_file_name):
         conn = mysql.connector.connect(host='ncnr-r9nano', database='bumps_db', user='bumps', password='bumps_dba')
         cursor = conn.cursor()
         strWhere =  " where (%s='%s' and %s=%s);" % (FIELD_TOKEN, str(token), FIELD_JOB_ID, str(job_id))
-        strSql= "update %s set %s='%s' %s;" %  (TABLE_PARAMS, FIELD_TIME_ENDED, str_end_time, strWhere)
+        strSql= "update %s set %s='%s' %s" %  (TABLE_PARAMS, FIELD_TIME_ENDED, str_end_time, strWhere)
         cursor.execute(strSql)
         conn.commit()
         cursor.close()
@@ -214,6 +214,11 @@ def insert_result (token, job_id, zip_file_name):
 
         conn = mysql.connector.connect(host='ncnr-r9nano', database='bumps_db', user='bumps', password='bumps_dba')
         cursor = conn.cursor()
+        strSql = "update t_bumps_jobs set time_ended=null, result_zip=null %s;" % strWhere
+        print ("SQL:\n" + strSql)
+        cursor.execute(strSql)
+        print("results nulled")
+        conn.commit()
         query= "update t_bumps_jobs set result_zip=%s %s;"# %  (TABLE_PARAMS, FIELD_RES_CONTENT, zip_data, strWhere)
         args = (zip_data, strWhere)
 #        query = "UPDATE authors SET photo = %s WHERE id  = %s"

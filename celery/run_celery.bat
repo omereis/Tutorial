@@ -12,3 +12,6 @@ docker run -h celery_client --name celery_client --link redis-server --link rabb
 rem celery with redis as broker
 docker run --name -p 5671:5671 -p 5672:5672 -p 6379:6379 redis-server -d redis
 docker run -h oe_celery --name oe_celery --link redis-server -it -d oe_celery
+
+
+docker run -d --name -p 5671:5671 -p 5672:5672 rabbit-server rabbitmq

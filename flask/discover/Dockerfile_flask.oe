@@ -8,9 +8,10 @@ COPY . /home/flask
 WORKDIR /home/flask
 RUN pip install --upgrade pip
 RUN pip install flask
+RUN pip install Flask-Session
 # RUN pip install -r requirements.txt
 
 ENV HOME=/home/flask
 
-#ENTRYPOINT ["python"]
-#CMD ["app.py"]
+# ENTRYPOINT ["python"]
+# CMD ["app.py"]

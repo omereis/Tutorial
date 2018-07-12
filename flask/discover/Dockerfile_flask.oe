@@ -4,7 +4,8 @@ RUN apt-get update -y
 RUN apt-get install -y python-pip python-dev build-essential
 RUN apt-get upgrade -y
 RUN apt install -y vim
-COPY . /home/flask
+COPY ./ /home/flask
+COPY ./vimrc /etc/vim/vimrc
 WORKDIR /home/flask
 RUN pip install --upgrade pip
 RUN pip install flask

@@ -1,0 +1,16 @@
+FROM ubuntu:16.04
+
+RUN apt-get update -y
+RUN apt-get install -y python-pip python-dev build-essential
+RUN apt-get upgrade -y
+RUN apt install -y vim
+COPY . /home/flask
+WORKDIR /home/flask
+RUN pip install --upgrade pip
+RUN pip install flask
+# RUN pip install -r requirements.txt
+
+ENV HOME=/home/flask
+
+#ENTRYPOINT ["python"]
+#CMD ["app.py"]

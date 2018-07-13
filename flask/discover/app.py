@@ -1,10 +1,23 @@
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
+import mysql
+from mysql.connector import MySQLConnection, Error
+#from oe_debug import print_debug
 #------------------------------------------------------------------------------
 # create the application object
 app = Flask(__name__)
 app.secret_key = 'secret_key'
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+def connect_to_db():
+    conn = None
+    try:
+        conn = mysql.connector.connect(host='ncnr-r9nano.campus.nist.gov', database='lite', \
+                                        user='discover',password='flask')
+    except Error as e:
+        print(e)
+    return conn 
 #------------------------------------------------------------------------------
 def login_required(f):
     @wraps(f)
@@ -19,7 +32,12 @@ def login_required(f):
 @app.route('/')
 @login_required
 def home():
-    return render_template('index.html')  # render a template
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    cursor.execute("select * from posts;")
+    posts = [dict(title=row[0],description=row[1]) for row in cursor.fetchall()]
+    conn.close()
+    return render_template('index.html', posts=posts)  # render a template
 #------------------------------------------------------------------------------
 @app.route('/welcome')
 @login_required

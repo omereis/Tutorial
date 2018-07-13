@@ -16,7 +16,6 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 #------------------------------------------------------------------------------
-# use decorators to link the function to a url
 @app.route('/')
 @login_required
 def home():
@@ -35,6 +34,7 @@ def login():
             error = 'Invalid Credentials. Please try again.'
         else:
             session['logged_in'] = True
+            session['username']  = 'admin'
             flash ('Just logged in :-)')
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
@@ -46,13 +46,15 @@ def logout():
     flash ('Just logged out :-(')
     return redirect(url_for('welcome'))
 #------------------------------------------------------------------------------
-# start the server with the 'run()' method
+@app.before_first_request
+def on_start():
+    print("on_start")
+    session.clear()
+#------------------------------------------------------------------------------
 if __name__ == '__main__':
     try:
         session.pop('logged_in', None)
-        print("session cleared")
-        app.run(debug=True, host='0.0.0.0')
-        print("application started")
     except Exception as e:
         print("Exception: " + str(e))
+    app.run(debug=True, host='0.0.0.0')
 

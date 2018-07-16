@@ -6,6 +6,8 @@ RUN apt-get upgrade -y
 RUN apt install -y vim
 RUN apt-get install -y mysql-client
 RUN apt install -y tzdata
+RUN apt install -y wget
+RUN apt install -y snapd
 
 COPY ./ /home/flask
 COPY ./vimrc /etc/vim/vimrc
@@ -22,3 +24,4 @@ ENV HOME=/home/flask
 
 # ENTRYPOINT ["python"]
 # CMD ["app.py"]
+

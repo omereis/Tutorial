@@ -1,5 +1,5 @@
-docker container rm -f flask_dev
-docker build --rm -t flask_dev -f Dockerfile_flask.oe .
-docker run -d -it -p 5000:5000 -h flask_dev --name flask_dev flask_dev
-docker exec -i -t flask_dev bash
+docker container rm -f bumps_gui
+docker build --rm -t bumps_gui -f Dockerfile.bumps .
+docker run -d -it -p 5000:5000 -h bumps_gui --name bumps_gui bumps_gui
+docker exec -i -t bumps_gui bash
 

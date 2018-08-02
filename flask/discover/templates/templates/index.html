@@ -8,6 +8,15 @@
     <div class="container">
       <h1>Welcome to Flask</h1>
       <hr>
+	<form method="POST">
+	    <input name="text">
+    	<input type="submit">
+	</form>
+	<form method="POST" action="{{ url_for('read_my_text') }}">
+    	<input name="my_text">i
+	    <input type="submit">
+	</form>
+      <hr>
       <p>Click <a href="/logout">here</a> to log out</p>
       <hr>
       {% for message in get_flashed_messages() %}

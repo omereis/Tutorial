@@ -29,8 +29,30 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 #------------------------------------------------------------------------------
-@app.route('/')
+@app.route('/app/read')
 @login_required
+def read_text():
+    conn = connect_to_db()
+#    cursor = conn.cursor()
+#    cursor.execute("select * from posts;")
+#    posts = [dict(title=row[0],description=row[1]) for row in cursor.fetchall()]
+#    conn.close()
+    return render_template('welcome.html')  # render a template
+#------------------------------------------------------------------------------
+@app.route('/read/text', methods=['POST'])
+def read_my_text():
+    text = request.form['my_text']
+    processed_text = text.upper()
+    return render_template('welcome.html', text=text)  # render a template
+#------------------------------------------------------------------------------
+@app.route('/', methods=['POST'])
+def my_form_post():
+    text = request.form['text']
+    processed_text = text.upper()
+    return render_template('welcome.html', text=text)  # render a template
+#------------------------------------------------------------------------------
+@app.route('/')
+#@login_required
 def home():
     conn = connect_to_db()
     cursor = conn.cursor()

@@ -1,0 +1,22 @@
+{%  extends "base.html" %}
+{% block content %}
+<h1>Welcome to Flask</h1>
+<h3>Enjoy</h3>
+<hr>
+<form method="POST" action="{{ url_for('read_text') }}">
+    <input name="text">
+    <input type="submit">
+</form>
+<hr>
+<br>
+You are looged in as {{session['username']}}
+<hr>
+{% for post in posts %}
+  <strong>Title:</strong> {{ post.title }} <br>
+  <strong>Post:</strong> {{ post.description }} <br>
+<br>
+<hr>
+{% endfor %}
+<p>Click <a href="/logout">here</a> to log out</p>
+<hr>
+{% endblock %}

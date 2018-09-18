@@ -1,0 +1,25 @@
+FROM ubuntu:16.04
+# docker build --rm -t oe_Refl1D -f Refl1D_docker.txt .
+# docker run -h oe_Refl1D --name oe_Refl1D -it -d oe_Refl1D
+# docker run -h oe_Refl1D --name oe_Refl1D -it -d oe_Refl1D
+# the default image doesn't have python, so this is going to be a big install
+
+RUN apt-get update && apt-get install -y python-pip man vim
+RUN pip install --upgrade pip
+#RUN apt-get install -y man vim
+RUN apt -y dist-upgrade
+RUN apt install -y python2.7 python-pip
+RUN apt-get install -y iputils-ping
+RUN pip install celery
+RUN pip install redis
+#RUN ln -s /run/shm /dev/shm
+
+RUN mkdir /home/ref1d
+COPY ./ home/ref1d/
+
+
+ENV LINES=45
+ENV COLUMNS=100
+ 
+WORKDIR home/ref1d
+

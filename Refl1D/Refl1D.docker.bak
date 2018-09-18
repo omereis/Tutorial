@@ -1,0 +1,28 @@
+FROM ubuntu:16.04
+# docker build --rm -f Refl1D.docker -t oe_refl1d .
+# docker build --rm -f Refl1D_docker.txt -t oe_refl1d .
+# docker run -h oe_refl1d --name oe_refl1d -it -d oe_refl1d
+# the default image doesn't have python, so this is going to be a big install
+
+RUN apt-get update && apt-get install -y python-pip man vim
+RUN pip install --upgrade pip
+#RUN apt-get install -y man vim
+RUN apt -y dist-upgrade
+RUN apt install -y python2.7 python-pip
+RUN apt-get install -y iputils-ping
+RUN pip install matplotlib
+RUN pip install numpy
+RUN pip install scipy
+RUN pip install wxPython
+#RUN pip install setuptools
+#RUN pip install pyparsing
+
+RUN mkdir /home/ref1d
+COPY ./ home/ref1d/
+
+
+ENV LINES=45
+ENV COLUMNS=100
+ 
+WORKDIR home/ref1d
+

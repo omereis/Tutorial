@@ -1,0 +1,46 @@
+FROM ubuntu:16.04
+
+RUN apt-get update -y
+RUN apt-get upgrade -y
+
+RUN apt install -y python3
+RUN apt install -y python3-pip
+RUN pip3 install --upgrade setuptools pip
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+#RUN apt install -y mysql-client
+#RUN pip install mysql-connector-python
+RUN apt install -y sqlite3 libsqlite3-dev
+RUN apt install -y tree
+RUN apt install -y vim
+RUN apt install -y python3-dev
+RUN pip install Django
+RUN pip install virtualenvwrapper
+
+WORKDIR /home/django_user
+ENV HOME=/home/django_user/
+#RUN django-admin startproject mysite
+#ENV PYTHONPATH=/usr/local/lib/python3.5/dist-packages
+#WORKDIR /home/django_user/mysite
+
+#RUN django-admin startproject locallibrary
+#WORKDIR /home/django_user/locallibrary
+#RUN python manage.py startapp catalog
+
+COPY ./vimrc /etc/vim/vimrc
+COPY ./ /home/django_user/
+
+#COPY ./run_s.sh /home/django_user/mysite/run_s.sh
+
+ENV export WORKON_HOME=$HOME/.virtualenvs
+ENV export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+ENV export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=' -p /usr/bin/python3 '
+ENV export PROJECT_HOME=$HOME/Devel
+RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh"
+
+#RUN python manage.py startapp polls
+#RUN cp ../polls_urls.py polls/urls.py
+#RUN cp ../polls_views.py polls/views.py
+#RUN cp ../mysite_urls.py mysite/urls.py
+#RUN python manage.py migrate

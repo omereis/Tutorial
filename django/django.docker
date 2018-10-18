@@ -3,23 +3,31 @@ FROM ubuntu:16.04
 RUN apt-get update -y
 RUN apt-get upgrade -y
 
-RUN apt install -y python3
-RUN apt install -y python3-pip
-RUN pip3 install --upgrade setuptools pip
-RUN ln -s /usr/bin/pip3 /usr/bin/pip
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
-#RUN apt install -y mysql-client
-#RUN pip install mysql-connector-python
 RUN apt install -y sqlite3 libsqlite3-dev
 RUN apt install -y tree
 RUN apt install -y vim
-RUN apt install -y python3-dev
-RUN pip install Django
-RUN pip install virtualenvwrapper
+#RUN apt install -y python3-dev
 
-WORKDIR /home/django_user
 ENV HOME=/home/django_user/
+
+RUN apt install -y redis-server curl
+
+RUN apt install -y bzip2
+RUN curl -o /tmp/Miniconda3-latest-Linux-x86_64.sh -O https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+RUN chmod a+x /tmp/Miniconda3-latest-Linux-x86_64.sh
+RUN /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
+ENV PATH "$PATH:$HOME/miniconda/bin"
+RUN apt install -y iputils-ping
+RUN apt install -y gcc
+RUN apt install -y gcc-5 g++-5
+RUN apt install -y g++
+RUN conda install django
+
+#RUN apt install -y mysql-client
+#RUN pip install mysql-connector-python
+#RUN pip install numpy
+
+#WORKDIR /home/django_user
 
 COPY ./vimrc /etc/vim/vimrc
 COPY ./ /home/django_user/
@@ -28,10 +36,19 @@ ENV export WORKON_HOME=$HOME/.virtualenvs
 ENV export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 ENV export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=' -p /usr/bin/python3 '
 ENV export PROJECT_HOME=$HOME/Devel
-RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh"
+#RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh"
 
 ENV LINES=50
 ENV COLUMNS=140
 
 WORKDIR /home/django_user/test_proj/local_lib
-#RUN source prep.sh
+#RUN echo "from django.contrib.auth.models import User; User.objects.create_superuser('ruth', 'ruth_haimes@example.com', 'haimes')" | python manage.py shell
+ENV export REFL1D_PATH='/home/django_user/miniconda/envs/webrefl/bin/'
+ENV export REFL1D_JOB_DIR='/home/django_user/web_ref/proj_dir'
+RUN mkdir /home/django_user/web_ref/proj_dir
+#cp admin.py catalog/
+#WORKDIR /home/django_user/web_ref/test/environment
+#RUN conda env create -f webrefl_env.yml
+#RUN source activate webrefl_env
+
+

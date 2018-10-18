@@ -1,0 +1,58 @@
+
+<!-- saved from url=(0053)http://layout.jquery-dev.com/demos/nested_simple.html -->
+<html style="overflow: hidden; height: 100%; border: none; padding: 0px; margin: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Layout Example</title>
+
+	<link type="text/css" rel="stylesheet" href="./Layout Example_files/layout-default-latest.css">
+
+	<style type="text/css">
+	.container	{ padding: 0; overflow: hidden; }
+	.blue		{ background: #EEF; }
+	.green		{ background: #EFE; }
+	</style>
+
+	<script type="text/javascript" src="./Layout Example_files/jquery-latest.js.download"></script>
+	<script type="text/javascript" src="./Layout Example_files/jquery-ui-latest.js.download"></script>
+	<script type="text/javascript" src="./Layout Example_files/jquery.layout-latest.js.download"></script>
+	<script type="text/javascript">
+
+	$(document).ready(function () {
+		$('body').layout({
+			west__size:			.50
+		,	west__childOptions:	{
+				center__childOptions:	{
+					size:		.33
+				}
+			}
+		});
+	});
+
+	</script>
+
+</head>
+<body class="ui-layout-container" style="zoom: 1; overflow: hidden; width: auto; height: auto; margin: 0px; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; cursor: auto;">
+
+<div class="ui-layout-north ui-layout-pane ui-layout-pane-north" style="position: absolute; margin: 0px; top: 0px; bottom: auto; left: 0px; right: 0px; width: auto; z-index: 0; height: 18px; display: block; visibility: visible;">Outer North</div>
+
+<div class="ui-layout-center ui-layout-pane ui-layout-pane-center ui-layout-pane-hover ui-layout-pane-center-hover ui-layout-pane-open-hover ui-layout-pane-center-open-hover" style="position: absolute; margin: 0px; left: 963px; right: 206px; top: 46px; bottom: 46px; height: 900px; width: 729px; z-index: 0; display: block; visibility: visible;">Outer Center</div>
+
+<div class="ui-layout-south ui-layout-pane ui-layout-pane-south" style="position: absolute; margin: 0px; top: auto; bottom: 0px; left: 0px; right: 0px; width: auto; z-index: 0; height: 18px; display: block; visibility: visible;">Outer South</div>
+
+<div class="ui-layout-east ui-layout-pane ui-layout-pane-east" style="position: absolute; margin: 0px; left: auto; right: 0px; top: 46px; bottom: 46px; height: 900px; z-index: 0; width: 178px; display: block; visibility: visible;">Outer East</div>
+
+<div class="ui-layout-west blue ui-layout-pane ui-layout-pane-west ui-layout-container" style="position: absolute; margin: 0px; left: 0px; right: auto; top: 46px; bottom: 46px; height: 900px; z-index: 0; width: 935px; display: block; visibility: visible; overflow: hidden;"><b><u>Outer West</u></b>
+
+	<div class="ui-layout-north ui-layout-pane ui-layout-pane-north" style="position: absolute; margin: 0px; top: 10px; bottom: auto; left: 10px; right: 10px; width: auto; z-index: 0; height: 18px; display: block; visibility: visible;">Middle North</div>
+	<div class="ui-layout-south ui-layout-pane ui-layout-pane-south" style="position: absolute; margin: 0px; top: auto; bottom: 10px; left: 10px; right: 10px; width: auto; z-index: 0; height: 55px; display: block; visibility: visible;">Middle South</div>
+	<div class="ui-layout-center green ui-layout-pane ui-layout-pane-center ui-layout-container" style="position: absolute; margin: 0px; left: 10px; right: 10px; top: 56px; bottom: 93px; height: 749px; width: 913px; z-index: 0; display: block; visibility: visible; overflow: hidden;"><b><u>Middle Center</u></b>
+
+		<div class="ui-layout-west ui-layout-pane ui-layout-pane-west" style="position: absolute; margin: 0px; left: 10px; right: auto; top: 10px; bottom: 10px; height: 727px; z-index: 0; width: 178px; display: block; visibility: visible;">Inner West</div>
+		<div class="ui-layout-east ui-layout-pane ui-layout-pane-east" style="position: absolute; margin: 0px; left: auto; right: 10px; top: 10px; bottom: 10px; height: 727px; z-index: 0; width: 239px; display: block; visibility: visible;">Inner East</div>
+		<div class="ui-layout-center ui-layout-pane ui-layout-pane-center" style="position: absolute; margin: 0px; left: 216px; right: 277px; top: 10px; bottom: 10px; height: 727px; width: 418px; z-index: 0; display: block; visibility: visible;">Inner Center</div>
+
+	<div id="" class="ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: w-resize; left: 210px; height: 749px; width: 6px; top: 10px;"><div id="" class="ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 6px; top: 349px; left: 0px;"></div></div><div class="ui-layout-resizer ui-layout-resizer-east ui-layout-resizer-open ui-layout-resizer-east-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: e-resize; right: 271px; height: 749px; width: 6px; top: 10px;"><div id="" class="ui-layout-toggler ui-layout-toggler-east ui-layout-toggler-open ui-layout-toggler-east-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 6px; top: 349px; left: 0px;"></div></div></div>
+
+<div id="" class="ui-layout-resizer ui-layout-resizer-north ui-layout-resizer-open ui-layout-resizer-north-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: n-resize; top: 50px; width: 935px; height: 6px; left: 10px;"><div id="" class="ui-layout-toggler ui-layout-toggler-north ui-layout-toggler-open ui-layout-toggler-north-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 6px; left: 442px; top: 0px;"></div></div><div class="ui-layout-resizer ui-layout-resizer-south ui-layout-resizer-open ui-layout-resizer-south-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: s-resize; bottom: 87px; width: 935px; height: 6px; left: 10px;"><div id="" class="ui-layout-toggler ui-layout-toggler-south ui-layout-toggler-open ui-layout-toggler-south-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 6px; left: 442px; top: 0px;"></div></div></div>
+
+
+<div id="" class="ui-layout-resizer ui-layout-resizer-north ui-layout-resizer-open ui-layout-resizer-north-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: n-resize; top: 40px; width: 1920px; height: 6px; left: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-north ui-layout-toggler-open ui-layout-toggler-north-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 6px; left: 935px; top: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-south ui-layout-resizer-open ui-layout-resizer-south-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: s-resize; bottom: 40px; width: 1920px; height: 6px; left: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-south ui-layout-toggler-open ui-layout-toggler-south-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 6px; left: 935px; top: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: w-resize; left: 957px; height: 922px; width: 6px; top: 46px;"><div id="" class="ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 6px; top: 436px; left: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-east ui-layout-resizer-open ui-layout-resizer-east-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: e-resize; right: 200px; height: 922px; width: 6px; top: 46px;"><div id="" class="ui-layout-toggler ui-layout-toggler-east ui-layout-toggler-open ui-layout-toggler-east-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 6px; top: 436px; left: 0px;"></div></div></body></html>

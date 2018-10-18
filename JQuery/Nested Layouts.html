@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!-- saved from url=(0046)http://layout.jquery-dev.com/demos/nested.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" style="overflow: hidden; height: 100%; border: none; padding: 0px; margin: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+
+	<title>Nested Layouts</title>
+
+	<link type="text/css" rel="stylesheet" href="./Nested Layouts_files/layout-default-latest.css">
+
+	<style type="text/css">
+	/*
+	 *	NOTE: All CSS is purely cosmetic - it does not affect functionality
+	 */
+
+	/* customize borders to avoid double-borders around inner-layouts */
+	.ui-layout-pane {
+		border:			0; /* override layout-default-latest.css */
+		border-top:		1px solid #BBB;
+		border-bottom:	1px solid #BBB;
+	}
+	.ui-layout-pane-north ,
+	.ui-layout-pane-south {
+		border:			1px solid #BBB;
+		overflow:		hidden;
+	}
+	.ui-layout-pane-west ,
+	.ui-layout-pane-east {
+	}
+	.ui-layout-pane-center	{
+		border-left:	0;
+		border-right:	0;
+		}
+		.inner-center {
+			border:		1px solid #BBB;
+		}
+
+	/* add shading to outer sidebar-panes */
+	.outer-west ,
+	.outer-east {
+		background-color: #EEE;
+	}
+	.middle-west ,
+	.middle-east {
+		background-color: #F8F8F8;
+	}
+
+	/* remove padding & scrolling from panes that are 'containers' for nested layouts */
+	.outer-center ,
+	.middle-center {
+		border:			0; /* cosmetic */
+		padding:		0;
+		overflow:		hidden;
+	}
+
+	/*
+	 *	customize borders on panes/resizers to make pretty
+	 */
+	.ui-layout-pane-west		{ border-right:		0; }
+	.ui-layout-resizer-west		{ border-left:		1px solid #BBB; }
+	.ui-layout-pane-east		{ border-left:		0; }
+	.ui-layout-resizer-east		{ border-right:		1px solid #BBB; }
+	.ui-layout-pane-north		{ border-bottom:	0; }
+	.ui-layout-resizer-north	{ border-top:		1px solid #BBB; }
+	.ui-layout-pane-south		{ border-top:		0; }
+	.ui-layout-resizer-south	{ border-bottom: 	1px solid #BBB; }
+	/*
+	 *	add borders to resizers when pane is 'closed'
+	 *
+	 *.ui-layout-resizer-closed	{ border:			1px solid #BBB; }
+	 */
+	/*
+	 *	show both borders when the resizer is 'dragging'
+	 */
+	.ui-layout-resizer-west-dragging ,
+	.ui-layout-resizer-east-dragging {
+		border-left:		1px solid #BBB;
+		border-right:		1px solid #BBB;
+	}
+	.ui-layout-resizer-north-dragging ,
+	.ui-layout-resizer-south-dragging {
+		border-top:		1px solid #BBB;
+		border-bottom:	1px solid #BBB;
+	}
+
+	</style>
+
+	<script type="text/javascript" src="./Nested Layouts_files/jquery-latest.js.download"></script>
+	<script type="text/javascript" src="./Nested Layouts_files/jquery-ui-latest.js.download"></script>
+	<script type="text/javascript" src="./Nested Layouts_files/jquery.layout-latest.js.download"></script>
+
+	<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		// OUTER-LAYOUT
+		$('body').layout({
+			center__paneSelector:	".outer-center"
+		,	west__paneSelector:		".outer-west"
+		,	east__paneSelector:		".outer-east"
+		,	west__size:				125
+		,	east__size:				125
+		,	spacing_open:			8  // ALL panes
+		,	spacing_closed:			12 // ALL panes
+		//,	north__spacing_open:	0
+		//,	south__spacing_open:	0
+		,	north__maxSize:			200
+		,	south__maxSize:			200
+
+			// MIDDLE-LAYOUT (child of outer-center-pane)
+		,	center__childOptions: {
+				center__paneSelector:	".middle-center"
+			,	west__paneSelector:		".middle-west"
+			,	east__paneSelector:		".middle-east"
+			,	west__size:				100
+			,	east__size:				100
+			,	spacing_open:			8  // ALL panes
+			,	spacing_closed:			12 // ALL panes
+
+				// INNER-LAYOUT (child of middle-center-pane)
+			,	center__childOptions: {
+					center__paneSelector:	".inner-center"
+				,	west__paneSelector:		".inner-west"
+				,	east__paneSelector:		".inner-east"
+				,	west__size:				75
+				,	east__size:				75
+				,	spacing_open:			8  // ALL panes
+				,	spacing_closed:			8  // ALL panes
+				,	west__spacing_closed:	12
+				,	east__spacing_closed:	12
+				}
+			}
+		});
+
+	});
+
+	</script>
+
+</head>
+<body class="ui-layout-container" style="zoom: 1; overflow: hidden; width: auto; height: auto; margin: 0px; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px;">
+
+<div class="outer-center ui-layout-pane ui-layout-pane-center ui-layout-container ui-layout-pane-hover ui-layout-pane-center-hover ui-layout-pane-open-hover ui-layout-pane-center-open-hover" style="position: absolute; margin: 0px; left: 133px; right: 133px; top: 47px; bottom: 47px; height: 920px; width: 1654px; z-index: 0; display: block; visibility: visible; overflow: hidden;">
+
+	<div class="middle-center ui-layout-pane ui-layout-pane-center ui-layout-container ui-layout-pane-hover ui-layout-pane-center-hover ui-layout-pane-open-hover ui-layout-pane-center-open-hover" style="position: absolute; margin: 0px; left: 108px; right: 108px; top: 0px; bottom: 0px; height: 920px; width: 1438px; z-index: 0; display: block; visibility: visible; overflow: hidden;">
+
+		<div class="inner-center ui-layout-pane ui-layout-pane-center ui-layout-pane-hover ui-layout-pane-center-hover ui-layout-pane-open-hover ui-layout-pane-center-open-hover" style="position: absolute; margin: 0px; left: 83px; right: 83px; top: 47px; bottom: 47px; height: 804px; width: 1250px; z-index: 0; display: block; visibility: visible;">Inner Center</div>
+		<div class="inner-west ui-layout-pane ui-layout-pane-west" style="position: absolute; margin: 0px; left: 0px; right: auto; top: 47px; bottom: 47px; height: 804px; z-index: 0; width: 55px; display: block; visibility: visible;">Inner West</div>
+		<div class="inner-east ui-layout-pane ui-layout-pane-east" style="position: absolute; margin: 0px; left: auto; right: 0px; top: 47px; bottom: 47px; height: 804px; z-index: 0; width: 55px; display: block; visibility: visible;">Inner East</div>
+		<div class="ui-layout-north ui-layout-pane ui-layout-pane-north" style="position: absolute; margin: 0px; top: 0px; bottom: auto; left: 0px; right: 0px; width: auto; z-index: 0; height: 18px; display: block; visibility: visible;">Inner North</div>
+		<div class="ui-layout-south ui-layout-pane ui-layout-pane-south" style="position: absolute; margin: 0px; top: auto; bottom: 0px; left: 0px; right: 0px; width: auto; z-index: 0; height: 18px; display: block; visibility: visible;">Inner South</div>
+
+	<div id="" class="ui-layout-resizer ui-layout-resizer-north ui-layout-resizer-open ui-layout-resizer-north-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: n-resize; top: 39px; width: 1438px; height: 7px; left: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-north ui-layout-toggler-open ui-layout-toggler-north-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 8px; left: 694px; top: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-south ui-layout-resizer-open ui-layout-resizer-south-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: s-resize; bottom: 39px; width: 1438px; height: 7px; left: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-south ui-layout-toggler-open ui-layout-toggler-south-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 8px; left: 694px; top: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: w-resize; left: 75px; height: 826px; width: 7px; top: 47px;"><div id="" class="ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 8px; top: 388px; left: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-east ui-layout-resizer-open ui-layout-resizer-east-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: e-resize; right: 75px; height: 826px; width: 7px; top: 47px;"><div id="" class="ui-layout-toggler ui-layout-toggler-east ui-layout-toggler-open ui-layout-toggler-east-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 8px; top: 388px; left: 0px;"></div></div></div>
+	<div class="middle-west ui-layout-pane ui-layout-pane-west" style="position: absolute; margin: 0px; left: 0px; right: auto; top: 0px; bottom: 0px; height: 898px; z-index: 0; width: 80px; display: block; visibility: visible;">Middle West</div>
+	<div class="middle-east ui-layout-pane ui-layout-pane-east" style="position: absolute; margin: 0px; left: auto; right: 0px; top: 0px; bottom: 0px; height: 898px; z-index: 0; width: 80px; display: block; visibility: visible;">Middle East</div>
+
+<div id="" class="ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: w-resize; left: 100px; height: 920px; width: 7px; top: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 8px; top: 435px; left: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-east ui-layout-resizer-open ui-layout-resizer-east-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: e-resize; right: 100px; height: 920px; width: 7px; top: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-east ui-layout-toggler-open ui-layout-toggler-east-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 8px; top: 435px; left: 0px;"></div></div></div>
+
+<div class="outer-west ui-layout-pane ui-layout-pane-west" style="position: absolute; margin: 0px; left: 0px; right: auto; top: 47px; bottom: 47px; height: 898px; z-index: 0; width: 105px; display: block; visibility: visible;">Outer West</div>
+<div class="outer-east ui-layout-pane ui-layout-pane-east" style="position: absolute; margin: 0px; left: auto; right: 0px; top: 47px; bottom: 47px; height: 898px; z-index: 0; width: 105px; display: block; visibility: visible;">Outer East</div>
+
+<div class="ui-layout-north ui-layout-pane ui-layout-pane-north" style="position: absolute; margin: 0px; top: 0px; bottom: auto; left: 0px; right: 0px; width: auto; z-index: 0; height: 18px; display: block; visibility: visible;">Outer North</div>
+<div class="ui-layout-south ui-layout-pane ui-layout-pane-south" style="position: absolute; margin: 0px; top: auto; bottom: 0px; left: 0px; right: 0px; width: auto; z-index: 0; height: 18px; display: block; visibility: visible;">Outer South</div>
+
+
+<div id="" class="ui-layout-resizer ui-layout-resizer-north ui-layout-resizer-open ui-layout-resizer-north-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: n-resize; top: 39px; width: 1920px; height: 7px; left: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-north ui-layout-toggler-open ui-layout-toggler-north-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 8px; left: 935px; top: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-south ui-layout-resizer-open ui-layout-resizer-south-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: s-resize; bottom: 39px; width: 1920px; height: 7px; left: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-south ui-layout-toggler-open ui-layout-toggler-south-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 8px; left: 935px; top: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: w-resize; left: 125px; height: 920px; width: 7px; top: 47px;"><div id="" class="ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 8px; top: 435px; left: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-east ui-layout-resizer-open ui-layout-resizer-east-open" title="Resize" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: e-resize; right: 125px; height: 920px; width: 7px; top: 47px;"><div id="" class="ui-layout-toggler ui-layout-toggler-east ui-layout-toggler-open ui-layout-toggler-east-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 8px; top: 435px; left: 0px;"></div></div></body></html>

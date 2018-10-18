@@ -1,0 +1,76 @@
+FROM ubuntu:16.04
+
+RUN apt-get update -y
+RUN apt-get upgrade -y
+
+RUN apt install -y sqlite3 libsqlite3-dev
+RUN apt install -y tree
+RUN apt install -y vim
+#RUN apt install -y python3-dev
+
+ENV HOME=/home/django_user
+
+RUN apt install -y redis-server curl
+
+RUN apt install -y bzip2
+RUN curl -o /tmp/Miniconda3-latest-Linux-x86_64.sh -O https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+RUN chmod a+x /tmp/Miniconda3-latest-Linux-x86_64.sh
+RUN /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
+RUN apt install -y gcc
+RUN apt install -y gcc-5 g++-5
+RUN apt install -y g++
+RUN apt install -y make
+#RUN conda install django
+
+#RUN apt install -y mysql-client
+#RUN pip install mysql-connector-python
+#RUN pip install numpy
+#RUN pip install celery
+
+#WORKDIR /home/django_user
+
+COPY ./vimrc /etc/vim/vimrc
+COPY ./ /home/django_user/
+
+ENV export WORKON_HOME=$HOME/.virtualenvs
+ENV export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+ENV export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=' -p /usr/bin/python3 '
+ENV export PROJECT_HOME=$HOME/Devel
+#RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh"
+
+ENV export REFL1D_PATH='/home/django_user/miniconda/envs/webrefl/bin/'
+ENV export REFL1D_JOB_DIR='/home/django_user/web_ref/job_dir'
+
+ENV LINES=50
+ENV COLUMNS=140
+
+WORKDIR /home/django_user/test_proj/local_lib
+#RUN /home/django_user/test_proj/local_lib/prep.sh
+RUN mkdir /var/www
+RUN mkdir /var/www/web_reflectivity
+ENV export C_FORCE_ROOT="true"
+
+#cp admin.py catalog/
+WORKDIR /home/django_user/web_ref/test/environment
+#RUN pip install --upgrade pip
+#RUN pip install pandas
+###RUN /home/django_user/miniconda/bin/conda env create -f webrefl_env.yml
+#RUN echo "conda activate" >> ~/.bashrc
+ENV PATH "$HOME/miniconda/bin:$PATH"
+RUN echo "PATH=":$PATH >> ~/msg.txt
+#ENV export PATH="/home/django_user/miniconda/bin:$PATH"
+#RUN PATH="/home/django_user/miniconda/bin:$PATH" ; conda env create -f oe_env.yml ; . activate oe
+#RUN echo $PATH >> ~/.bashrc
+#RUN echo PATH="/home/django_user/miniconda/bin:$PATH" >> ~/.bashrc
+#RUN conda env create -f oe_env.yml
+#RUN . activate oe
+# RUN . activate webrefl
+#RUN cd /home/django_user/web_ref/ ; make install
+RUN ln -s /home/django_user/miniconda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
+RUN ["/bin/bash", "-c", "conda  env create -f webrefl_env.yml"]
+RUN ["/bin/bash", "-c", "source activate webrefl ; cd /home/django_user/web_ref ; make install"]
+#RUN ["/bin/bash", "-c", "source activate webrefl ; cd /var/www/web_reflectivity/app ; echo "from django.contrib.auth.models import User; User.objects.create_superuser('ruth', 'ruth_haimes@example.com', 'haimes')" | python manage.py shell"]
+#RUN cd /var/www/web_reflectivity/app ; echo "from django.contrib.auth.models import User; User.objects.create_superuser('ruth', 'ruth_haimes@example.com', 'haimes')" | python manage.py shell
+
+RUN ["/bin/bash", "-c", "cd /var/www/web_reflectivity/app ; source activate webrefl ; echo \"from django.contrib.auth.models import User; User.objects.create_superuser('ruth', 'ruth_haimes@example.com', 'haimes')\" | python manage.py shell"]
+#RUN redis-server

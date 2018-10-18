@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!-- saved from url=(0055)http://layout.jquery-dev.com/demos/nested_sidebars.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" style="overflow: hidden; height: 100%; border: none; padding: 0px; margin: 0px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	 
+
+	<title>Nested Sidebars Layout</title> 
+
+	<link type="text/css" rel="stylesheet" href="./Nested Sidebars Layout_files/layout-default-latest.css">
+
+	<style type="text/css">
+	/* give outer-panes their own colors */
+	body > .ui-layout-center	{ background: #CEE; }
+	body > .ui-layout-west	 	{ background: #CCF; }
+	body > .ui-layout-east		{ background: #CFC; }
+	
+	</style>
+
+	<script type="text/javascript" src="./Nested Sidebars Layout_files/jquery-latest.js.download"></script>
+	<script type="text/javascript" src="./Nested Sidebars Layout_files/jquery-ui-latest.js.download"></script>
+	<script type="text/javascript" src="./Nested Sidebars Layout_files/jquery.layout-latest.js.download"></script>
+	<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		$('body').layout({
+			minSize:					100	// ALL panes
+		,	west__size:					200
+		,	east__size:					200
+		,	stateManagement__enabled:	true
+
+		//	West Sidebar options
+		,	west__childOptions:	{
+				minSize:				50	// ALL panes
+			,	south__size:			300
+			}
+
+		//	East Sidebar options
+		,	east__childOptions:	{
+				minSize:				50	// ALL panes
+			,	south__size:			100
+			}
+
+		});
+
+	});
+
+	</script>
+
+</head>
+<body class="ui-layout-container" style="zoom: 1; overflow: hidden; width: auto; height: auto; margin: 0px; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; cursor: auto;">
+
+<div class="ui-layout-center ui-layout-pane ui-layout-pane-center ui-layout-pane-hover ui-layout-pane-center-hover ui-layout-pane-open-hover ui-layout-pane-center-open-hover" style="position: absolute; margin: 0px; left: 206px; right: 534px; top: 0px; bottom: 0px; height: 992px; width: 1158px; z-index: 0; display: block; visibility: visible;">
+	Outer - Center pane
+	<p>&nbsp;</p>
+	<p><a href="http://layout.jquery-dev.com/demos.html">Go&nbsp;to Demos&nbsp;page</a></p>
+</div>
+
+<div class="ui-layout-west ui-layout-pane ui-layout-pane-west ui-layout-container" style="position: absolute; margin: 0px; left: 0px; right: auto; top: 0px; bottom: 0px; height: 992px; z-index: 0; width: 178px; display: block; visibility: visible; overflow: hidden;">
+	<div class="ui-layout-center ui-layout-pane ui-layout-pane-center" style="position: absolute; margin: 0px; left: 10px; right: 10px; top: 10px; bottom: 316px; height: 664px; width: 156px; z-index: 0; display: block; visibility: visible;"> West - Center </div>
+	<div class="ui-layout-south ui-layout-pane ui-layout-pane-south" style="position: absolute; margin: 0px; top: auto; bottom: 10px; left: 10px; right: 10px; width: auto; z-index: 0; height: 278px; display: block; visibility: visible;">  West - South </div>
+	<div id="" class="ui-layout-resizer ui-layout-resizer-south ui-layout-resizer-open ui-layout-resizer-south-open" title="rESIZE_Me" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: s-resize; bottom: 310px; width: 178px; height: 6px; left: 10px;">
+		<div id="" class="ui-layout-toggler ui-layout-toggler-south ui-layout-toggler-open ui-layout-toggler-south-open" title="CloseGame" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 6px; left: 64px; top: 0px;">
+		</div>
+	</div>
+	<div id="" class="ui-layout-resizer ui-layout-resizer-south ui-layout-resizer-open ui-layout-resizer-south-open" title="rESIZE_Me" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: s-resize; bottom: 310px; width: 178px; height: 6px; left: 10px;">
+		<div id="" class="ui-layout-toggler ui-layout-toggler-south ui-layout-toggler-open ui-layout-toggler-south-open" title="CloseGame" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 6px; left: 64px; top: 0px;">
+		</div>
+	</div>
+</div>
+
+<div class="ui-layout-east ui-layout-pane ui-layout-pane-east ui-layout-container"
+	style="position: absolute; margin: 0px; left: auto; right: 0px; top: 0px; bottom: 0px; height: 992px; z-index: 0; width: 506px;
+		display: block; visibility: visible; overflow: hidden;">
+	<div class="ui-layout-center ui-layout-pane ui-layout-pane-center"
+		style="position: absolute; margin: 0px; left: 10px; right: 10px; top: 10px; bottom: 226px; height: 754px; width: 484px;
+			z-index: 0; display: block; visibility: visible;"> East - Center </div>
+	<div class="ui-layout-south ui-layout-pane ui-layout-pane-south"
+		style="color: white; background: rgb(180, 59, 204); position: absolute; margin: 0px; top: auto; bottom: 10px; left: 10px; right: 10px; width: auto;
+			z-index: 0; height: 188px; display: block; visibility: visible;">  East - South 
+	</div>
+	<div class="ui-layout-resizer ui-layout-resizer-south ui-layout-resizer-open ui-layout-resizer-south-open" title="rESIZE" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: s-resize; bottom: 220px; width: 506px; height: 6px; left: 10px;">
+		<div id="" class="ui-layout-toggler ui-layout-toggler-south ui-layout-toggler-open ui-layout-toggler-south-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; width: 48px; height: 6px; left: 228px; top: 0px;">
+		</div>
+	</div>
+</div>
+
+
+<div id="" class="ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="rESIZE" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: w-resize; left: 200px; height: 1014px; width: 6px; top: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 6px; top: 482px; left: 0px;"></div></div><div id="" class="ui-layout-resizer ui-layout-resizer-east ui-layout-resizer-open ui-layout-resizer-east-open" title="rESIZE" aria-disabled="false" style="position: absolute; padding: 0px; margin: 0px; font-size: 1px; text-align: left; overflow: hidden; z-index: 2; cursor: e-resize; right: 528px; height: 1014px; width: 6px; top: 0px;"><div id="" class="ui-layout-toggler ui-layout-toggler-east ui-layout-toggler-open ui-layout-toggler-east-open" title="Close" style="position: absolute; display: block; padding: 0px; margin: 0px; overflow: hidden; text-align: center; font-size: 1px; cursor: pointer; z-index: 1; visibility: visible; height: 48px; width: 6px; top: 482px; left: 0px;"></div></div></body></html>

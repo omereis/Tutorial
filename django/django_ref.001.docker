@@ -1,0 +1,17 @@
+FROM ubuntu:18.04
+
+RUN apt-get update -y
+RUN apt-get upgrade -y
+
+RUN apt install -y sqlite3 libsqlite3-dev
+RUN apt install -y tree
+RUN apt install -y vim
+#RUN apt install -y python3-dev
+
+WORKDIR /home/django_user
+
+ENV HOME=/home/django_user
+RUN mkdir $HOME/miniconda
+RUN mkdir $HOME/miniconda/bin
+ENV PATH "$HOME/miniconda/bin:$PATH"
+

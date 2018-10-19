@@ -1,3 +1,6 @@
+#
+# c a t a l o g / m o d e l s . p y
+#
 from django.db import models
 
 # Create your models here.

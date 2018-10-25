@@ -1,0 +1,35 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Title: {{ book.title }}</h1>
+
+  <p><strong>Author:</strong> <a href="">{{ book.author }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>Summary:</strong> {{ book.summary }}</p>
+  <p><strong>ISBN:</strong> {{ book.isbn }}</p> 
+  <p><strong>Language:</strong> {{ book.language }}</p>  
+  <p><strong>Genre:</strong> {% for genre in book.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>  
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Copies</h4>
+    <table border="1" width="80%">
+      <tr>
+        <th><b>status</b></th>
+        <th><b>Imprint</b></th>
+        <th><b>Due to be returned</b></th>
+      </tr>
+      <div class="pagination" style="background-color:rgb(174, 174, 230);">
+    {% for copy in book.bookinstance_set.all %}
+      <tr>
+        <td><p class="{% if copy.status == 'a' %}text-success{% elif copy.status == 'm' %}text-danger{% else %}text-warning{% endif %}">{{ copy.get_status_display }}</p></td>
+        <td> {{copy.imprint}} </td>
+        <td> {% if copy.status != 'a' %}
+               <p>{{copy.due_back}}</p>
+             {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  </div>
+{% endblock %}
+
+

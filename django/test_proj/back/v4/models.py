@@ -1,6 +1,3 @@
-#
-# c a t a l o g / m o d e l s . p y
-#
 from django.db import models
 
 # Create your models here.
@@ -24,7 +21,7 @@ class Book(models.Model):
     author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
     
     summary = models.TextField(max_length=1000, help_text='Enter a brief description of the book')
-    isbn = models.CharField('ISBN', max_length=13, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>')
+    isbn = models.CharField('ISBN', max_length=13, blank=True, help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>')
     
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
     # Genre class has already been defined so we can specify the object above.
@@ -83,10 +80,6 @@ class Author(models.Model):
 
     class Meta:
         ordering = ['last_name', 'first_name']
-    
-    def full_name(self):
-        """Returns the url to access a particular author instance."""
-        return '{} {}'.format(self.first_name, self.last_name) 
     
     def get_absolute_url(self):
         """Returns the url to access a particular author instance."""

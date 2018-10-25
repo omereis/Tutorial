@@ -1,0 +1,46 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h2> {{ author.first_name }} {{ author.last_name }}</h2>
+  {{author.date_of_birth}} - {% if author.date_of_death %}{{author.date_of_death}}{% endif %}
+<br><br>
+  {% for book in author.book_set.all %}
+    <hr>
+    title: {{ book.title }}<br>
+    ISBN: {{ book.isbn }}<br>
+    Genre: {{ book.display_genre }}
+  {% endfor %}
+    <hr>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+th {
+    text-align: center;
+}
+</style>
+<table style="width:100%">
+  <tr>
+    <th>Firstname</th>
+    <th>Lastname</th>
+    <th>Age</th>
+  </tr>
+  <tr>
+    <td>Jill</td>
+    <td>Smith</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td>Eve</td>
+    <td>Jackson</td>
+    <td>94</td>
+  </tr>
+  <tr>
+    <td>John</td>
+    <td>Doe</td>
+    <td>80</td>
+  </tr>
+</table>
+
+{% endblock %}
+

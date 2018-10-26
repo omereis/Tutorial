@@ -50,6 +50,10 @@ RUN mkdir /var/www
 RUN mkdir /var/www/web_reflectivity
 ENV export C_FORCE_ROOT="true"
 
+RUN echo "America/New York" >> /etc/timezone
+RUN apt install -y tzdata
+RUN dpkg-reconfigure -f noninteractive tzdata
+
 #cp admin.py catalog/
 WORKDIR /home/django_user/web_ref/test/environment
 #RUN pip install --upgrade pip
@@ -74,3 +78,4 @@ RUN ["/bin/bash", "-c", "source activate webrefl ; cd /home/django_user/web_ref 
 
 RUN ["/bin/bash", "-c", "cd /var/www/web_reflectivity/app ; source activate webrefl ; echo \"from django.contrib.auth.models import User; User.objects.create_superuser('ruth', 'ruth_haimes@example.com', 'haimes')\" | python manage.py shell"]
 #RUN redis-server
+WORKDIR /var/www/web_reflectivity/app

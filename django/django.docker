@@ -50,5 +50,6 @@ RUN mkdir /home/django_user/web_ref/proj_dir
 #WORKDIR /home/django_user/web_ref/test/environment
 #RUN conda env create -f webrefl_env.yml
 #RUN source activate webrefl_env
+#ENTRYPOINT ["python" "manage.py runserver 0.0.0.0:5000"]
 
 

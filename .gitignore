@@ -6,4 +6,5 @@ err.txt
 *.tar
 *.zip
 *.tgz
+*.swp
 slurm_tutorial.docx

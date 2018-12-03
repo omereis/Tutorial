@@ -1,0 +1,33 @@
+modifySelection Function:
+
+lstr.length='5'
+
+s='{"roughness":true,"sld":true}'
+
+typeof (s)='string'
+
+s.length='29'
+
+q='{"roughness"'
+
+typeof (q)='string'
+
+q.length='12'
+
+no_fit='{"sld":true},{"roughness":true,"sld":true},{"thickness":true,"roughness":true,"sld":true},{"sld":true,"mu":true},{"sld":true}'
+
+strToFit='[object Object],[object Object],[object Object],[object Object],[object Object]'
+
+to_fit.length=5
+
+typeof(to_fit[0])=object
+
+to_fit[0]=[object Object]
+
+strToFit='{"sld":true}
+{"roughness":true,"sld":true}
+{"thickness":true,"roughness":true,"sld":true}
+{"sld":true,"mu":true}
+{"sld":true}'
+
+strToFit.length=125

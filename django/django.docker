@@ -40,7 +40,7 @@ ENV export REFL1D_PATH='/home/django_user/miniconda/envs/webrefl/bin/'
 ENV export REFL1D_JOB_DIR='/home/django_user/web_ref/proj_dir'
 RUN mkdir /home/django_user/web_ref/proj_dir
 EXPOSE 5000
-ENTRYPOINT ["python", "manage.py"]
-CMD ["runserver", "0.0.0.0:5000"]
+#ENTRYPOINT ["python", "manage.py"]
+#CMD ["runserver", "0.0.0.0:5000"]
 
 

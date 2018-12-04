@@ -21,8 +21,13 @@ ENV HOME=/home/oe/microblog
 COPY ./ /home/oe
 
 ENV FLASK_APP=microblog.py
+ENV FLASK_DEBUG=1
 
 # Make the 5000 port available from outside the container
 EXPOSE 5000
 
 
+
+# Get-PSReadlineOption | Select *color
+# Set-PSReadlineOption -TokenKind Command -ForegroundColor Blue
+# Set-PSReadlineOption -TokenKind Parameter -ForegroundColor DarkBlue

@@ -15,6 +15,7 @@ RUN apt install -y tree
 
 # RUN apt install -y python3-venv
 RUN pip install flask
+RUN pip install flask-wtf
 
 WORKDIR /home/oe/microblog
 ENV HOME=/home/oe/microblog
@@ -31,3 +32,4 @@ EXPOSE 5000
 # Get-PSReadlineOption | Select *color
 # Set-PSReadlineOption -TokenKind Command -ForegroundColor Blue
 # Set-PSReadlineOption -TokenKind Parameter -ForegroundColor DarkBlue
+

@@ -16,10 +16,17 @@ RUN apt install -y tree
 # RUN apt install -y python3-venv
 RUN pip install flask
 RUN pip install flask-wtf
+RUN pip install flask-sqlalchemy
+RUN pip install flask-migrate
 
 WORKDIR /home/oe/microblog
 ENV HOME=/home/oe/microblog
+ENV SQLALCHEMY_TRACK_MODIFICATIONS True
 COPY ./ /home/oe
+
+RUN flask db init
+RUN flask db migrate -m "users table"
+RUN flask db upgrade
 
 ENV FLASK_APP=microblog.py
 ENV FLASK_DEBUG=1

@@ -15,13 +15,15 @@ RUN apt install -y tree
 RUN apt install -y curl
 
 RUN pip install --upgrade pip
+RUN pip install --upgrade pip
 # RUN apt install -y python3-venv
 RUN pip install flask
 RUN pip install flask-wtf
 RUN pip install flask-sqlalchemy
 RUN pip install flask-migrate
+RUN pip install flask-httpauth
 
-WORKDIR /home/oe/rest
+WORKDIR /home/oe/rest/todo
 ENV HOME=/home/oe/rest
 ENV SQLALCHEMY_TRACK_MODIFICATIONS True
 COPY ./ /home/oe/rest

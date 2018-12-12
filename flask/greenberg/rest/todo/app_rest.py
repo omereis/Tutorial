@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, jsonify, abort, request, url_for
+from flask import Flask, jsonify, abort, request, url_for, make_response
 import getopt, sys
 
 app = Flask(__name__)
@@ -102,7 +102,6 @@ if __name__ == '__main__':
     port='5000'
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h:p:", ["host", "port"])
-        print("no error")
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err) 

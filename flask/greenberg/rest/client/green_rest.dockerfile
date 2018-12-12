@@ -39,7 +39,7 @@ COPY ./ /home/oe/rest
 ENV FLASK_DEBUG=1
 
 # Make the 5000 port available from outside the container
-EXPOSE 5000
+EXPOSE 6000
 
 
 
@@ -47,4 +47,3 @@ EXPOSE 5000
 # Set-PSReadlineOption -TokenKind Command -ForegroundColor Blue
 # Set-PSReadlineOption -TokenKind Parameter -ForegroundColor DarkBlue
 
-# curl -i http://localhost:1000/todo/api/v1.0/tasks

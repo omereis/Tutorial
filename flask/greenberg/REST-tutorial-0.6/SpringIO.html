@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello jQuery</title>
+        <script src = "https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js" type = "text/javascript"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>
+            $.ajax({
+                //url: "5000/todo/api/v1.0/tasks/1"
+                url: "http://rest-service.guides.spring.io/greeting"
+            }).then(function(data) {
+                $('.greeting-id').append(data.id);
+                $('.greeting-content').append(data.content);
+                try {
+                    $('.greeting-title').append(data.title);
+                }
+                catch(err) {
+                    alert(err.message);
+                }
+            });
+        </script>
+    </head>
+
+    <body>
+        <div>
+            <p>Today is: <span data-bind = "text: whatDay"></span></p>
+            <p class="greeting-id">The ID is </p>
+            <p class="greeting-content">The content is </p>
+            <p class="greeting-title">The title is </p>
+        </div>
+    </body>
+</html>

@@ -6,12 +6,20 @@
    
    <body>
         <h2 data-bind= "html: title"></h2>
-        <p><span data-bind="html: welcomeMessgae "></span></p>
-        <p>Today is: <span data-bind = "text: whatDay"></span></p>
-        <p>First name: <input data-bind="value: firstName" /></p>
-        <p>Last name: <input data-bind="value: lastName" /></p>
-        <h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
-
+       <table>
+           <tr>
+               <td>
+                    <p><span data-bind="html: welcomeMessgae "></span></p>
+                    <p>Today is: <span data-bind = "text: whatDay"></span></p>
+                    <p>First name: <input data-bind="value: firstName" /></p>
+                    <p>Last name: <input data-bind="value: lastName" /></p>
+                    <h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
+                </td>
+                <td>
+                        <button data-bind="click: tryREST">Try REST</button>
+                </td>
+           </tr>
+       </table>
       <script>
          var AppViewModel = function(first, last) {
             this.welcomeMessgae = ko.observable("Welcome to TutorialsPoint !!! For free online tutorials and courses click <a href = 'https://tutorialspoint.com/'>here</a>.");
@@ -22,9 +30,17 @@
             this.firstName = ko.observable(first);
             this.lastName = ko.observable(last);
             this.fullName = ko.computed(function() {return this.firstName() + " " + this.lastName();}, this);
+            this.tryREST = function() {
+                $.ajax({
+                    url: "http://rest-service.guides.spring.io/greeting"
+                }).then(function(data) {
+                    $('.greeting-id').append(data.id);
+                    $('.greeting-content').append(data.content);
+                });
+            }
          }
          
-         ko.applyBindings(new AppViewModel('Inbar', 'Eisenberg'));
+        ko.applyBindings(new AppViewModel('Inbar', 'Eisenberg'));
       </script>
       
    </body>

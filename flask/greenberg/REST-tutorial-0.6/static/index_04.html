@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>ToDo API Client Demo v0.5.1</title>
+<title>ToDo API Client Demo v0.4</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
@@ -11,11 +11,8 @@
 <body>
     <div class="navbar">
         <div class="navbar-inner">
-            <a class="brand" href="#">ToDo API Client Demo v0.5.1</a>
+            <a class="brand" href="#">ToDo API Client Demo v0.4</a>
         </div>
-    </div>
-    <div>
-        <button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
     </div>
     <div id="main" class="container">
         <table class="table table-striped">
@@ -43,49 +40,21 @@
         <button data-bind="click: beginAdd" class="btn">Add Task</button>
     </div>
     <script type="text/javascript">
-//-----------------------------------------------------------------------------
-        function tryREST() {
-            alert("Trying REST");
-        }
-        // Activates knockout.js
-        ko.applyBindings(new tryREST());
-//-----------------------------------------------------------------------------
         function TasksViewModel() {
             var self = this;
-            self.tasksURI = 'http://localhost:5000/todo/api/v1.0/tasks';
-            //self.tasksURI = 'http://ncnr-r9nano.campus.nist.gov:1000/todo/api/v1.0/tasks/';
-            //self.tasksURI = 'http://ncnr-r9nano.campus.nist.gov:1000/todo/api/v1.0/tasks/';
-            self.username = "miguel";
-            self.password = "python";
             self.tasks = ko.observableArray();
-
-            self.ajax = function(uri, method, data) {
-                var request = {
-                    url: uri,
-                    type: method,
-                    contentType: "application/json",
-                    accepts: "application/json",
-                    cache: false,
-                    dataType: 'json',
-                    data: 'JSON.stringify(data)',//JSON.stringify(data)
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("Authorization", 
-                            "Basic " + btoa(self.username + ":" + self.password));
-                    },
-                    error: function(jqXHR) {
-                        console.log("ajax error " + jqXHR.status);
-                    }
-                };
-                var ajax_ret;
-                try {
-                    ajax_ret = $.ajax(request);
+            self.tasks([
+                {
+                    title: ko.observable('title #1'),
+                    description: ko.observable('description #1'),
+                    done: ko.observable(false)
+                },
+                {
+                    title: ko.observable('title #2'),
+                    description: ko.observable('description #2'),
+                    done: ko.observable(true)
                 }
-                catch (err) {
-                    alert (err.message);
-                }
-                return ajax_ret;//$.ajax(request);
-            }
-
+            ]);
             self.beginAdd = function() {
                 alert("Add");
             }
@@ -101,22 +70,8 @@
             self.markDone = function(task) {
                 task.done(true);
             }
-            
-            self.ajax(self.tasksURI, 'GET').done(function(data) {
-                for (var i = 0; i < data.tasks.length; i++) {
-                    self.tasks.push({
-                        uri: ko.observable(data.tasks[i].uri),
-                        title: ko.observable(data.tasks[i].title),
-                        description: ko.observable(data.tasks[i].description),
-                        done: ko.observable(data.tasks[i].done)
-                    });
-                }
-            });
         }
-        
-        //$().ready(function() {
-            ko.applyBindings(new TasksViewModel(), $('#main')[0]);
-        //});
+        ko.applyBindings(new TasksViewModel(), $('#main')[0]);
     </script>
 </body>
 </html>

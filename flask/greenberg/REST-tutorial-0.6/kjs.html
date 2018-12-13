@@ -1,42 +1,31 @@
-<html>
-<head>
-        <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-        <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
-        <title>ToDo API Client Demo v 6.0</title>
-<script type="text/javascript">
-    function AppViewModel() {
-        this.firstName = "Burt";
-        this.lastName = "Tennenbaum";
-    }
+<!DOCTYPE html>
+   <head>
+      <title data-bind= "value: title">KnockoutJS</title>
+      <script src = "https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js" type = "text/javascript"></script>
+   </head>
+   
+   <body>
+        <h2 data-bind= "html: title"></h2>
+        <p><span data-bind="html: welcomeMessgae "></span></p>
+        <p>Today is: <span data-bind = "text: whatDay"></span></p>
+        <p>First name: <input data-bind="value: firstName" /></p>
+        <p>Last name: <input data-bind="value: lastName" /></p>
+        <h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
 
-// Activates knockout.js
-    ko.applyBindings(new AppViewModel());
-// Here's my data model
-var ViewModel = function(first, last) {
-    this.firstName = ko.observable(first);
-    this.lastName = ko.observable(last);
- 
-    this.fullName = ko.computed(function() {
-        // Knockout tracks dependencies automatically. It knows that fullName depends on firstName and lastName, because these get called when evaluating fullName.
-        return this.firstName() + " " + this.lastName();
-    }, this);
-};
- 
-ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work
-</script>
-</head>
-<body>
-// Here's my data model
-var ViewModel = function(first, last) {
-    this.firstName = ko.observable(first);
-    this.lastName = ko.observable(last);
- 
-    this.fullName = ko.computed(function() {
-        // Knockout tracks dependencies automatically. It knows that fullName depends on firstName and lastName, because these get called when evaluating fullName.
-        return this.firstName() + " " + this.lastName();
-    }, this);
-};
- 
-ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work</body>
+      <script>
+         var AppViewModel = function(first, last) {
+            this.welcomeMessgae = ko.observable("Welcome to TutorialsPoint !!! For free online tutorials and courses click <a href = 'https://tutorialspoint.com/'>here</a>.");
+            //this.welcomeMessgae ();
+            this.title = "KnockoutJS Html binding";
+            var now = new Date();
+            this.whatDay = now.toLocaleDateString('en-US') + ", " + now.toLocaleTimeString('en-US');
+            this.firstName = ko.observable(first);
+            this.lastName = ko.observable(last);
+            this.fullName = ko.computed(function() {return this.firstName() + " " + this.lastName();}, this);
+         }
+         
+         ko.applyBindings(new AppViewModel('Inbar', 'Eisenberg'));
+      </script>
+      
+   </body>
 </html>

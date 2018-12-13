@@ -20,6 +20,12 @@ tasks = [
         'title': u'Learn Python',
         'description': u'Need to find a good Python tutorial on the web', 
         'done': False
+    },
+    {
+        'id': 3,
+        'title': u'Learn REST',
+        'description': u'Complete Greenberg''s tutorial', 
+        'done': False
     }
 ]
 #------------------------------------------------------------------------------
@@ -30,6 +36,8 @@ auth = HTTPBasicAuth()
 def get_password(username):
     if username == 'miguel':
         return 'python'
+    elif username == 'omer':
+        return 'ruthy'
     return None
 #------------------------------------------------------------------------------
 @auth.error_handler

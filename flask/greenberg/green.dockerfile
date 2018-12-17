@@ -18,6 +18,7 @@ RUN pip install flask
 RUN pip install flask-wtf
 RUN pip install flask-sqlalchemy
 RUN pip install flask-migrate
+RUN pip install -U flask-cors
 
 WORKDIR /home/oe/microblog
 ENV HOME=/home/oe/microblog

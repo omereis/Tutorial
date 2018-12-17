@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AJAX 3 - Extrnal API</title>
+    <style>
+        .users{
+            display: flex;
+            background: #f4f4f4;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .user_ul{
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>AJAX 3 - Extrnal API</h2>
+    <hr>
+    <button id="btnTasks">Get Task</button>
+    <hr>
+    <h3>Tasks</h3>
+    <div id="tasks">
+
+    </div>
+    <hr>
+    <script>
+        document.getElementById('btnTasks').addEventListener('click', loadTask);
+
+        function loadTask () {
+            var xhr = new XMLHttpRequest();
+            //xhr.open ('GET', 'https://api.github.com/users', true);
+//-----------------------------------------------------------------------------
+            xhr.open ('GET', 'http://localhost:5000/todo/api/v1.0/tasks/1', true);
+//-----------------------------------------------------------------------------
+            xhr.onreadystatechange = function() {
+                console.log('Task ReadyState: ', xhr.readyState);
+                if ((this.readyState == 4) && (this.status == 200)){
+                    console.log('Task ReadyState: ', xhr.readyState);
+                    document.getElementById('tasks').innerHTML = this.responseText;
+                }
+            }
+//-----------------------------------------------------------------------------
+            xhr.onerror = function(err) {
+                document.getElementById('tasks').innerHTML = '<font color="red">Communication Error</font>';
+            }
+//-----------------------------------------------------------------------------
+            xhr.send();
+        }
+    </script>
+    <button id="button">Load GitHub users</button>
+    <h3>GutHub Users</h3>
+    <br><br>
+    <div id="users">
+
+    </div>
+
+    <script>
+        document.getElementById('button').addEventListener('click', loadUsers);
+
+        // load github users
+        function loadUsers(){//XMLHttpRequest
+            var xhr = new XMLHttpRequest();
+            xhr.open ('GET', 'https://api.github.com/users', true);
+
+            xhr.onload = function() {
+                if (this.status == 200) {
+                    var users = JSON.parse(this.responseText);
+                    //document.getElementById('users').innerHTML = users.toString();
+                    console.log(users);
+                    var output = '';
+                    var u;
+                    for (var n in users) {
+                        u = users[n];
+                        output += '<div class="users">' +
+                                    '<img src="' + users[n].avatar_url + '" width="70" height="70">' +
+                                    '<ul>' +
+                                    '<li>ID: ' + users[n].id + '</li>' +
+                                    '<li>LOGIN: ' + users[n].login + '</li>' +
+                                    '</ul></div>';
+
+                    }
+                    document.getElementById('users').innerHTML = output;
+                }
+            }
+
+            xhr.send();
+        }
+    </script>
+</body>
+</html>

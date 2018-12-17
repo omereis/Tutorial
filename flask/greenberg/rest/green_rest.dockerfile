@@ -22,6 +22,7 @@ RUN pip install flask-wtf
 RUN pip install flask-sqlalchemy
 RUN pip install flask-migrate
 RUN pip install flask-httpauth
+RUN pip install flask-cors
 
 WORKDIR /home/oe/rest/todo
 ENV HOME=/home/oe/rest

@@ -1,8 +1,10 @@
 #!flask/bin/python
 from flask import Flask, jsonify, abort, request, url_for, make_response
 import getopt, sys
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 #------------------------------------------------------------------------------
 @app.route('/')
 def index():

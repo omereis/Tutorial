@@ -51,6 +51,7 @@ def unauthorized():
 @auth.login_required
 def get_tasks():
     #return jsonify({'tasks': tasks})
+    #print_tasks('In get_tasks')
     return jsonify({'tasks': [make_public_task(task) for task in tasks]})
 #------------------------------------------------------------------------------
 def make_public_task(task):
@@ -69,14 +70,15 @@ def get_task(task_id):
         abort(404)
     return jsonify({'task': task[0]})
 #------------------------------------------------------------------------------
+def print_tasks(header=''):
+    print_debug(header)
+    try:
+        print_debug(('Tasks: {}').format(tasks))
+    except Exception as e:
+        print_debug (('Error in create_task: {}').format(e))
+#------------------------------------------------------------------------------
 @app.route('/todo/api/v1.0/tasks/', methods=['POST'])
 def create_task():
-    print_debug ('Here is print_debug')
-    try:
-        print(('create_task, Response: {}').format(Response))
-        print(('create_task, dir(Response): {}').format(dir(Response)))
-    except Exception as e:
-        print (('Error in create_task: {}').format(e))
     if not request.json or not 'title' in request.json:
         abort(400)
     task = {
@@ -86,6 +88,7 @@ def create_task():
         'done': False
     }
     tasks.append(task)
+    #print_tasks('After create_task')
     return jsonify({'task': task}), 201
 #------------------------------------------------------------------------------
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['PUT'])

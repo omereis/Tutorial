@@ -106,6 +106,18 @@ import getopt, sys
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
     host='127.0.0.1'
-    port=7000
-    app.run(debug=True,host=host,port=port)
+    port='5000'
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h:p:", ["host", "port"])
+    except getopt.GetoptError as err:
+        # print help information and exit:
+        print(err) 
+    for o,a in opts:
+        if o in ('-p', '-port'):
+            port = a
+        elif o in ('-h', '-host'):
+            host = a
+    print(('Running in {}:{}').format(host,port))
+    #print(1/0)
+    app.run(debug=True,host=host,port=int(port))
 

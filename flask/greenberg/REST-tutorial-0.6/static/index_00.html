@@ -84,7 +84,7 @@
                     accepts: "application/json",
                     cache: false,
                     dataType: 'json',
-                    data: JSON.stringify(data),
+                    data: 'JSON.stringify(data)',//JSON.stringify(data)
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("Authorization", 
                             "Basic " + btoa(self.username + ":" + self.password));
@@ -104,21 +104,7 @@
             }
 
             self.beginAdd = function() {
-                //alert('Add');
-                $('#add').modal('show');
-            }
-            self.add = function(task) {
-                //url = 'http://localhost:5000/todo/api/v1.0/tasks/post';
-//                var task = {title: '4', description: 'task 4'};
-                self.ajax(self.tasksURI, 'POST', task).done(function(data) {
-                //self.ajax(url, 'GET', task).done(function(data) {
-                    self.tasks.push({
-                        uri: ko.observable(data.task.uri),
-                        title: ko.observable(data.task.title),
-                        description: ko.observable(data.task.description),
-                        done: ko.observable(data.task.done)
-                    });
-                });
+                alert("Add");
             }
             self.beginEdit = function(task) {
                 alert("Edit: " + task.title());
@@ -143,32 +129,11 @@
                     });
                 }
             });
-            //var addTaskViewModel = new AddTaskViewModel();
-            //var tasksViewModel = new TasksViewModel();
-            //ko.applyBindings(tasksViewModel, $('#main')[0]);
-            //ko.applyBindings(addTaskViewModel, $('#add')[0]);
         }
-        function AddTaskViewModel() {
-                var self = this;
-                self.title = ko.observable();
-                self.description = ko.observable();
-
-                self.addTask = function() {
-                    $('#add').modal('hide');
-                    tasksViewModel.add({
-                        title: self.title(),
-                        description: self.description()
-                    });
-                    self.title("");
-                    self.description("");
-                }
-                //alert("Add");
-            }
         
-            var addTaskViewModel = new AddTaskViewModel();
-            var tasksViewModel = new TasksViewModel();
-            ko.applyBindings(tasksViewModel, $('#main')[0]);
-            ko.applyBindings(addTaskViewModel, $('#add')[0]);
+        //$().ready(function() {
+            ko.applyBindings(new TasksViewModel(), $('#main')[0]);
+        //});
     </script>
 </body>
 </html> 

@@ -2,11 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
 	<title>Local Nested Layouts</title>
-
 	<link type="text/css" rel="stylesheet" href="http://layout.jquery-dev.com/lib/css/layout-default-latest.css" />
-
 	<style type="text/css">
 	/*
 	 *	NOTE: All CSS is purely cosmetic - it does not affect functionality
@@ -22,9 +19,7 @@
 	.ui-layout-pane-south {
 		border:			1px solid #BBB;
 		overflow:		hidden;
-	}
-	.ui-layout-pane-west ,
-	.ui-layout-pane-east {
+        background-color: #ffffbb;
 	}
 	.ui-layout-pane-center	{
 		border-left:	0;
@@ -55,9 +50,7 @@
 		overflow:		hidden;
 	}
 
-	/*
-	 *	customize borders on panes/resizers to make pretty
-	 */
+	/* customize borders on panes/resizers to make pretty */
 	.ui-layout-pane-west		{ border-right:		0; }
 	.ui-layout-resizer-west		{ border-left:		1px solid #BBB; }
 	.ui-layout-pane-east		{ border-left:		0; }
@@ -93,9 +86,13 @@
 
 	<script type="text/javascript">
 
+/*
+*/
 	$(document).ready(function () {
 
-		// OUTER-LAYOUT
+        // OUTER-LAYOUT
+        var window_width = window.innerWidth;
+        var backend_width = 0.25;
 		$('body').layout({
 			center__paneSelector:	".outer-center"
 		,	west__paneSelector:		".outer-west"
@@ -115,7 +112,7 @@
 			,	west__paneSelector:		".middle-west"
 			,	east__paneSelector:		".middle-east"
 			,	west__size:				100
-			,	east__size:				100
+			,	east__size:				window_width * backend_width
 			,	spacing_open:			8  // ALL panes
 			,	spacing_closed:			12 // ALL panes
 
@@ -125,7 +122,7 @@
 				,	west__paneSelector:		".inner-west"
 				,	east__paneSelector:		".inner-east"
 				,	west__size:				75
-				,	east__size:				75
+				,	east__size:				(window_width * (1 - backend_width)) / 2
 				,	spacing_open:			8  // ALL panes
 				,	spacing_closed:			8  // ALL panes
 				,	west__spacing_closed:	12
@@ -146,30 +143,32 @@
 	<div class="middle-center">
 
 <!-- -->
-		<!-- -->
+		<!--
 		<div class="inner-west">Inner West</div>
-		
+		-->
 		<div class="inner-east">Inner East</div>
-		<div class="ui-layout-north">Inner North</div>
+        <div class="ui-layout-north">Inner North</div>
+        <!--
 		<div class="ui-layout-south">Inner South</div>
-		<!-- -->
+		-->
 		<div class="inner-center">Inner Center</div>
 		<!-- -->
 	</div>
-
-	<div class="middle-west">Middle West</div>
+    <!--
+    <div class="middle-west">Middle West</div>
+    -->
 	<div class="middle-east">Middle East</div>
 
 </div>
 
-
+<!--
 <div class="outer-west">Outer West</div>
 
 <div class="outer-east">Outer East</div>
-<!-- -->
+
 <div class="ui-layout-north">Outer North</div>
 
 <div class="ui-layout-south">Outer South</div>
-
+-->
 </body>
 </html>

@@ -17,6 +17,7 @@ RUN ln -s /usr/bin/python3.6 /usr/bin/python
 RUN pip3 install flask
 RUN apt install -y python3-venv
 RUN pip install python-dotenv
+RUN pip install flask_wtf
 
 WORKDIR /home/oe/microblog
 ENV HOME=/home/oe/microblog

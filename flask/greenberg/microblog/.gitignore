@@ -1,0 +1,9 @@
+*.whl
+*.c
+*.O
+*.pyc
+err.txt
+*.tar
+*.zip
+*.tgz
+slurm_tutorial.docx

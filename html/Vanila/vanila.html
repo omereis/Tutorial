@@ -24,19 +24,27 @@
 
         .panes-separator-vert {
             width: 5pt;
-            background: rgb(22, 60, 97);
+            background: rgb(68, 104, 1);
             position: relative;
             cursor: col-resize;
         }
 
         .right-pane {
             flex: auto;
-            background: #eee;
+            background:  rgb(173, 243, 196);
+        }
+
+        .center-pane {
+            flex: auto;
+            width: 300pt;
+            position: relative;
+            background:  rgb(111, 161, 207);;
         }
 
         .panes-container,
         .panes-separator-vert,
         .left-pane,
+        .center-pane,
         .right-pane {
             margin: 0;
             padding: 0;
@@ -59,6 +67,10 @@
         </ul>
     </div>
     <div class="panes-separator-vert" id="panes-separator"></div>
+    <!--<div class="center-pane" id="center-pane">
+        This is the center pane
+    </div>
+    <div class="panes-separator-vert" id="panes-right-separator"></div>-->
     <div class="right-pane" id="right-pane">
         <p>And I'm the right pane</p>
       <p><a href="https://github.com/lingtalfi/simpledrag">https://github.com/lingtalfi/simpledrag</a></p>
@@ -76,7 +88,9 @@
 
     var leftPane = document.getElementById('left-pane');
     var rightPane = document.getElementById('right-pane');
+    var paneCenter = document.getElementById('center-pane');
     var paneSep = document.getElementById('panes-separator');
+    var panelRightSep = document.getElementById('panes-right-separator');
 
     // The script below constrains the target to move horizontally between a left and a right virtual boundaries.
     // - the left limit is positioned at 10% of the screen width
@@ -84,7 +98,41 @@
     var leftLimit = 10;
     var rightLimit = 90;
 
+    panelRightSep.sdrag(function (el, pageX, startX, pageY, startY, fix) {
+        fix.skipX = true;
 
+        if (pageX < window.innerWidth * leftLimit / 100) {
+            pageX = window.innerWidth * leftLimit / 100;
+            fix.pageX = pageX;
+        }
+        if (pageX > window.innerWidth * rightLimit / 100) {
+            pageX = window.innerWidth * rightLimit / 100;
+            fix.pageX = pageX;
+        }
+
+        var cur = pageX / window.innerWidth * 100;
+        if (cur < 0) {
+            cur = 0;
+        }
+        if (cur > window.innerWidth) {
+            cur = window.innerWidth;
+        }
+
+        var w=0;
+        try {
+            var w = 100 * (pageX / window.innerWidth - paneCenter.style.width);
+//            var right = (100-cur-2);
+            //paneCenter.style.right = w + '%';
+//            rightPane.style.left = (paneCenter.style.right + paneCenter.style.width) + '%';
+            console.log(w);
+        }
+        catch (err) {
+            console.log(err.message);
+        }
+        console.log(w);
+    }, null, 'horizontal');
+/*
+*/
     paneSep.sdrag(function (el, pageX, startX, pageY, startY, fix) {
 
         fix.skipX = true;
@@ -106,13 +154,11 @@
             cur = window.innerWidth;
         }
 
-
         var right = (100-cur-2);
         leftPane.style.width = cur + '%';
         rightPane.style.width = right + '%';
 
     }, null, 'horizontal');
-
 
 </script>
 

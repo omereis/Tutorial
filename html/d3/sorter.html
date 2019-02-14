@@ -137,7 +137,17 @@
 
 	<h1>D3.js Sortable & Responsive Table</h1>
     <br>
-    <button type="button" onclick="addLine()">Add Line</button><br>
+    <table border="0">
+        <tr>
+            <td>
+                <button type="button" onclick="addLine()">Add Line</button>
+            </td>
+            <td>
+                <button type="button" onclick="getFirstName()">First Names</button>
+            </td>
+        </tr>
+    </table>
+    
     <br>
 
     <p>Click the table header to sort data according to that column</p>
@@ -148,6 +158,14 @@
 //-----------------------------------------------------------------------------
 var g_rows=null, g_table=null;
 
+        function getFirstName () {
+            var tbl = d3.select("#my_table");
+            var bdy=tbl.select('tbody');
+            var rows = bdy.selectAll("tr");
+            var a=rows.selectAll('th');
+            console.log("Names");
+        }
+//-----------------------------------------------------------------------------
         function addLine () {
             var tbl = d3.select("#my_table");
             var bdy=tbl.select('tbody');

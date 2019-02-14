@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Modal View Example</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://unpkg.com/d3-require@0.4.5/build/d3-require.js"></script>
+    <script src="https://unpkg.com/d3-let@0.3.2/build/d3-let.js"></script>
+    <script src="https://unpkg.com/d3-view@0.9.3/build/d3-view.js"></script>
+<!--
+        <style>
+      .view .done {
+          text-decoration: line-through;
+          color: #b7b7b7;
+      }
+      .info {
+          padding: .75rem 2rem;
+      }
+      .todo-container {
+          max-width: 800px;
+      }
+    </style>
+-->
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <button type="button" class="btn btn-primary" d3-on="$modal()">
+                    Launch d3-view modal
+                </button>
+                <br>Selected button: <p id="sel_btn"></p>
+            </div>
+        </div>
+    </div>
+    <script src="JS/script.js"></script>
+</body>
+</html>

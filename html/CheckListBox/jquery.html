@@ -12,6 +12,12 @@
       <title>Show checkboxes</title>
   </head>
     <script>
+//-----------------------------------------------------------------------------
+			function onChecboxClick (element) {
+				var txt = element.value;
+				alert (txt);
+			}
+//-----------------------------------------------------------------------------
       function tableMaxCols(table){
         var colCount;
         try {
@@ -26,6 +32,7 @@
         }
 				return (colCount);
       }
+//-----------------------------------------------------------------------------
       function lineAdd(tableName){
          var table = document.getElementById(tableName);
          var row = table.insertRow(-1);
@@ -41,7 +48,9 @@
 				var count = tableMaxCols (table);
 				var c = row.insertCell(0);
 				var cboxName = "Checkbox" + (row.rowIndex + 1);
-				c.innerHTML = '<input type="checkbox" name="' + cboxName + '" id="' + cboxName + 'value="' + cboxName + '">' + cboxName + '<br>';
+				c.innerHTML = '<input type="checkbox" name="' + cboxName + '" id="' + cboxName + '" value="' + cboxName + 
+								'" onclick="onChecboxClick(this)">' +
+								cboxName + '<br>';
 
 				for (var n=1 ; n < count ; n++) {
 					c = row.insertCell(n);

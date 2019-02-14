@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Define() Function</title>
+      <!-- <script data-main = "main" src = "require.js"></script> -->
+      <script>
+            function myFunction() {
+               document.getElementById("word").innerHTML = "Hello World";
+               var w1 = myBad();
+               var w2 = words();
+               document.getElementById("w1").innerHTML = words(7);
+               document.getElementById("w2").innerHTML = words(1);
+            }
+         </script>
+         <script type="text/javascript" src="words.js"></script> 
+   </head>
+   
+   <body>
+      <h2>RequireJS Define()<br> Function Example</h2>
+      <button onclick="myFunction()">Click me</button>
+
+      <p id="word"></p>
+      <p id="w1"></p>
+      <p id="w2"></p>
+      </body>
+</html>

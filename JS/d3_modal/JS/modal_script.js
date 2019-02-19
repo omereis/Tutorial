@@ -1,4 +1,7 @@
-//</br>faker.lorem.sentences(3),
+/*
+Source:
+    https://bl.ocks.org/lsbardel/964b454dd40bc32082a0753e9106a707
+*/
 (function () {
 
     var modal = {
@@ -58,8 +61,7 @@
             }
         },
         render: function () {
-            //return this.renderFromUrl('/JS/d3_modal/modal.html');
-            return this.renderFromUrl('modal.html');
+            return this.renderFromUrl('modal_msg.html');
         }
     };
 

@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<!--
+    Source:
+    https://bl.ocks.org/lsbardel/964b454dd40bc32082a0753e9106a707
+-->
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -8,20 +12,6 @@
     <script src="https://unpkg.com/d3-require@0.4.5/build/d3-require.js"></script>
     <script src="https://unpkg.com/d3-let@0.3.2/build/d3-let.js"></script>
     <script src="https://unpkg.com/d3-view@0.9.3/build/d3-view.js"></script>
-<!--
-        <style>
-      .view .done {
-          text-decoration: line-through;
-          color: #b7b7b7;
-      }
-      .info {
-          padding: .75rem 2rem;
-      }
-      .todo-container {
-          max-width: 800px;
-      }
-    </style>
--->
 </head>
 <body>
     <div class="container-fluid">
@@ -30,10 +20,19 @@
                 <button type="button" class="btn btn-primary" d3-on="$modal()">
                     Launch d3-view modal
                 </button>
-                <br>Selected button: <p id="sel_btn"></p>
+                <button type="button" class="btn btn-primary" onclick="showModal()">
+                        View modal through JS
+                </button>
+            <hr>
+            Selected button: <p id="sel_btn"></p>
             </div>
         </div>
     </div>
-    <script src="JS/script.js"></script>
+    <script src="JS/modal_script.js"></script>
+    <script>
+        function showModal () {
+            $modal();
+        }
+    </script>
 </body>
 </html>

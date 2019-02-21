@@ -60,12 +60,11 @@ def not_found(error):
 import datetime, json
 
 def request_data_to_json(msg):
-    jsn = msg.decode('utf-8')
-    s=jsn[jsn.find('{')+1:jsn.find('}')]
-    s_split=s.split(':')
-    jsn_src = '{"'+s_split[0]+'":"'+s_split[1]+'"}'
-    j_data = json.loads(jsn_src)
-    return j_data
+    print_debug (('request_data_to_json, msg: {}').format(msg))
+    msg_str = msg.decode('utf-8')
+    print_debug (('request_data_to_json, msg_str: {}').format(msg_str))
+    jsn_msg = eval(msg_str)
+    return (jsn_msg)
 
 def complete_record(j_data):
     if ('id' not in j_data.keys()):
@@ -81,37 +80,44 @@ def complete_record(j_data):
 @app.route('/todo/api/v1.0/tasks', methods=['POST'])
 def create_task():
     j_data = request_data_to_json (request.data)
-    task = {
-        'id': tasks[-1]['id'] + 1,
-        'title': j_data['title'],
-        'description': "",
-        'done': False
-    }
+    print_debug(('create_task, j_data: {}').format(j_data))
+    try:
+        task = {
+            'id': tasks[-1]['id'] + 1,
+            'done': False
+        }
+        task['title'] = j_data['title'] if ('title' in j_data) else ""
+        task['description'] = j_data['description'] if ('description' in j_data) else ""
+        print_debug(('create_task: title in j_data: {}').format(txt))
+    except Exception as e:
+        print_debug(('create_task exception: {}').format(e))
+    print_debug(('create_task, task: {}').format(task))
     j_data = complete_record(j_data)
     tasks.append(task)
     return jsonify({'task': task}), 201
 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
-    print_debug('task_id: ' + str(task_id))
     task = [task for task in tasks if task['id'] == task_id]
-    print_debug('task: ' + str(task))
+    j_data = request_data_to_json (request.data)
     if len(task) == 0:
         abort(404)
-    #if not request.json:
-        #abort(400)
-    print_debug('request data: ' + str(request.data))
-    if 'title' in request.json and type(request.json['title']) != unicode:
-        abort(400)
-    if 'description' in request.json and type(request.json['description']) is not unicode:
-        abort(400)
-    if 'done' in request.json and type(request.json['done']) is not bool:
-        abort(400)
-    task[0]['title'] = request.json.get('title', task[0]['title'])
-    task[0]['description'] = request.json.get('description', task[0]['description'])
-    task[0]['done'] = request.json.get('done', task[0]['done'])
+    task0 = task[0]
+    if 'title' in j_data:
+        task0['title'] = j_data['title']
+    if 'description' in j_data:
+        task0['description'] = j_data['description']
+    if 'done' in j_data:
+        task0['done'] = j_data['done']
     return jsonify({'task': task[0]})
 
+@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    task = [task for task in tasks if task['id'] == task_id]
+    if len(task) == 0:
+        abort(404)
+    tasks.remove(task[0])
+    return jsonify({'result': True})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

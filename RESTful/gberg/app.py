@@ -60,9 +60,9 @@ def not_found(error):
 import datetime, json
 
 def request_data_to_json(msg):
-    print_debug (('request_data_to_json, msg: {}').format(msg))
+    #print_debug (('request_data_to_json, msg: {}').format(msg))
     msg_str = msg.decode('utf-8')
-    print_debug (('request_data_to_json, msg_str: {}').format(msg_str))
+    #print_debug (('request_data_to_json, msg_str: {}').format(msg_str))
     jsn_msg = eval(msg_str)
     return (jsn_msg)
 
@@ -80,7 +80,7 @@ def complete_record(j_data):
 @app.route('/todo/api/v1.0/tasks', methods=['POST'])
 def create_task():
     j_data = request_data_to_json (request.data)
-    print_debug(('create_task, j_data: {}').format(j_data))
+    #print_debug(('create_task, j_data: {}').format(j_data))
     try:
         task = {
             'id': tasks[-1]['id'] + 1,
@@ -88,10 +88,10 @@ def create_task():
         }
         task['title'] = j_data['title'] if ('title' in j_data) else ""
         task['description'] = j_data['description'] if ('description' in j_data) else ""
-        print_debug(('create_task: title in j_data: {}').format(txt))
+        #print_debug(('create_task: title in j_data: {}').format(txt))
     except Exception as e:
         print_debug(('create_task exception: {}').format(e))
-    print_debug(('create_task, task: {}').format(task))
+    #print_debug(('create_task, task: {}').format(task))
     j_data = complete_record(j_data)
     tasks.append(task)
     return jsonify({'task': task}), 201

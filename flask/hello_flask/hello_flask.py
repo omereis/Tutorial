@@ -1,11 +1,7 @@
-#!/usr/bin/env python
-
 import flask
-
 
 # Create the application.
 APP = flask.Flask(__name__)
-
 
 @APP.route('/')
 def index():
@@ -13,6 +9,15 @@ def index():
     """
     return flask.render_template('index.html')
 
+@APP.route('/calculator')
+def calculator():
+    #return flask.render_template('Reflectivity/refl_calc.html')
+    return flask.render_template('Reflectivity/calculators/calcR_d3_dark.html')
+    #return flask.render_template('calcR_d3_dark.html')
+@APP.route('/calculator/reflectivity_calculator')
+def clacR():
+    return flask.render_template('Reflectivity/calculators/calcR_d3_dark.html')
+    
 
 if __name__ == '__main__':
     from sys import argv

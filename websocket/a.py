@@ -36,8 +36,8 @@ for opt, arg in options:
         version = arg
     elif opt in ('-h', '--host'):
         host = arg
-    elif opt in ('-0', '--port'):
-        host = arg
+    elif opt in ('-p', '--port'):
+        port = arg
     
 print('VERSION   :', version)
 print('VERBOSE   :', verbose)

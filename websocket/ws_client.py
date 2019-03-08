@@ -2,6 +2,9 @@ import asyncio
 import websockets
 import getopt, sys
 
+host = 'localhost'
+port = 5000
+
 try:
     if len(sys.argv) > 0:
         print('ARGV      :', sys.argv[1:])
@@ -24,6 +27,7 @@ for opt, arg in options:
 
 async def hello():
     address = 'ws://{}:{}'.format(host,port)
+    print("Address: {}".format(address))
     async with websockets.connect(address) as websocket:
         name = input("What's your name? ")
 

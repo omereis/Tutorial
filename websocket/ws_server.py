@@ -2,6 +2,10 @@ import asyncio
 import websockets
 import getopt, sys
 
+#------------------------------------------------------------------------------
+host = 'localhost'
+port = 8765
+#------------------------------------------------------------------------------
 try:
     if len(sys.argv) > 0:
         print('ARGV      :', sys.argv[1:])
@@ -16,9 +20,6 @@ except getopt.GetoptError as err:
     print(err) 
     exit(1)
 #------------------------------------------------------------------------------
-host = 'localhost'
-port = 8765
-#------------------------------------------------------------------------------
 for opt, arg in options:
     if opt in ('-h', '--host'):
         host = arg.strip();
@@ -27,8 +28,12 @@ for opt, arg in options:
 #------------------------------------------------------------------------------
 async def hello(websocket, path):
     name = await websocket.recv()
-    source = websocket.remote_address
-    print ("Just got a message from a client in {}".format(source))
+    source = "{}:{}".format(websocket.host, websocket.port)
+    print ("Just got a message from...")
+    try:
+        print ("    client in {}".format(source))
+    except Exception as e:
+        print('Oops: {}'.format(e.message))
     print(" {}".format(name))
     greeting = "Hello {}, from {}:{}!".format(name, host, port)
     await websocket.send(greeting)

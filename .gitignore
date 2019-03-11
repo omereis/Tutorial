@@ -8,3 +8,6 @@ err.txt
 *.tgz
 *.swp
 slurm_tutorial.docx
+*.~*
+__history/*
+__recovery/*

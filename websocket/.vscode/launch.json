@@ -10,21 +10,6 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
-            "args": [
-                "-p 8765",
-                "-h ncnr-r9nano.campus.nist.gov"
-            ],
-        },
-        {
-            "name": "Python (no arguments)",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            //"args": [
-            //   "-p 8765",
-            //    "-h ncnr-r9nano.campus.nist.gov"
-            //],
         },
         {
             "name": "Python: Remote Attach",

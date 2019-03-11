@@ -3,7 +3,7 @@ import websockets
 import getopt, sys
 
 host = 'localhost'
-port = 5000
+port = 8765
 
 try:
     if len(sys.argv) > 0:

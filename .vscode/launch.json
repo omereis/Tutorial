@@ -20,7 +20,7 @@
             "cwd": "${workspaceFolder}",
             "env": {},
             "envFile": "${workspaceFolder}/.env",
-            "args": ["-h 127.0.0.1 -p 1000"],
+            //"args": ["-h 127.0.0.1 -p 1000"],
             //"args": ["-a -b -cfoo -d bar a1 a2"],
             "debugOptions": [
                 "RedirectOutput"

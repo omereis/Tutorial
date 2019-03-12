@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <Transactions>
+    <Transaction>2019/03/11 09:08:52.593,=D:\Users\one4\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>2019/03/11 09:08:52.647,=D:\Omer\Source\Tutorial\Mongo\mkdsk.c</Transaction>
+    <Transaction>2019/03/11 09:11:40.526,D:\Omer\Source\Tutorial\Mongo\Project1PCH1.h=D:\Users\one4\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>2019/03/11 09:12:05.696,D:\Omer\Source\Tutorial\Mongo\mkfilePCH1.h=D:\Omer\Source\Tutorial\Mongo\Project1PCH1.h</Transaction>
+    <Transaction>2019/03/11 09:12:05.730,D:\Omer\Source\Tutorial\Mongo\mkfile.cbproj=D:\Users\one4\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
+  </Transactions>
+</BorlandProject>

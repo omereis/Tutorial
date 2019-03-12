@@ -17,3 +17,4 @@ ts*.dat
 *.tds
 *.map
 *.il*
+Win32/*

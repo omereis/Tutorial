@@ -12,6 +12,7 @@
 //-----------------------------------------------------------------------------
 int get_cli_size(struct FileMaker *pfm,  int argc, char *argv[]);
 void create_files (struct FileMaker *pfm);
+void remove_old ();
 //-----------------------------------------------------------------------------
 struct FileMaker {
 	int count;
@@ -103,16 +104,23 @@ void create_files (struct FileMaker *pfm)
 {
 	FILE* file;
 	char str[1024], szNameFmt[1000];
-	char *ptr =  malloc (4096);
-	int n, fd;
+	char *ptr =  malloc (1024);
+	int n, fd, i;
+	size_t sFile;
 
+	for (n=0 ; n < 1024 ; n++)
+		ptr[n] = n + 1;
 	remove_old ();
 	sprintf (szNameFmt, "%s%%0%dd.dat", szNameBase, pfm->count);
 
 	for (n=0 ; n < pfm->count ; n++) {
 		sprintf (str, szNameFmt, n);
 		file = fopen (str, "w+b");
-		fwrite(file, 1, 1024, str);
+		//fwrite(ptr, 1, 1024, file);
+		for (i=0 ; i < 1024; i++) {
+			fwrite(ptr, 1, 1024, file);
+		}
+//		fwrite(ptr, 1, 1024, file);
 		fflush(file);
 		fclose (file);
 /*
@@ -125,6 +133,25 @@ void create_files (struct FileMaker *pfm)
 	}
     free(ptr);
 	printf ("created %d new files\n", n);
+}
+//-----------------------------------------------------------------------------
+int match(const char *pattern, const char *candidate, int p, int c) {
+	if (pattern[p] == '\0') {
+		return candidate[c] == '\0';
+	}
+	else if (pattern[p] == '*') {
+		for (; candidate[c] != '\0'; c++) {
+			if (match(pattern, candidate, p+1, c))
+				return 1;
+		}
+		return match(pattern, candidate, p+1, c);
+	}
+	else if (pattern[p] != '?' && pattern[p] != candidate[c]) {
+		return 0;
+	}
+	else {
+		return match(pattern, candidate, p+1, c+1);
+	}
 }
 //-----------------------------------------------------------------------------
 

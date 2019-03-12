@@ -1,5 +1,4 @@
 *.whl
-*.c
 *.O
 *.pyc
 err.txt
@@ -11,3 +10,10 @@ slurm_tutorial.docx
 *.~*
 __history/*
 __recovery/*
+Win32/*
+ts*.dat
+*.exe
+*.obj
+*.tds
+*.map
+*.il*

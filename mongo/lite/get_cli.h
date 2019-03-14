@@ -9,5 +9,5 @@
 #include "db_tst.h"
 #include "fm.h"
 //-----------------------------------------------------------------------------
-int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[]);
+int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppName[]);
 #endif

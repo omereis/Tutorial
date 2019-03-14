@@ -8,14 +8,17 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <sys/statvfs.h> 
 
 //-----------------------------------------------------------------------------
 struct FileMaker {
 	int count;
 	int size;
 	char mult;
+	char szOutFile[1024];
 };
 //-----------------------------------------------------------------------------
+off_t get_free_space ();
 void print_usage();
 bool match(const char *pattern, const char *candidate, int p, int c);
 int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[]);
@@ -36,14 +39,15 @@ int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[])
 {
 	int n, ok, c;
 	char str[1024], mult;
-	char *szSize, *szCount, *szMultiplier, cMult;
-	szSize = szCount = szMultiplier = NULL;
+	char *szSize, *szCount, *szMultiplier, cMult, *szOut;
+	szSize = szCount = szMultiplier = szOut = NULL;
 
 	pfm->count = 10;
 	pfm->size = 5;
 	pfm->mult = 'M';
+	strcpy (pfm->szOutFile, "usage.csv");
 
-	while ((c = getopt (argc, argv, "Hhs:c:m:")) != -1) {
+	while ((c = getopt (argc, argv, "Hhs:c:m:o:")) != -1) {
 		switch (c) {
 			case 's':
 			case 'S':
@@ -55,6 +59,9 @@ int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[])
 				break;
 			case 'm':
 				szMultiplier = optarg;
+				break;
+			case 'o':
+				strcpy (pfm->szOutFile, optarg);
 				break;
 			case 'h':
 			case 'H':
@@ -83,6 +90,7 @@ int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[])
 	printf("fm.count=%d\n", pfm->count);
 	printf("fm.size=%d\n", pfm->size);
 	printf("fm.mult=%c\n", pfm->mult);
+	printf("Output file: '%s'\n", pfm->szOutFile);
 }
 //-----------------------------------------------------------------------------
 void print_usage()
@@ -110,7 +118,7 @@ void remove_old ()
 		}
 	}
 	closedir (dir);
-	printf ("removed %d files\n", n);
+	//printf ("removed %d files\n", n);
 }
 //-----------------------------------------------------------------------------
 bool match(const char *pattern, const char *candidate, int p, int c) {
@@ -135,33 +143,61 @@ bool match(const char *pattern, const char *candidate, int p, int c) {
 //-----------------------------------------------------------------------------
 void create_files (struct FileMaker *pfm)
 {
-	FILE* file;
+	FILE *file, *fOut;
 	char str[1024], szNameFmt[1000];
 	char *ptr =  malloc (pfm->size * 1024);
-	int n, fd, i;
-	size_t sizeFile;
+	int iOuter, nInner, fd, i;
+	size_t sizeFile, sTotalSize, stBefore, stAfter;
+	struct stat st;
 
-	remove_old ();
 	sprintf (szNameFmt, "%s%%0%dd.dat", szNameBase, pfm->count);
 	sizeFile = get_size(pfm);
 	printf ("sizeFile = %ld\n", sizeFile);
 	if (sizeFile > 0) {
-		for (n=0 ; n < pfm->count ; n++) {
-			sprintf (str, szNameFmt, n);
-		//printf ("%d: %s\n", n, str);
-/**/
-			file = fopen (str, "w+b");
-		//fwrite(str, 1, 1024, file);
-			for (i=0 ; i < sizeFile ; i++)
-				//fwrite(ptr, 1, pfm->size * 1024, file);
-				fwrite(ptr, 1, 1024, file);
-			fflush(file);
-			fclose (file);
-/**/
+		fOut = fopen (pfm->szOutFile, "w+");
+		printf ("results file opened\n");
+		fprintf (fOut, "Files,Before,Size,After\n");
+		printf ("results file header printed\n");
+		printf ("\ncont:%d\n\n", pfm->count);
+/*
+		for (iOuter=0 ; iOuter < pfm->count ; iOuter++) {
+			printf ("ready to old removed\n");
 		}
+*/
+		for (iOuter=0 ; iOuter < pfm->count ; iOuter++) {
+			//printf ("ready to old removed\n");
+			remove_old ();
+			//printf ("old removed\n");
+			stBefore = get_free_space();
+			sTotalSize = 0;
+			for (nInner=0 ; nInner < iOuter ; nInner++) {
+				sprintf (str, szNameFmt, nInner);
+				file = fopen (str, "w+b");
+				for (i=0 ; i < sizeFile ; i++)
+					fwrite(ptr, 1, 1024, file);
+				fflush(file);
+				fclose (file);
+				stat (str, &st);
+				sTotalSize += st.st_size;
+			}
+			stAfter = get_free_space();
+			if ((iOuter % 5) == 0)
+				printf ("Created %3d Files\n", iOuter);
+			fprintf (fOut, "%d,%ld,%ld,%ld\n", nInner, stBefore, sTotalSize, stAfter);
+		}
+		fclose (fOut);
 	}
     free(ptr);
-	printf ("created %d new files\n", n);
+	printf ("created %d new files\n", iOuter);
+	remove_old ();
+	printf ("Removed data files\n");
+}
+//-----------------------------------------------------------------------------
+off_t get_free_space ()
+{
+	struct statvfs vfs;
+	statvfs (".", &vfs); 
+	return (vfs.f_bfree);
 }
 //-----------------------------------------------------------------------------
 size_t SizeFromMult (char cMult)

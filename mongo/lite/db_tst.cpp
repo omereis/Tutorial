@@ -3,30 +3,28 @@
 #include <string>
 #include <string.h>
 #include <stdlib.h>
+#include <cstddef>
 #include "db_tst.h"
-
+#include "fm.h"
+#include "get_cli.h" 
 //-----------------------------------------------------------------------------
 //using namespace std;
 //-----------------------------------------------------------------------------
-/*
-// prototypes
-bool open_database (char *szDB, sqlite3 **db, int argc, char *argv[]);
-void create_blobs_table(sqlite3* db);
-string get_blobs_table_create_sql ();
-bool blob_table_exists(sqlite3 *db);
-*/
 
+void insert_items (sqlite3 *db, struct FileMaker *pfm);
 //-----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
     sqlite3 *db;
     char *zErrMsg = 0;
     char szDB[] = "db_blobs.sqlite";
-    int rc;
+	struct FileMaker fm;
 
     if (open_database (szDB, &db, argc, argv)) {
         printf ("Database opened\n");
-        create_blobs_table(db);
+		create_blobs_table(db);
+		get_cli_params(&fm, argc, argv, (char*) "test_blob"); 
+		insert_items(db, &fm);
         sqlite3_close(db);
         printf ("Database Closed\n");
     }
@@ -98,17 +96,20 @@ void create_blobs_table (sqlite3 *db)
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
 		}
-		else
-			printf("BLOB Table Created\n");
-   }
+	}
 }
 
+bool s_fTableExists;
 //-----------------------------------------------------------------------------
-static int cbCreate(void *NotUsed, int argc, char **argv, char **azColName) {
+static int cbCreate(void *NotUsed, int argc, char **argv, char **azColName)
+{
+	s_fTableExists = true;
+	return 0;
 	int i;
 	for(i = 0; i<argc; i++) {
 		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
 	}
+	printf("\n");
 	printf("\n");
 	return 0;
 }
@@ -118,6 +119,7 @@ bool blob_table_exists(sqlite3 *db)
 {
 	char *zErrMsg = 0;
 
+	s_fTableExists = false;
     string strSql = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + strBlobTable + "';";
     int rc = sqlite3_exec(db, strSql.c_str(), cbCreate, 0, &zErrMsg);
 	if (rc != SQLITE_OK) {
@@ -126,8 +128,7 @@ bool blob_table_exists(sqlite3 *db)
 	} else {
 		fprintf(stdout, "Table created successfully\n");
 	}
-	exit(0);
-	return (false);
+	return (s_fTableExists);
 }
 
 //-----------------------------------------------------------------------------
@@ -140,8 +141,37 @@ string get_blobs_table_create_sql ()
 	sprintf (szBuf, szSqlCreateTable, strBlobTable.c_str());
 	str = string(szBuf);
 	delete[] szBuf;
-	//printf ("SQL statement:\n%s\n", str.c_str());
 	return (str);
-	//exit(0);
 }
 
+//-----------------------------------------------------------------------------
+static int callbackInsert (void *data, int argc, char **argv, char **azColName)
+{
+	int i;
+	fprintf(stderr, "Insert callback\nbackn%s: ", (const char*)data);
+
+	for(i = 0; i<argc; i++){
+		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+	}
+
+	printf("\n");
+	return 0;
+}
+
+#include <cwchar>
+//-----------------------------------------------------------------------------
+void insert_items(sqlite3 *db, struct FileMaker *pfm)
+{
+	int n, rc;
+	string strSql;
+    char *zErrMsg = 0;
+
+	for (n=0 ; n < pfm->count ; n++) {
+		strSql = "insert into " + strBlobTable + "(id) values (" + std::to_string(n+1) + ");";
+		rc = sqlite3_exec(db, strSql.c_str(), callbackInsert, 0, &zErrMsg);
+		if (rc != SQLITE_OK ) {
+			fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
+		}
+	}
+}

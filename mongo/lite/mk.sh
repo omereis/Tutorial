@@ -1,1 +1,1 @@
-c++ -o blob_test db_tst.cpp genfile.c get_cli.c -lsqlite3
+c++ -g -o blob_test db_tst.cpp genfile.cpp get_cli.c -lsqlite3

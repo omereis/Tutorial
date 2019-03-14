@@ -10,4 +10,5 @@
 #include "fm.h"
 //-----------------------------------------------------------------------------
 int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppName[]);
+void print_params(struct FileMaker *pfm);
 #endif

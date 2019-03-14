@@ -4,12 +4,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+
 #include "db_tst.h"
+#include "get_cli.h"
 #include "fm.h"
 
 //-----------------------------------------------------------------------------
 void print_usage(char *szAppName);
-void print_params(struct FileMaker *pfm);
+//void print_params(struct FileMaker *pfm);
 
 //-----------------------------------------------------------------------------
 int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppName[])
@@ -65,8 +67,8 @@ int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppNam
 				pfm->mult = 'K';
 		}
 	}
-	print_params(pfm);
 /*
+	print_params(pfm);
 	printf("fm.count=%d\n", pfm->count);
 	printf("fm.size=%d\n", pfm->size);
 	printf("fm.mult=%c\n", pfm->mult);

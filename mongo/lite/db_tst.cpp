@@ -4,32 +4,66 @@
 #include <string.h>
 #include <stdlib.h>
 #include <cstddef>
+#include <cwchar>
+#include <exception>
+
 #include "db_tst.h"
 #include "fm.h"
 #include "get_cli.h" 
+#include "genfile.h" 
 //-----------------------------------------------------------------------------
 //using namespace std;
 //-----------------------------------------------------------------------------
 
-void insert_items (sqlite3 *db, struct FileMaker *pfm);
+extern char *szNameBase;
+
+void insert_items (sqlite3 *db, struct FileMaker *pfmi, char szName[]);
+void delete_current_items (sqlite3 *db, struct FileMaker *pfm);
+bool file_exists (const char szName[]);
+void gen_one_file (char szName[], struct FileMaker *pfm);
+char *read_file (char szName[], int &length);
+
 //-----------------------------------------------------------------------------
+
 int main(int argc, char* argv[])
 {
     sqlite3 *db;
     char *zErrMsg = 0;
     char szDB[] = "db_blobs.sqlite";
 	struct FileMaker fm;
+	char *szName = new char[strlen(szNameBase) * 2];
 
+	sprintf (szName, "%s.dat", szNameBase);
     if (open_database (szDB, &db, argc, argv)) {
         printf ("Database opened\n");
 		create_blobs_table(db);
+		printf ("  Table created\n");
 		get_cli_params(&fm, argc, argv, (char*) "test_blob"); 
-		insert_items(db, &fm);
+		printf ("Read command line parameters:\n\n");
+		print_params (&fm);
+		printf ("-----------------------------------\n\n");
+		gen_one_file (szName, &fm);
+		delete_current_items (db, &fm);
+		printf ("  Old items deleted\n");
+		insert_items(db, &fm, szName);
+		printf ("  New items Added\n");
         sqlite3_close(db);
         printf ("Database Closed\n");
+		remove (szName);
+		printf ("Data file deleted\n");
     }
+	delete[] szName;
 }
 
+//-----------------------------------------------------------------------------
+void gen_one_file (char szName[], struct FileMaker *pfm)
+{
+	int nCount = pfm->count;
+
+	pfm->count = 1;
+	generate_file (szName, pfm);
+	pfm->count = nCount;
+}
 //-----------------------------------------------------------------------------
 bool open_database (char *szDB, sqlite3 **db, int argc, char *argv[])
 {
@@ -158,20 +192,103 @@ static int callbackInsert (void *data, int argc, char **argv, char **azColName)
 	return 0;
 }
 
-#include <cwchar>
 //-----------------------------------------------------------------------------
-void insert_items(sqlite3 *db, struct FileMaker *pfm)
+void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 {
-	int n, rc;
+	int n, rc, length;
 	string strSql;
-    char *zErrMsg = 0;
+	char *zErrMsg = 0, *pData;
+	FILE *fDebug;
+	sqlite3_stmt *ppStmt;
+	const char  **pzTail;
 
+	fDebug = fopen ("oe_debug.txt", "a+");
+	pData = read_file (szName, length);
+	printf ("file read\n");
+	printf ("read for %d items\n\n", pfm->count);
 	for (n=0 ; n < pfm->count ; n++) {
-		strSql = "insert into " + strBlobTable + "(id) values (" + std::to_string(n+1) + ");";
+		strSql = "insert into " + strBlobTable + "(id,file) values (" + std::to_string(n+1) + ", ?);";
+
+		//printf ("%d: %s\n", n, strSql.c_str());
+		//fprintf (fDebug, "%d: %s\n", n, strSql.c_str());
+
+		rc = sqlite3_prepare_v2(db, strSql.c_str(), -1, &ppStmt, NULL);
+		if (rc != SQLITE_OK) {
+			fprintf (stderr, "Error:\n%s\n", sqlite3_errmsg(db));
+			exit (-1);
+		}
+		//fprintf (stderr, "statement prepared\n");
+		if(ppStmt) {
+	      // For Blob collumn bind 1
+			sqlite3_bind_blob(ppStmt, 1, pData, length, SQLITE_TRANSIENT);
+			sqlite3_step(ppStmt);
+			sqlite3_finalize(ppStmt);
+			sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
+		}
+/*
 		rc = sqlite3_exec(db, strSql.c_str(), callbackInsert, 0, &zErrMsg);
 		if (rc != SQLITE_OK ) {
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
 		}
+*/
 	}
+	fclose (fDebug);
+	delete (pData);
+}
+
+//-----------------------------------------------------------------------------
+void delete_current_items (sqlite3 *db, struct FileMaker *pfm)
+{
+    int n, rc;
+    string strSql;
+    char *zErrMsg = 0;
+
+	//for (n=0 ; n < pfm->count ; n++) {
+        //strSql = "delete from " + strBlobTable + " where (id= " + std::to_string(n+1) + ");";
+        strSql = "delete from " + strBlobTable + ";";
+        rc = sqlite3_exec(db, strSql.c_str(), callbackInsert, 0, &zErrMsg);
+        if (rc != SQLITE_OK ) {
+            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        }
+    //}
+}
+
+#include <fstream>
+//-----------------------------------------------------------------------------
+bool file_exists (const char szName[])
+{
+	std::ifstream ifile (szName);
+	bool f = (bool) ifile;
+	if (f)
+		printf ("File %s exists\n", szName);
+	return ((bool) ifile);
+}
+
+//-----------------------------------------------------------------------------
+std::ifstream::pos_type filesize(const char* filename)
+{
+    std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+    return in.tellg(); 
+}
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+//-----------------------------------------------------------------------------
+char *read_file (char szName[], int &length)
+{
+	float rSize = (float) filesize(szName);
+	length = (int) filesize(szName);
+
+	char *pData = new char [length];
+	int fd = open (szName, S_IRUSR);
+	int read_bytes = read (fd, pData, length);
+	close(fd);
+
+	printf ("file %s size is %g\n", szName, rSize);
+	printf ("%d bytes read, %d bytes in file\n", read_bytes, length);
+	return (pData);
 }

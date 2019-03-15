@@ -1,8 +1,0 @@
-db_tst.cpp: In function ‘int main(int, char**)’:
-db_tst.cpp:33:46: warning: ISO C++ forbids converting a string constant to ‘char*’ [-Wwrite-strings]
-   get_cli_params(&fm, argc, argv, "test_blob");
-                                              ^
-genfile.c: In function ‘size_t size_from_mult(char)’:
-genfile.c:43:11: error: ‘tolower’ was not declared in this scope
-  char c = tolower(cMult);
-           ^~~~~~~

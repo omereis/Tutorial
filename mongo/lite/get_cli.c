@@ -90,3 +90,13 @@ void print_params(struct FileMaker *pfm)
 	printf("fm.mult=%c\n", pfm->mult);
 	printf("Output file: '%s'\n", pfm->szOutFile);
 }
+
+#include <sys/statvfs.h>
+//-----------------------------------------------------------------------------
+off_t get_free_space ()
+{
+	struct statvfs vfs;
+	statvfs (".", &vfs); 
+	return (vfs.f_bfree);
+}
+//-----------------------------------------------------------------------------

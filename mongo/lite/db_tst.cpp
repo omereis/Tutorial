@@ -193,48 +193,68 @@ static int callbackInsert (void *data, int argc, char **argv, char **azColName)
 }
 
 //-----------------------------------------------------------------------------
+void insert_item (sqlite3 *db, int n);
 void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 {
 	int n, rc, length;
 	string strSql;
 	char *zErrMsg = 0, *pData;
-	FILE *fDebug;
+	FILE *fResults;
 	sqlite3_stmt *ppStmt;
 	const char  **pzTail;
 
-	fDebug = fopen ("oe_debug.txt", "a+");
+	fResults = fopen (pfm->szOutFile, "w+");
+	fprintf (fResults, "Number,Space\n");
 	pData = read_file (szName, length);
 	printf ("file read\n");
 	printf ("read for %d items\n\n", pfm->count);
 	for (n=0 ; n < pfm->count ; n++) {
+		insert_item (db, n);
+/*
 		strSql = "insert into " + strBlobTable + "(id,file) values (" + std::to_string(n+1) + ", ?);";
-
-		//printf ("%d: %s\n", n, strSql.c_str());
-		//fprintf (fDebug, "%d: %s\n", n, strSql.c_str());
 
 		rc = sqlite3_prepare_v2(db, strSql.c_str(), -1, &ppStmt, NULL);
 		if (rc != SQLITE_OK) {
 			fprintf (stderr, "Error:\n%s\n", sqlite3_errmsg(db));
 			exit (-1);
 		}
-		//fprintf (stderr, "statement prepared\n");
 		if(ppStmt) {
-	      // For Blob collumn bind 1
 			sqlite3_bind_blob(ppStmt, 1, pData, length, SQLITE_TRANSIENT);
 			sqlite3_step(ppStmt);
 			sqlite3_finalize(ppStmt);
 			sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
 		}
-/*
-		rc = sqlite3_exec(db, strSql.c_str(), callbackInsert, 0, &zErrMsg);
-		if (rc != SQLITE_OK ) {
-			fprintf(stderr, "SQL error: %s\n", zErrMsg);
-			sqlite3_free(zErrMsg);
-		}
 */
+		if (((n+1) % 5) == 0)
+			fprintf (stderr, "%d items inserted\r", (n + 1));
+		fprintf (fResults, "%d,%ld\n", n+1, get_free_space());
 	}
-	fclose (fDebug);
+	fclose (fResults);
 	delete (pData);
+}
+
+//-----------------------------------------------------------------------------
+void insert_item (sqlite3 *db, int n)
+{
+	int rc, length;
+	string strSql;
+	char *zErrMsg = 0, *pData;
+	FILE *fResults;
+	sqlite3_stmt *ppStmt;
+	const char  **pzTail;
+
+	strSql = "insert into " + strBlobTable + "(id,file) values (" + std::to_string(n+1) + ", ?);";
+	rc = sqlite3_prepare_v2(db, strSql.c_str(), -1, &ppStmt, NULL);
+	if (rc != SQLITE_OK) {
+		fprintf (stderr, "Error:\n%s\n", sqlite3_errmsg(db));
+		exit (-1);
+	}
+	if(ppStmt) {
+		sqlite3_bind_blob(ppStmt, 1, pData, length, SQLITE_TRANSIENT);
+		sqlite3_step(ppStmt);
+		sqlite3_finalize(ppStmt);
+		sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
+	}
 }
 
 //-----------------------------------------------------------------------------

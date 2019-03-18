@@ -21,6 +21,9 @@ RUN apt-get install -y gcc
 RUN apt-get install -y --reinstall build-essential
 RUN apt-get install -y g++
 RUN apt-get install -y g++-multilib
+RUN apt-get install -y libmysqlcppconn-dev
+RUN apt-get install -y iputils-ping
+RUN apt install -y mysql-client
 
 # RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
 # RUN touch /etc/apt/sources.list.d/mongodb-org-3.4.list
@@ -31,7 +34,8 @@ RUN apt-get install -y g++-multilib
 RUN touch /var/lib/mongodb/arad
 RUN rm /var/lib/mongodb/*
 
-WORKDIR /home/oe/lite
+WORKDIR /home/oe/mysql
+#WORKDIR /home/oe/lite
 ENV HOME=/home/oe/
 COPY ./ /home/oe
 

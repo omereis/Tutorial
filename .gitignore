@@ -18,3 +18,4 @@ ts*.dat
 *.map
 *.il*
 Win32/*
+*.sqlite

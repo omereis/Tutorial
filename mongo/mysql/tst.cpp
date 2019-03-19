@@ -37,59 +37,103 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #include <cppconn/statement.h>
 
 
+
 /* MySQL Connector/C++ specific headers */
 #include <driver.h>
 #include <connection.h>
 #include <statement.h>
 #include <prepared_statement.h>
+//#include <resultset.h>
 #include <cppconn/resultset.h>
 #include <metadata.h>
 #include <resultset_metadata.h>
 #include <exception.h>
 #include <warning.h>
 
-using namespace std;
 using namespace sql;
+using namespace std;
 
 void retrieve_data_and_print (ResultSet *rs, int type, int colidx, string colname);
 
-#define NUMOFFSET	100
-#define	COLNAME		200
+#define NUMOFFSET 100
+
+//-----------------------------------------------------------------------------
+void print_error (sql::SQLException &e, const string &strFile, const string &strFunction, int nLine)
+{
+	cout << "# ERR: SQLException in " << strFile << endl;
+	cout << "(" << strFile << ") on line " << std::to_string (nLine) << endl;
+	cout << "# ERR: " << e.what();
+	cout << " (MySQL error code: " << e.getErrorCode();
+	cout << ", SQLState: " << e.getSQLState() << " )" << endl << endl;
+}
+
+//-----------------------------------------------------------------------------
+int getMaxID (sql::Statement *stmt, const string &strTable, const string &strID)
+{
+	string strSql;
+	sql::ResultSet *rs;
+	int nMax;
+
+	strSql = "select max(" + strID + ") from " + strTable + ";";
+	//strSql = "select * from " + strTable + ";";
+	try {
+		cout << strSql << endl;
+		rs = stmt->executeQuery (strSql);
+		rs->first ();
+		nMax = rs->getInt(1);
+	}
+	catch (sql::SQLException &e) {
+        cout << "# ERR: SQLException in " << __FILE__;
+        cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+        cout << "# ERR: " << e.what();
+        cout << " (MySQL error code: " << e.getErrorCode();
+        cout << ", SQLState: " << e.getSQLState() << " )" << endl << endl;
+		nMax = -1;
+    }
+	return (nMax);
+}
+
+static const string TableBlob ("T_BLOB");
+//-----------------------------------------------------------------------------
 int main(void)
 {
 	cout << endl;
-	cout << "Running 'SELECT 'Hello World!' AS _message'..." << endl;
+	//cout << "Running 'SELECT 'Hello World!' AS _message'..." << endl;
 
 	try {
 		sql::Driver *driver;
 		sql::Connection *con;
 		sql::Statement *stmt;
 		sql::ResultSet *res;
+		string strSql;
+
+#define NUMOFFSET 100
 
   /* Create a connection */
+#define NUMOFFSET 100
+
 		driver = get_driver_instance();
-		//con = driver->connect("tcp://127.0.0.1:3306", "root", "root");
 		con = driver->connect("tcp://ncnr-r9nano.campus.nist.gov", "myblob", "myblob");
   /* Connect to the MySQL test database */
-		//con->setSchema("test");
 		con->setSchema("lite");
 		cout << "\nDatabase connection\'s autocommit mode = " << con -> getAutoCommit() << endl;
 		stmt = con->createStatement();
+		int id = getMaxID (stmt, "T_BLOB", "ID") + 1;
+		cout << "Next max ID: " << id << endl;
+		for (int n=0 ; n < 50 ; n++) {
+			try {
+				strSql = "insert into " + TableBlob + " (id) values (" + std::to_string (id++) + ");";
+				stmt->executeQuery (strSql);
+			}
+			catch (sql::SQLException &e) {
+				print_error (e, __FILE__, __FUNCTION__, __LINE__);
+			}
+		}
+
 		res = stmt->executeQuery ("select * from T_BLOB;");
 
 		retrieve_data_and_print (res, NUMOFFSET, 1,"");
-/*
-		stmt = con->createStatement();
-		res = stmt->executeQuery("SELECT 'Hello World!' AS _message");
-		while (res->next()) {
-			cout << "\t... MySQL replies: ";
-    ** Access column data by alias or column name **
-			cout << res->getString("_message") << endl;
-			cout << "\t... MySQL says it again: ";
-    ** Access column data by numeric offset, 1 is the first column **
-			cout << res->getString(1) << endl;
-		}
-*/
+
 		delete res;
 		delete stmt;
 		delete con;
@@ -107,24 +151,22 @@ int main(void)
 	return EXIT_SUCCESS;
 }
 
+#define	COLNAME	200
 //-----------------------------------------------------------------------------
-void retrieve_data_and_print (ResultSet *rs, int type, int colidx, string colname) {
+void retrieve_data_and_print (ResultSet *rs, int type, int colidx, string colname)
+{
+	ResultSetMetaData *pMeta;
 
-	/* retrieve the row count in the result set */
-	cout << "\nRetrieved " << rs -> rowsCount() << " row(s)." << endl;
-
-	cout << "\nCityName" << endl;
-	cout << "--------" << endl;
-
-	/* fetch the data : retrieve all the rows in the result set */
-	while (rs->next()) {
-		if (type == NUMOFFSET) {
-                       cout << rs -> getString(colidx) << endl;
-		} else if (type == COLNAME) {
-                       cout << rs -> getString(colname) << endl;
-		} // if-else
-	} // while
-
-	cout << endl;
+	try {
+		pMeta = rs->getMetaData();
+		cout << "Number of columns : " << pMeta->getColumnCount() << endl;
+		while (rs->next()) {
+			cout << rs->getString(1) << endl;
+		}
+	}
+	catch (sql::SQLException &e) {
+		cout << "Error";
+		cout << e.getErrorCode();
+	}
 
 } // retrieve_data_and_print()

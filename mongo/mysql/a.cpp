@@ -1,5 +1,8 @@
-#include <cppconn/resultset.h>
+#include <streambuf>
 
-ResultSet *rs;
+std::streambuf *buf;
 
+char *sz;
+
+buf = (std::streambug*)) new std::streambuf (sz, 5);
 

@@ -1,1 +1,1 @@
-g++ -Wall -I/usr/include/cppconn -o btst tst.cpp -L/usr/lib -lmysqlcppconn
+g++ -Wall -I/usr/include/cppconn -o btst tst.cpp misc.cpp -L/usr/lib -lmysqlcppconn

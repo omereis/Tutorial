@@ -116,24 +116,27 @@ void insert_file (sql::Connection *con, int idStart, const string &strFile, int 
 	sql::PreparedStatement *pstmt;
 	char *pData;
 	std::istream *blob;
-	ifstream *blobFile;
+	ifstream *ifstr;
 	int nLen;
 
 	//buf = new std::streambuf ((const char *) pData, s);
 	//blob = new std::istream(strFile.c_str(), ifstream::binary);
 	//fb.open (strFile.c_str(), ios::in | ios::binary);
 	strSql = "insert into " + TableBlob + "(" + FieldID + "," + FieldFile + ") values (?,?);";
+
+	ifstream infile;
+	char buf[100];
+	infile.open("hello.dat", ios::binary | ios::in);
+	infile.read (buf, 10);
+
+	blob = dynamic_cast<istream*>(&infile);
 	pstmt = con->prepareStatement (strSql);
 	try {
-		//pData = read_file (strFile.c_str(), nLen);
+		pData = read_file (strFile.c_str(), nLen);
 		//buf = new std::streambuf (pData);
-		blobFile = new ifstream ("file", ios::binary | ios::in);
-		int nDataSize = blobFile->tellg();
-		pData = new char[nDataSize];
-		blobFile->read (pData, nDataSize);
-
-		pstmt->setBlob (1, blobFile);
+		//istr = new std::istream (buf);
 		pstmt->setBlob (1, blob);
+		pstmt->setBlob (1, &infile);
 		//pstmt->setBinaryStream (1, pData);
 		delete pData;
 	}

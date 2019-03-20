@@ -23,7 +23,6 @@ bool file_exists (const char szName[]);
 void gen_one_file (char szName[], struct FileMaker *pfm);
 char *read_file (char szName[], int &length);
 void insert_item (sqlite3 *db, int n);
-void insert_item (sqlite3 *db, int n, char *pData, int length);
 void remove_item (sqlite3 *db, int n);
 
 //-----------------------------------------------------------------------------
@@ -108,6 +107,19 @@ static int callback(void *data, int argc, char **argv, char **azColName){
    return 0;
 }
 
+/*
+//-----------------------------------------------------------------------------
+static int callback(void *NotUsed, int argc, char **argv, char **azColName)
+{
+	int i;
+
+	for(i = 0; i<argc; i++)
+		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+	printf("\n");
+	return 0;
+}
+*/
+
 //-----------------------------------------------------------------------------
 void create_blobs_table (sqlite3 *db)
 {
@@ -191,19 +203,16 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 	FILE *fResults;
 	sqlite3_stmt *ppStmt;
 	const char  **pzTail;
-	//FILE *fDebug = fopen ("oe_debug.txt", "a+");
-	float rTotalSize = 0.0;
 
 	fResults = fopen (pfm->szOutFile, "w+");
-	fprintf (fResults, "Number,Inserted,Space\n");
+	fprintf (fResults, "Number,Space\n");
 	pData = read_file (szName, length);
 	printf ("file read\n");
 	printf ("read for %d items\n\n", pfm->count);
 	for (n=0 ; n < pfm->count ; n++) {
-		//insert_item (db, n, pData, length);
+		//insert_item (db, n);
 /**/
 		strSql = "insert into " + strBlobTable + "(id,file) values (" + std::to_string(n+1) + ", ?);";
-		//fprintf (fDebug, "%d: %s\n", n, strSql.c_str());
 		rc = sqlite3_prepare_v2(db, strSql.c_str(), -1, &ppStmt, NULL);
 		if (rc != SQLITE_OK) {
 			fprintf (stderr, "Error:\n%s\n", sqlite3_errmsg(db));
@@ -218,19 +227,10 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 /**/
 		if (((n+1) % 5) == 0)
 			fprintf (stderr, "%d items inserted\r", (n + 1));
-		rTotalSize += (float) length;
-		fprintf (fResults, "%d,%g,%ld\n", n+1, rTotalSize,get_free_space());
-	}
-	for (n=pfm->count  ; n > 0 ; n--) {
-		remove_item (db, n);
-		if (((n+1) % 5) == 0)
-			fprintf (stderr, "%d items remained\r", (n + 1));
-			rTotalSize -= (float) length;
-		fprintf (fResults, "%d,%g,%ld\n", n+1, rTotalSize, get_free_space());
+		fprintf (fResults, "%d,%ld\n", n+1, get_free_space());
 	}
 	fclose (fResults);
 	delete (pData);
-	//fclose (fDebug);
 }
 
 //-----------------------------------------------------------------------------
@@ -249,7 +249,7 @@ void insert_items_new(sqlite3 *db, struct FileMaker *pfm, char szName[])
 	printf ("file read\n");
 	printf ("read for %d items\n\n", pfm->count);
 	for (n=0 ; n < pfm->count ; n++) {
-		insert_item (db, n, NULL, 0);
+		insert_item (db, n);
 		if (((n+1) % 5) == 0)
 			fprintf (stderr, "%d items inserted\r", (n + 1));
 		fprintf (fResults, "%d,%ld\n", n+1, get_free_space());
@@ -267,11 +267,12 @@ void insert_items_new(sqlite3 *db, struct FileMaker *pfm, char szName[])
 }
 
 //-----------------------------------------------------------------------------
-void insert_item (sqlite3 *db, int n, char *pData, int length)
+void insert_item (sqlite3 *db, int n)
 {
-	int rc;
+	int rc, length;
 	string strSql;
-	char *zErrMsg;
+	char *zErrMsg = 0, *pData;
+	FILE *fResults;
 	sqlite3_stmt *ppStmt;
 	const char  **pzTail;
 
@@ -302,7 +303,6 @@ void remove_item (sqlite3 *db, int n)
 		sqlite3_close(db);
 		exit(-1);
 	}
-	sqlite3_exec(db, "VACUUM;", NULL, NULL, NULL);
 	sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
 }
 

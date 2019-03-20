@@ -115,7 +115,6 @@ void insert_file (sql::Connection *con, int idStart, const string &strFile, int 
 	string strSql;
 	sql::PreparedStatement *pstmt;
 	char *pData;
-	std::istream *blob;
 	ifstream *blobFile;
 	int nLen;
 
@@ -127,15 +126,18 @@ void insert_file (sql::Connection *con, int idStart, const string &strFile, int 
 	try {
 		//pData = read_file (strFile.c_str(), nLen);
 		//buf = new std::streambuf (pData);
-		blobFile = new ifstream ("file", ios::binary | ios::in);
-		int nDataSize = blobFile->tellg();
-		pData = new char[nDataSize];
-		blobFile->read (pData, nDataSize);
-
-		pstmt->setBlob (1, blobFile);
-		pstmt->setBlob (1, blob);
-		//pstmt->setBinaryStream (1, pData);
+		blobFile = new ifstream (strFile, ios::binary | ios::in);
+		nLen = blobFile->tellg();
+		pData = new char[nLen];
+		cout << "about to read file " << strFile << endl;
+		blobFile->read (pData, nLen);
+		cout << "File " << strFile << " read" << endl;
+		pstmt->setInt (1, idStart);
+		pstmt->setBlob (2, blobFile);
+		pstmt->executeUpdate();
+		cout << "File " << strFile << " inserted to database" << endl;
 		delete pData;
+		delete pstmt;
 	}
 	catch (exception &e) {
 		print_error (e, __FILE__, __FUNCTION__, __LINE__);
@@ -168,6 +170,7 @@ int main(void)
 		stmt = con->createStatement();
 		int id = getMaxID (stmt, "T_BLOB", "ID") + 1;
 		cout << "Next max ID: " << id << endl;
+/*
 		for (int n=0 ; n < 50 ; n++) {
 			try {
 				strSql = "insert into " + TableBlob + " (id) values (" + std::to_string (id++) + ");";
@@ -177,7 +180,7 @@ int main(void)
 				print_error (e, __FILE__, __FUNCTION__, __LINE__);
 			}
 		}
-
+*/
 		id = getMaxID (stmt, "T_BLOB", "ID") + 1;
 		insert_file (con, id, "/home/one4/Source/disk_space/mysql/bari.jpg", 2);
 		res = stmt->executeQuery ("select * from T_BLOB;");

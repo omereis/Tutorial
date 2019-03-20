@@ -23,21 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include <fstream>      // std::filebuf
-#include <streambuf>
 
-#include "genfile.h"
 #include "misc.h"
-#include "get_cli.h"
-
-/*
-using namespace sql;
-using namespace std;
-
-static const string TableBlob ("T_BLOB");
-static const string FieldID   ("ID");
-static const string FieldFile  ("FILE_BLOB");
-*/
 
 /*
   Include directly the different
@@ -50,12 +37,7 @@ static const string FieldFile  ("FILE_BLOB");
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
-using namespace sql;
-using namespace std;
 
-static const string TableBlob ("T_BLOB");
-static const string FieldID   ("ID");
-static const string FieldFile  ("FILE_BLOB");
 
 /* MySQL Connector/C++ specific headers */
 #include <driver.h>
@@ -69,11 +51,13 @@ static const string FieldFile  ("FILE_BLOB");
 #include <exception.h>
 #include <warning.h>
 
+using namespace sql;
+using namespace std;
+
 void print_sql_error (sql::SQLException &e, const string &strFile, const string &strFunction, int nLine);
 void print_error (exception &e, const string &strFile, const string &strFunction, int nLine);
 void insert_file (sql::Connection *con, int idStart, const string &strFile, int nInsertCount = 1);
-void insert_file (sql::Connection *con, int idStart, const std::string &strDataFileName, struct FileMaker *pfm);
-long GetFileSize(std::string filename);
+//#include "perr.h"
 //-----------------------------------------------------------------------------
 void print_sql_error (sql::SQLException &e, const string &strFile, const string &strFunction, int nLine)
 {
@@ -120,8 +104,54 @@ int getMaxID (sql::Statement *stmt, const string &strTable, const string &strID)
 	return (nMax);
 }
 
+static const string TableBlob ("T_BLOB");
+static const string FieldID   ("ID");
+static const string FieldFile  ("FILE_BLOB");
+#include <iostream>     // std::ios, std::istream, std::cout
+#include <fstream>      // std::filebuf
+#include <streambuf>
 //-----------------------------------------------------------------------------
-int main(int argc, char *argv[])
+void insert_file (sql::Connection *con, int idStart, const string &strFile, int nInsertCount)
+{
+	string strSql, strBase;
+	sql::PreparedStatement *pstmt;
+	char *pData;
+	ifstream *blobFile;
+	int nLen;
+
+	//buf = new std::streambuf ((const char *) pData, s);
+	//blob = new std::istream(strFile.c_str(), ifstream::binary);
+	//fb.open (strFile.c_str(), ios::in | ios::binary);
+	try {
+		//pData = read_file (strFile.c_str(), nLen);
+		//buf = new std::streambuf (pData);
+		cout << "about to read file " << strFile << endl;
+		//blobFile->read (pData, nLen);
+		cout << "File " << strFile << " read" << endl;
+		strBase = "insert into " + TableBlob + "(" + FieldID + "," + FieldFile + ") values (?,?);";
+		for (int n=0 ; n < nInsertCount ; n++) {
+			blobFile = new ifstream (strFile, ios::binary | ios::in);
+			nLen = blobFile->tellg();
+			pData = new char[nLen];
+			blobFile->read (pData, nLen);
+			strSql = strBase;
+			pstmt = con->prepareStatement (strSql);
+			pstmt->setInt (1, idStart++);
+			pstmt->setBlob (2, blobFile);
+			pstmt->executeUpdate();
+			delete pstmt;
+			delete pData;
+			delete blobFile;
+		}
+		cout << "File " << strFile << " inserted to database" << endl;
+	}
+	catch (exception &e) {
+		print_error (e, __FILE__, __FUNCTION__, __LINE__);
+	}
+}
+
+//-----------------------------------------------------------------------------
+int main(void)
 {
 	cout << endl;
 	//cout << "Running 'SELECT 'Hello World!' AS _message'..." << endl;
@@ -130,14 +160,9 @@ int main(int argc, char *argv[])
 		sql::Driver *driver;
 		sql::Connection *con;
 		sql::Statement *stmt;
-		struct FileMaker fm;
-		string strSql, strDataFileName;
+		sql::ResultSet *res;
+		string strSql;
 
-		get_cli_params(&fm, argc, argv, (char*) "btst");
-		print_params (&fm);
-		cout << "Free space: " << get_free_space() / (1024 * 1024) << " M bytes"<< endl;
-		strDataFileName = gen_one_file ("", &fm);
-		//exit(0);
 #define NUMOFFSET 100
 
   /* Create a connection */
@@ -151,13 +176,24 @@ int main(int argc, char *argv[])
 		stmt = con->createStatement();
 		int id = getMaxID (stmt, "T_BLOB", "ID") + 1;
 		cout << "Next max ID: " << id << endl;
+/*
+		for (int n=0 ; n < 50 ; n++) {
+			try {
+				strSql = "insert into " + TableBlob + " (id) values (" + std::to_string (id++) + ");";
+				stmt->executeQuery (strSql);
+			}
+			catch (sql::SQLException &e) {
+				print_error (e, __FILE__, __FUNCTION__, __LINE__);
+			}
+		}
+*/
 		id = getMaxID (stmt, "T_BLOB", "ID") + 1;
-		//insert_file (con, id, "/home/one4/Source/disk_space/mysql/bari.jpg", 5);
-		insert_file (con, id, strDataFileName, &fm);
+		insert_file (con, id, "/home/one4/Source/disk_space/mysql/bari.jpg", 5);
+		res = stmt->executeQuery ("select * from T_BLOB;");
 
 		//retrieve_data_and_print (res, NUMOFFSET, 1,"");
 
-		//delete res;
+		delete res;
 		delete stmt;
 		delete con;
 
@@ -192,116 +228,4 @@ void retrieve_data_and_print (ResultSet *rs, int type, int colidx, string colnam
 		cout << e.getErrorCode();
 	}
 
-}
-
-//-----------------------------------------------------------------------------
-void insert_file (sql::Connection *con, int idStart, const string &strFile, int nInsertCount)
-{
-	string strSql, strBase;
-	sql::PreparedStatement *pstmt;
-	char *pData;
-	ifstream *blobFile;
-	int nLen;
-
-	try {
-		//cout << "about to read file " << strFile << endl;
-		//cout << "File " << strFile << " read" << endl;
-		strBase = "insert into " + TableBlob + "(" + FieldID + "," + FieldFile + ") values (?,?);";
-		for (int n=0 ; n < nInsertCount ; n++) {
-			blobFile = new ifstream (strFile, ios::binary | ios::in);
-			nLen = blobFile->tellg();
-			pData = new char[nLen];
-			blobFile->read (pData, nLen);
-			strSql = strBase;
-			pstmt = con->prepareStatement (strSql);
-			pstmt->setInt (1, idStart++);
-			pstmt->setBlob (2, blobFile);
-			pstmt->executeUpdate();
-			delete pstmt;
-			delete pData;
-			delete blobFile;
-		}
-		cout << "File " << strFile << " inserted to database" << endl;
-	}
-	catch (exception &e) {
-		print_error (e, __FILE__, __FUNCTION__, __LINE__);
-	}
-}
-
-//-----------------------------------------------------------------------------
-void insert_file (sql::Connection *con, int idStart, const std::string &strDataFileName, struct FileMaker *pfm)
-{
-	string strSql, strBase;
-	sql::PreparedStatement *pstmt;
-	char *pData;
-	ifstream *blobFile;
-	int n, nLen, nBefore, nAfter;
-	long lSize;
-	FILE *fResults;
-	clock_t cStart;
-	double dSeconds;
-	sql::Statement *stmt;
-
-	try {
-		//cout << "about to read file " << strFile << endl;
-		//cout << "File " << strFile << " read" << endl;
-		strBase = "insert into " + TableBlob + "(" + FieldID + "," + FieldFile + ") values (?,?);";
-		fResults = fopen (pfm->szOutFile, "a+");
-		fprintf (fResults, "Number,Before,After,Inserted,Time\n");
-		lSize = GetFileSize (strDataFileName);
-		printf ("File %s size: %ld\n", strDataFileName.c_str(), lSize);
-		
-		for (n=0 ; n < pfm->count ; n++) {
-			cStart = clock();
-			nBefore = get_free_space();
-
-			blobFile = new ifstream (strDataFileName, ios::binary | ios::in);
-			nLen = blobFile->tellg();
-			//fprintf (stderr, "File size: %d\n", nLen);
-			
-			pData = new char[nLen];
-			blobFile->read (pData, nLen);
-			strSql = strBase;
-			pstmt = con->prepareStatement (strSql);
-			pstmt->setInt (1, idStart++);
-			pstmt->setBlob (2, blobFile);
-			pstmt->executeUpdate();
-			delete pstmt;
-			delete pData;
-			fprintf (stderr, "Inserted %d files\r", n+1);
-			delete blobFile;
-
-			nAfter = get_free_space();
-			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
-			fprintf (stderr, "%d,%d,%d,%ldi,%g\r", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
-			fprintf (fResults, "%d,%d,%d,%ld,%g\n", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
-		}
-		fprintf (stderr, "\nDone inserting\n");
-		for ( ; n >= 0 ; n++) {
-			cStart = clock();
-			nBefore = get_free_space();
-			strSql = "delete from " + TableBlob + " where " + FieldID + "=" + std::to_string(n) + ";";
-			stmt = con->createStatement();
-			stmt->executeQuery (strSql);
-			delete stmt;
-			nAfter = get_free_space();
-			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
-			fprintf (stderr, "%d,%d,%d,%ldi,%g\r", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
-			fprintf (fResults, "%d,%d,%d,%ld,%g\n", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
-		}
-		fclose (fResults);
-	}
-	catch (exception &e) {
-		print_error (e, __FILE__, __FUNCTION__, __LINE__);
-	}
-}
-
-//-----------------------------------------------------------------------------
-long GetFileSize(std::string filename)
-{
-    struct stat stat_buf;
-    int rc = stat(filename.c_str(), &stat_buf);
-    return rc == 0 ? stat_buf.st_size : -1;
-}
-
-//-----------------------------------------------------------------------------
+} // retrieve_data_and_print()

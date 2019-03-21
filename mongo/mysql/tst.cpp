@@ -50,6 +50,8 @@ static const string FieldFile  ("FILE_BLOB");
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
+enum	SqlCommand	{SQLExecute, SQLQuery};
+
 using namespace sql;
 using namespace std;
 
@@ -74,6 +76,7 @@ void print_error (exception &e, const string &strFile, const string &strFunction
 void insert_file (sql::Connection *con, int idStart, const string &strFile, int nInsertCount = 1);
 void insert_file (sql::Connection *con, int idStart, const std::string &strDataFileName, struct FileMaker *pfm);
 long GetFileSize(std::string filename);
+bool RunSql (sql::Connection *con, const std::string &strSql, const SqlCommand &cmd, sql::ResultSet *res=NULL);
 //-----------------------------------------------------------------------------
 void print_sql_error (sql::SQLException &e, const string &strFile, const string &strFunction, int nLine)
 {
@@ -104,7 +107,6 @@ int getMaxID (sql::Statement *stmt, const string &strTable, const string &strID)
 	strSql = "select max(" + strID + ") from " + strTable + ";";
 	//strSql = "select * from " + strTable + ";";
 	try {
-		cout << strSql << endl;
 		rs = stmt->executeQuery (strSql);
 		rs->first ();
 		nMax = rs->getInt(1);
@@ -147,7 +149,7 @@ int main(int argc, char *argv[])
 		con = driver->connect("tcp://ncnr-r9nano.campus.nist.gov", "myblob", "myblob");
   /* Connect to the MySQL test database */
 		con->setSchema("lite");
-		cout << "\nDatabase connection\'s autocommit mode = " << con -> getAutoCommit() << endl;
+		//cout << "\nDatabase connection\'s autocommit mode = " << con -> getAutoCommit() << endl;
 		stmt = con->createStatement();
 		int id = getMaxID (stmt, "T_BLOB", "ID") + 1;
 		cout << "Next max ID: " << id << endl;
@@ -158,7 +160,7 @@ int main(int argc, char *argv[])
 		//retrieve_data_and_print (res, NUMOFFSET, 1,"");
 
 		//delete res;
-		delete stmt;
+		//delete stmt;
 		delete con;
 
 	}
@@ -240,11 +242,17 @@ void insert_file (sql::Connection *con, int idStart, const std::string &strDataF
 	FILE *fResults;
 	clock_t cStart;
 	double dSeconds;
-	sql::Statement *stmt;
+	//sql::Statement *stmt;
+	sql::ResultSet *res=NULL;
 
 	try {
 		//cout << "about to read file " << strFile << endl;
 		//cout << "File " << strFile << " read" << endl;
+		fprintf (stderr, "Optimizing Table\n");
+		if (RunSql (con, "optimize table " + TableBlob + ";", SQLQuery, res))
+			fprintf (stderr, "Table Optimized\n");
+		else
+			return;
 		strBase = "insert into " + TableBlob + "(" + FieldID + "," + FieldFile + ") values (?,?);";
 		fResults = fopen (pfm->szOutFile, "a+");
 		fprintf (fResults, "Number,Before,After,Inserted,Time\n");
@@ -277,23 +285,57 @@ void insert_file (sql::Connection *con, int idStart, const std::string &strDataF
 			fprintf (fResults, "%d,%d,%d,%ld,%g\n", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
 		}
 		fprintf (stderr, "\nDone inserting\n");
-		for ( ; n >= 0 ; n++) {
+		for ( ; n >= 0 ; n--) {
 			cStart = clock();
 			nBefore = get_free_space();
-			strSql = "delete from " + TableBlob + " where " + FieldID + "=" + std::to_string(n) + ";";
-			stmt = con->createStatement();
-			stmt->executeQuery (strSql);
-			delete stmt;
+			strSql = "delete from " + TableBlob + " where " + FieldID + "=" + std::to_string(n + 1) + ";";
+			RunSql (con, strSql, SQLExecute);
+			//stmt = con->createStatement();
+			//stmt->executeUpdate(strSql);
+			//delete stmt;
 			nAfter = get_free_space();
 			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
 			fprintf (stderr, "%d,%d,%d,%ldi,%g\r", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
 			fprintf (fResults, "%d,%d,%d,%ld,%g\n", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
+			fprintf (stderr, "Deleted file #%d\r", n+1);
 		}
 		fclose (fResults);
 	}
 	catch (exception &e) {
+	//catch (sql::SQLException &e) {
+		//fprintf (stderr, "\nSQL Error:\n%s\n\n", strSql.c_str());
+		//fprintf (stderr, "what: %s\n", e.what());
+		//fprintf (stderr, "code: %d\n", e.getErrorCode());
+		//fprintf (stderr, "state: %s\n", e.getSQLState().c_str());
 		print_error (e, __FILE__, __FUNCTION__, __LINE__);
 	}
+}
+
+//-----------------------------------------------------------------------------
+bool RunSql (sql::Connection *con, const std::string &strSql, const SqlCommand &cmd, sql::ResultSet *res)
+{
+	sql::Statement *stmt;
+	bool f;
+
+//enum	SqlCommand	{SQLExecute, SQLQuery};
+	try {
+		stmt = con->createStatement();
+		//fprintf (stderr, "Statement Created\n");
+		if (cmd == SQLExecute)
+			stmt->executeUpdate (strSql);
+		else if (cmd == SQLQuery)
+			res = stmt->executeQuery (strSql);
+		//fprintf (stderr, "Statement executed\n\n");
+		delete stmt;
+		f = true;
+	}
+	catch (exception &e) {
+		fprintf (stderr, "\nSQL Error:\n%s\n\n", strSql.c_str());
+		print_error (e, __FILE__, __FUNCTION__, __LINE__);
+		fprintf (stderr, "\n");
+		f = false;
+	}
+	return (f);
 }
 
 //-----------------------------------------------------------------------------

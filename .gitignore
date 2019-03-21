@@ -8,6 +8,7 @@ err.txt
 *.swp
 slurm_tutorial.docx
 *.~*
+~*.*
 __history/*
 __recovery/*
 Win32/*

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "db_tst.h"
+//#include "db_tst.h"
 #include "get_cli.h"
 #include "fm.h"
 
@@ -14,11 +14,10 @@ void print_usage(char *szAppName);
 //void print_params(struct FileMaker *pfm);
 
 //-----------------------------------------------------------------------------
-int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppName[])
+void get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppName[])
 {
-	int n, ok, c;
-	char str[1024], mult;
-	char *szSize, *szCount, *szMultiplier, cMult, *szOut;
+	int c;
+	char *szSize, *szCount, *szMultiplier, *szOut;
 	szSize = szCount = szMultiplier = szOut = NULL;
 
 	pfm->count = 10;
@@ -27,7 +26,8 @@ int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppNam
 	strcpy (pfm->szOutFile, "usage.csv");
 
 	//print_params(pfm);
-	while ((c = getopt (argc, argv, "Hhs:c:m:o:")) != -1) {
+	pfm->restruct = 0;
+	while ((c = getopt (argc, argv, "Hhs:c:m:o:r")) != -1) {
 		switch (c) {
 			case 's':
 			case 'S':
@@ -42,6 +42,9 @@ int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppNam
 				break;
 			case 'o':
 				strcpy (pfm->szOutFile, optarg);
+				break;
+			case 'r':
+				pfm->restruct = 1;
 				break;
 			case 'h':
 			case 'H':
@@ -67,19 +70,12 @@ int get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppNam
 				pfm->mult = 'K';
 		}
 	}
-/*
-	print_params(pfm);
-	printf("fm.count=%d\n", pfm->count);
-	printf("fm.size=%d\n", pfm->size);
-	printf("fm.mult=%c\n", pfm->mult);
-	printf("Output file: '%s'\n", pfm->szOutFile);
-*/
 } 
 
 //-----------------------------------------------------------------------------
 void print_usage(char *szAppName)
 {
-	printf ("Usage:\%s [-s <size> -c <count> -m <K | M | G>]\n", szAppName);
+	printf ("Usage:\%s [-s <size> -c <count> -v -m <K | M | G>]\n", szAppName);
 }
 //-----------------------------------------------------------------------------
 
@@ -89,6 +85,7 @@ void print_params(struct FileMaker *pfm)
 	printf("fm.size=%d\n", pfm->size);
 	printf("fm.mult=%c\n", pfm->mult);
 	printf("Output file: '%s'\n", pfm->szOutFile);
+	printf ("Restructure: %s\n", pfm->restruct ? "true" : "false");
 }
 
 #include <sys/statvfs.h>
@@ -97,6 +94,6 @@ off_t get_free_space ()
 {
 	struct statvfs vfs;
 	statvfs (".", &vfs); 
-	return (vfs.f_bfree);
+	return (vfs.f_bfree * vfs.f_bsize);
 }
 //-----------------------------------------------------------------------------

@@ -1,5 +1,0 @@
-{"mu":true}
-{"thickness":true}
-{"roughness":true,"sld":true}
-{"mu":true}
-{}

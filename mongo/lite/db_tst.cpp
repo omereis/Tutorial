@@ -188,7 +188,7 @@ static int callbackInsert (void *data, int argc, char **argv, char **azColName)
 void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 //-----------------------------------------------------------------------------
 {
-	int n, rc, length;
+	int i, n, rc, length;
 	string strSql;
 	char *zErrMsg = 0, *pData;
 	FILE *fResults;
@@ -228,10 +228,11 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 		dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
 		fprintf (fResults, "%d,%g,%ld,%g\n", n+1, rTotalSize,get_free_space(), dSeconds);
 	}
-	for (n=pfm->count  ; n > 0 ; n--) {
+	for (n=pfm->count, i=1  ; n > 0 ; n--, i++) {
 		cStart = clock();
 		remove_item (db, n);
 		if (pfm->restruct) {
+			printf ("Restructuring %d \r", i);
 			sqlite3_exec(db, "VACUUM;", NULL, NULL, NULL);
 			sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 		}
@@ -373,7 +374,7 @@ char *read_file (char szName[], int &length)
 	int read_bytes = read (fd, pData, length);
 	close(fd);
 
-	printf ("file %s size is %g\n", szName, rSize);
-	printf ("%d bytes read, %d bytes in file\n", read_bytes, length);
+	//printf ("file %s size is %g\n", szName, rSize);
+	//printf ("%d bytes read, %d bytes in file\n", read_bytes, length);
 	return (pData);
 }

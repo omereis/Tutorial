@@ -43,6 +43,7 @@ void get_cli_params(struct FileMaker *pfm,  int argc, char *argv[], char szAppNa
 			case 'o':
 				strcpy (pfm->szOutFile, optarg);
 				break;
+			case 'R':
 			case 'r':
 				pfm->restruct = 1;
 				break;

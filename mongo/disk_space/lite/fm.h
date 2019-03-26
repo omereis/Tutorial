@@ -7,6 +7,7 @@ struct FileMaker {
 	char mult;
 	char restruct;
 	char del;
+	int insert_count;
 	char szOutFile[1024];
 }; 
 #endif

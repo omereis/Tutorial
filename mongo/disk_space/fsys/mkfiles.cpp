@@ -151,9 +151,8 @@ bool match(const char *pattern, const char *candidate, int p, int c) {
 void create_files (struct FileMaker *pfm)
 {
 	FILE *file, *fOut;
-	char /*str[1024], */szNameFmt[1000];
-	//char *ptr =  new char [pfm->size * 1024];
-	int iOuter, nInner, fd, i;
+	char szNameFmt[1000];
+	int iOuter, nInner, fd, i, nInserts;
 	size_t sizeFile, sTotalSize, stBefore, stAfter;
 	clock_t cStart;
 	double dSeconds;
@@ -165,30 +164,43 @@ void create_files (struct FileMaker *pfm)
 	remove_old ();
 	if (sizeFile > 0) {
 		strSourceFileName = get_file_name (0, pfm->count);
-		sTotalSize = generate_file (strSourceFileName.c_str(), pfm);
+		//sTotalSize = generate_file (strSourceFileName.c_str(), pfm);
 		fOut = fopen (pfm->szOutFile, "w+");
 		printf ("results file opened\n");
 		fprintf (fOut, "Files,Before,Size,After,Time\n");
 		printf ("results file header printed\n");
 		printf ("\ncont:%d\n\n", pfm->count);
-		sTotalSize = 0;
-		for (iOuter=0 ; iOuter < pfm->count ; iOuter++) {
-			cStart = clock();
-			stBefore = get_free_space();
-			//sprintf (str, szNameFmt, iOuter);
-			strFileName = get_file_name (iOuter + 1, pfm->count);
-			copy_file (strSourceFileName, strFileName);
-			sTotalSize += sizeFile;
-			//sTotalSize = generate_file (strFileName.c_str(), pfm);
-			stAfter = get_free_space();
-			if ((iOuter % 5) == 0)
-				fprintf (stderr, "File %s created\r", strFileName.c_str());
-			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
-			fprintf (fOut, "%d,%ld,%ld,%ld,%g\n", nInner, stBefore, sTotalSize, stAfter, dSeconds);
+		for (nInserts=0 ; nInserts < pfm->insert_count ; nInserts++) {
+			sTotalSize = generate_file (strSourceFileName.c_str(), pfm);
+			sTotalSize = 0;
+			for (iOuter=0 ; iOuter < pfm->count ; iOuter++) {
+				cStart = clock();
+				stBefore = get_free_space();
+				//sprintf (str, szNameFmt, iOuter);
+				strFileName = get_file_name (iOuter + 1, pfm->count);
+				copy_file (strSourceFileName, strFileName);
+				sTotalSize += sizeFile;
+				//sTotalSize = generate_file (strFileName.c_str(), pfm);
+				stAfter = get_free_space();
+				//if ((iOuter % 5) == 0)
+					fprintf (stderr, "File %s created\r", strFileName.c_str());
+				dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
+				fprintf (fOut, "%d,%ld,%ld,%ld,%g\n", nInner, stBefore, sTotalSize, stAfter, dSeconds);
+			}
+			if (nInserts < (pfm->insert_count - 1)) {
+				fprintf (fOut, "\n");
+				//fprintf (stderr, "completing insert # %d\n", nInserts + 1);
+				printf ("before deleting all, free space: %g ...\n", (double) get_free_space() / (1024.0 * 1024.0));
+				//getc(stdin);
+				remove_old();
+				printf ("after deleting all, free space: %g ...\n", (double) get_free_space() / (1024.0 * 1024.0));
+				//getc(stdin);
+			}
 		}
 		fprintf (fOut, "\n");
 		fprintf (stderr, "\n");
 		if (pfm->del) {
+			fprintf (stderr, "Deleting files\n");
 			for ( ; iOuter >= 0 ; iOuter--) {
 				cStart = clock();
 				stBefore = get_free_space();

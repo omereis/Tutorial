@@ -39,6 +39,6 @@ WORKDIR /home/oe/mongo
 ENV HOME=/home/oe/
 COPY ./ /home/oe/mongo
 
-# RUN service mongodb start
-
 EXPOSE 27017
+
+RUN service mongodb start

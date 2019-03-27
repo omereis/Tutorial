@@ -34,10 +34,10 @@ RUN apt install -y mysql-client
 RUN touch /var/lib/mongodb/arad
 RUN rm /var/lib/mongodb/*
 
-WORKDIR /home/oe/mongo
+WORKDIR /home/oe/mysql
 #WORKDIR /home/oe/lite
 ENV HOME=/home/oe/
-COPY ./ /home/oe/mongo
+COPY ./ /home/oe
 
 # RUN service mongodb start
 

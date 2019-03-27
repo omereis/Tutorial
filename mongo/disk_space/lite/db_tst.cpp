@@ -26,6 +26,7 @@ char *read_file (char szName[], int &length);
 void insert_item (sqlite3 *db, int n, char *pData, int length);
 void remove_item (sqlite3 *db, int n);
 int  insert_file (sqlite3 *db, int nItem, char szName[]);
+void restructure (sqlite3 *db, struct FileMaker *pfm, int i);
 
 //-----------------------------------------------------------------------------
 
@@ -46,7 +47,6 @@ int main(int argc, char* argv[])
 		printf ("Read command line parameters:\n\n");
 		print_params (&fm);
 		printf ("-----------------------------------\n\n");
-		getc (stdin);
 		gen_one_file (szName, &fm);
 		delete_current_items (db, &fm);
 		printf ("  Old items deleted\n");
@@ -190,7 +190,7 @@ static int callbackInsert (void *data, int argc, char **argv, char **azColName)
 void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 //-----------------------------------------------------------------------------
 {
-	int i, n, rc, length;
+	int i, nInserts, n, rc, length;
 	string strSql;
 	char *zErrMsg = 0, *pData;
 	FILE *fResults;
@@ -204,47 +204,34 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 	fprintf (fResults, "Number,Inserted,Space,Time\n");
 	printf ("file read\n");
 	printf ("read for %d items\n\n", pfm->count);
-	for (n=0 ; n < pfm->count ; n++) {
-		cStart = clock();
-		rTotalSize += insert_file (db, n, szName);
-/*
-		pData = read_file (szName, length);
-		strSql = "insert into " + strBlobTable + "(id,file) values (" + std::to_string(n+1) + ", ?);";
-		rc = sqlite3_prepare_v2(db, strSql.c_str(), -1, &ppStmt, NULL);
-		if (rc != SQLITE_OK) {
-			fprintf (stderr, "Error:\n%s\n", sqlite3_errmsg(db));
-			exit (-1);
+	fprintf (stderr, "\n\n-----------------------------------------------------------------------\n");
+	for (nInserts=0 ; nInserts < pfm->insert_count ; nInserts++) {
+		fprintf (stderr, "Insert-delete loop #%d\n", nInserts);
+		for (n=0 ; n < pfm->count ; n++) {
+			cStart = clock();
+			rTotalSize += insert_file (db, n, szName);
+			//if (((n+1) % 5) == 0)
+				fprintf (stderr, "%d items inserted\r", (n + 1));
+			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
+			fprintf (fResults, "%d,%g,%ld,%g\n", n+1, rTotalSize,get_free_space(), dSeconds);
 		}
-		if(ppStmt) {
-			sqlite3_bind_blob(ppStmt, 1, pData, length, SQLITE_TRANSIENT);
-			sqlite3_step(ppStmt);
-			sqlite3_finalize(ppStmt);
-			sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
+		printf ("done inserting...\n");
+		//getc(stdin);
+		for (n=pfm->count, i=1  ; n > 0 ; n--, i++) {
+			cStart = clock();
+			remove_item (db, n);
+			fprintf (stderr, "Item %d deleted, %d items remained\r", i, (n + 1));
+			if (pfm->restruct) {
+				fprintf (stderr, "Restructuring...\r");
+				restructure (db, pfm, i);
+			}
+			//if (((n+1) % 5) == 0)
+			rTotalSize -= (float) length;
+			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
+			fprintf (fResults, "%d,%g,%ld,%g\n", n+1, rTotalSize, get_free_space(), dSeconds);
 		}
-		rTotalSize += (float) length;
-		delete (pData);
-*/
-		if (((n+1) % 5) == 0)
-			fprintf (stderr, "%d items inserted\r", (n + 1));
-		dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
-		fprintf (fResults, "%d,%g,%ld,%g\n", n+1, rTotalSize,get_free_space(), dSeconds);
-	}
-	printf ("done inserting...");
-	getc(stdin);
-	printf ("\n");
-	for (n=pfm->count, i=1  ; n > 0 ; n--, i++) {
-		cStart = clock();
-		remove_item (db, n);
-		if (pfm->restruct) {
-			printf ("Restructuring %d \r", i);
-			sqlite3_exec(db, "VACUUM;", NULL, NULL, NULL);
-			sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
-		}
-		if (((n+1) % 5) == 0)
-			fprintf (stderr, "%d items remained\r", (n + 1));
-		rTotalSize -= (float) length;
-		dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
-		fprintf (fResults, "%d,%g,%ld,%g\n", n+1, rTotalSize, get_free_space(), dSeconds);
+		printf ("done deleting\n");
+		//getc(stdin);
 	}
 	cStart = clock ();
 	sqlite3_exec(db, "VACUUM;", NULL, NULL, NULL);
@@ -252,6 +239,16 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 	fprintf (fResults, "Total restructure time: %g\n", dSeconds);
 	fclose (fResults);
 	//fclose (fDebug);
+}
+
+//-----------------------------------------------------------------------------
+void restructure (sqlite3 *db, struct FileMaker *pfm, int i)
+{
+	if (pfm->restruct) {
+		//printf ("Restructuring %d \r", i);
+		sqlite3_exec(db, "VACUUM;", NULL, NULL, NULL);
+		sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -279,6 +276,7 @@ int  insert_file (sqlite3 *db, int nItem, char szName[])
 	delete (pData);
 	return (length);
 }
+
 //-----------------------------------------------------------------------------
 void insert_items_new(sqlite3 *db, struct FileMaker *pfm, char szName[])
 {

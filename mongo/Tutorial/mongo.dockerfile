@@ -23,7 +23,8 @@ RUN apt-get install -y g++
 RUN apt-get install -y g++-multilib
 RUN apt-get install -y libmysqlcppconn-dev
 RUN apt-get install -y iputils-ping
-RUN apt install -y mysql-client
+#RUN apt install -y mysql-client
+RUN apt install -y zip
 
 # RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
 # RUN touch /etc/apt/sources.list.d/mongodb-org-3.4.list
@@ -34,11 +35,14 @@ RUN apt install -y mysql-client
 RUN touch /var/lib/mongodb/arad
 RUN rm /var/lib/mongodb/*
 
+COPY ./ /home/oe/mongo
 WORKDIR /home/oe/mongo
 #WORKDIR /home/oe/lite
 ENV HOME=/home/oe/
-COPY ./ /home/oe/mongo
+RUN unzip /home/oe/mongo/backup/backup.zip -d /home/oe/mongo/backup ; rm /home/oe/mongo/backup/backup.zip
 
 EXPOSE 27017
 
-RUN service mongodb start
+# RUN mkdir /var/lib/data
+
+# RUN service mongodb start

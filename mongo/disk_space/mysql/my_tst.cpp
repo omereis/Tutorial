@@ -73,10 +73,11 @@ static const string FieldFile  ("FILE_BLOB");
 
 void print_sql_error (sql::SQLException &e, const string &strFile, const string &strFunction, int nLine);
 void print_error (exception &e, const string &strFile, const string &strFunction, int nLine);
-void insert_file (sql::Connection *con, int idStart, const string &strFile, int nInsertCount = 1);
 void insert_file (sql::Connection *con, int idStart, const std::string &strDataFileName, struct FileMaker *pfm);
 long GetFileSize(std::string filename);
 bool RunSql (sql::Connection *con, const std::string &strSql, const SqlCommand &cmd, sql::ResultSet *res=NULL);
+bool optimize_table (sql::Connection *con, sql::ResultSet **res);
+void insert_file_to_db (sql::Connection *con, const std::string &strDataFileName, const std::string &strSql, int id);
 //-----------------------------------------------------------------------------
 void print_sql_error (sql::SQLException &e, const string &strFile, const string &strFunction, int nLine)
 {
@@ -154,7 +155,6 @@ int main(int argc, char *argv[])
 		int id = getMaxID (stmt, "T_BLOB", "ID") + 1;
 		cout << "Next max ID: " << id << endl;
 		id = getMaxID (stmt, "T_BLOB", "ID") + 1;
-		//insert_file (con, id, "/home/one4/Source/disk_space/mysql/bari.jpg", 5);
 		insert_file (con, id, strDataFileName, &fm);
 
 		//retrieve_data_and_print (res, NUMOFFSET, 1,"");
@@ -197,59 +197,20 @@ void retrieve_data_and_print (ResultSet *rs, int type, int colidx, string colnam
 }
 
 //-----------------------------------------------------------------------------
-void insert_file (sql::Connection *con, int idStart, const string &strFile, int nInsertCount)
-{
-	string strSql, strBase;
-	sql::PreparedStatement *pstmt;
-	char *pData;
-	ifstream *blobFile;
-	int nLen;
-
-	try {
-		//cout << "about to read file " << strFile << endl;
-		//cout << "File " << strFile << " read" << endl;
-		strBase = "insert into " + TableBlob + "(" + FieldID + "," + FieldFile + ") values (?,?);";
-		for (int n=0 ; n < nInsertCount ; n++) {
-			blobFile = new ifstream (strFile, ios::binary | ios::in);
-			nLen = blobFile->tellg();
-			pData = new char[nLen];
-			blobFile->read (pData, nLen);
-			strSql = strBase;
-			pstmt = con->prepareStatement (strSql);
-			pstmt->setInt (1, idStart++);
-			pstmt->setBlob (2, blobFile);
-			pstmt->executeUpdate();
-			delete pstmt;
-			delete pData;
-			delete blobFile;
-		}
-		cout << "File " << strFile << " inserted to database" << endl;
-	}
-	catch (exception &e) {
-		print_error (e, __FILE__, __FUNCTION__, __LINE__);
-	}
-}
-
-//-----------------------------------------------------------------------------
 void insert_file (sql::Connection *con, int idStart, const std::string &strDataFileName, struct FileMaker *pfm)
 {
 	string strSql, strBase;
-	sql::PreparedStatement *pstmt;
-	char *pData;
-	ifstream *blobFile;
-	int n, nLen, nBefore, nAfter;
+	int n, nAfter, nInserts;
 	long lSize;
 	FILE *fResults;
 	clock_t cStart;
 	double dSeconds;
-	//sql::Statement *stmt;
 	sql::ResultSet *res=NULL;
 
 	try {
-		//cout << "about to read file " << strFile << endl;
-		//cout << "File " << strFile << " read" << endl;
 		fprintf (stderr, "Optimizing Table\n");
-		if (RunSql (con, "optimize table " + TableBlob + ";", SQLQuery, res))
+		if (optimize_table (con, &res))
+		//if (RunSql (con, "optimize table " + TableBlob + ";", SQLQuery, res))
 			fprintf (stderr, "Table Optimized\n");
 		else
 			return;
@@ -258,57 +219,80 @@ void insert_file (sql::Connection *con, int idStart, const std::string &strDataF
 		fprintf (fResults, "Number,Before,After,Inserted,Time\n");
 		lSize = GetFileSize (strDataFileName);
 		printf ("File %s size: %ld\n", strDataFileName.c_str(), lSize);
-		
-		for (n=0 ; n < pfm->count ; n++) {
-			cStart = clock();
-			nBefore = get_free_space();
 
-			blobFile = new ifstream (strDataFileName, ios::binary | ios::in);
-			nLen = blobFile->tellg();
-			//fprintf (stderr, "File size: %d\n", nLen);
-			
-			pData = new char[nLen];
-			blobFile->read (pData, nLen);
-			strSql = strBase;
-			pstmt = con->prepareStatement (strSql);
-			pstmt->setInt (1, idStart++);
-			pstmt->setBlob (2, blobFile);
-			pstmt->executeUpdate();
-			delete pstmt;
-			delete pData;
-			fprintf (stderr, "Inserted %d files\r", n+1);
-			delete blobFile;
-
-			nAfter = get_free_space();
-			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
-			fprintf (stderr, "%d,%d,%d,%ldi,%g\r", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
-			fprintf (fResults, "%d,%d,%d,%ld,%g\n", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
+		for (nInserts=0 ; nInserts < pfm->insert_count ; nInserts++) {
+			fprintf (stderr, "Insert-delete loop #%d\n", nInserts); 
+			for (n=0 ; n < pfm->count ; n++, idStart++) {
+				cStart = clock();
+				insert_file_to_db (con, strDataFileName, strBase, idStart);
+				fprintf (stderr, "Inserted %d files\r", n+1);
+				nAfter = get_free_space();
+				dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
+				fprintf (stderr, "%d,%d,%ld,%g\r", (n+1), nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
+				fprintf (fResults, "%d,%d,%ld,%g\n", (n+1), nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
+			}
+			fprintf (stderr, "\nDone inserting\n");
+			for ( ; n >= 0 ; n--, idStart--) {
+				cStart = clock();
+				strSql = "delete from " + TableBlob + " where " + FieldID + "=" + std::to_string(idStart) + ";";
+				RunSql (con, strSql, SQLExecute);
+				nAfter = get_free_space();
+				if (pfm->restruct) {
+					fprintf (stderr, "Restructuring...%3d\n", n);
+					optimize_table (con, &res);
+				}
+				dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
+				fprintf (stderr, "%d,%d,%ld,%g\r", (n+1), nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
+				fprintf (fResults, "%d,%d,%ld,%g\n", (n+1), nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
+				fprintf (stderr, "Deleted file #%d\r", n+1);
+			}
 		}
-		fprintf (stderr, "\nDone inserting\n");
-		for ( ; n >= 0 ; n--) {
-			cStart = clock();
-			nBefore = get_free_space();
-			strSql = "delete from " + TableBlob + " where " + FieldID + "=" + std::to_string(n + 1) + ";";
-			RunSql (con, strSql, SQLExecute);
-			//stmt = con->createStatement();
-			//stmt->executeUpdate(strSql);
-			//delete stmt;
-			nAfter = get_free_space();
-			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
-			fprintf (stderr, "%d,%d,%d,%ldi,%g\r", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
-			fprintf (fResults, "%d,%d,%d,%ld,%g\n", (n+1), nBefore,nAfter,((n+1) * lSize) / (1024 * 1024), dSeconds);
-			fprintf (stderr, "Deleted file #%d\r", n+1);
-		}
+		cStart = clock();
+		optimize_table (con, &res);
+ 		dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
+		fprintf (fResults, "Final optimize time: %g\n", dSeconds); 
 		fclose (fResults);
 	}
 	catch (exception &e) {
-	//catch (sql::SQLException &e) {
-		//fprintf (stderr, "\nSQL Error:\n%s\n\n", strSql.c_str());
-		//fprintf (stderr, "what: %s\n", e.what());
-		//fprintf (stderr, "code: %d\n", e.getErrorCode());
-		//fprintf (stderr, "state: %s\n", e.getSQLState().c_str());
 		print_error (e, __FILE__, __FUNCTION__, __LINE__);
 	}
+}
+
+//-----------------------------------------------------------------------------
+void insert_file_to_db (sql::Connection *con, const std::string &strDataFileName, const std::string &strSql, int id)
+{
+	sql::PreparedStatement *pstmt;
+	char *pData;
+	ifstream *blobFile;
+	int nLen;
+
+	blobFile = new ifstream (strDataFileName, ios::binary | ios::in);
+	nLen = blobFile->tellg();
+	pData = new char[nLen];
+	blobFile->read (pData, nLen);
+	//strSql = strBase;
+	pstmt = con->prepareStatement (strSql);
+	pstmt->setInt (1, id);
+	pstmt->setBlob (2, blobFile);
+	pstmt->executeUpdate();
+	delete pstmt;
+	delete pData;
+	delete blobFile;
+}
+
+//-----------------------------------------------------------------------------
+bool optimize_table (sql::Connection *con, sql::ResultSet **res)
+{
+	bool f;
+
+	try {
+		f = RunSql (con, "optimize table " + TableBlob + ";", SQLQuery, *res);
+	}
+	catch (exception &e) {
+		print_error (e, __FILE__, __FUNCTION__, __LINE__);
+		f = false;
+	}
+	return (f);
 }
 
 //-----------------------------------------------------------------------------

@@ -197,7 +197,7 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 	sqlite3_stmt *ppStmt;
 	const char  **pzTail;
 	//FILE *fDebug = fopen ("oe_debug.txt", "a+");
-	double rTotalSize = 0.0, dSeconds;
+	double rTotalSize = 0.0, dSeconds, rFileSize;
 	clock_t cStart;
 
 	fResults = fopen (pfm->szOutFile, "w+");
@@ -205,11 +205,12 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 	printf ("file read\n");
 	printf ("read for %d items\n\n", pfm->count);
 	fprintf (stderr, "\n\n-----------------------------------------------------------------------\n");
-	for (nInserts=0 ; nInserts < pfm->insert_count ; nInserts++) {
+	for (nInserts=0, rTotalSize=0.0 ; nInserts < pfm->insert_count ; nInserts++) {
 		fprintf (stderr, "Insert-delete loop #%d\n", nInserts);
 		for (n=0 ; n < pfm->count ; n++) {
 			cStart = clock();
-			rTotalSize += insert_file (db, n, szName);
+			rFileSize = insert_file (db, n, szName);
+			rTotalSize += rFileSize;
 			//if (((n+1) % 5) == 0)
 				fprintf (stderr, "%d items inserted\r", (n + 1));
 			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
@@ -220,13 +221,13 @@ void insert_items(sqlite3 *db, struct FileMaker *pfm, char szName[])
 		for (n=pfm->count, i=1  ; n > 0 ; n--, i++) {
 			cStart = clock();
 			remove_item (db, n);
-			fprintf (stderr, "Item %d deleted, %d items remained\r", i, (n + 1));
+			rTotalSize -= rFileSize;
+			fprintf (stderr, "Item %d deleted, %d items remained\n", i, (n + 1));
 			if (pfm->restruct) {
-				fprintf (stderr, "Restructuring...\r");
+				fprintf (stderr, "Restructuring...%3d\n", i);
 				restructure (db, pfm, i);
 			}
 			//if (((n+1) % 5) == 0)
-			rTotalSize -= (float) length;
 			dSeconds = ((double) (clock() - cStart)) / ((double) CLOCKS_PER_SEC);
 			fprintf (fResults, "%d,%g,%ld,%g\n", n+1, rTotalSize, get_free_space(), dSeconds);
 		}

@@ -37,6 +37,7 @@ size_t generate_file (const char szName[], struct FileMaker *pfm)
 	delete [] pData;
 	//delete[] szFileName;
 	//printf ("data deleted\n");
+	return (sizeFile);
 }
 
 //-----------------------------------------------------------------------------

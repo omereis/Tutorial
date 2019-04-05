@@ -286,7 +286,14 @@ bool optimize_table (sql::Connection *con, sql::ResultSet **res)
 	bool f;
 
 	try {
-		f = RunSql (con, "optimize table " + TableBlob + ";", SQLQuery, *res);
+		//RunSql (con, "ALTER TABLE " + TableBlob + " MODIFY ID INT NOT NULL;", SQLExecute);
+		fprintf(stderr, "----key removed\n");
+		RunSql (con, "ALTER TABLE " + TableBlob + " DROP PRIMARY KEY;", SQLExecute);
+		RunSql (con, "optimize table " + TableBlob + ";", SQLQuery, *res);
+		fprintf(stderr, "----table optimized\n");
+		RunSql (con, "ALTER TABLE " + TableBlob + " ADD PRIMARY KEY (ID);", SQLExecute);
+		fprintf(stderr, "----key restored\n");
+		f = true;
 	}
 	catch (exception &e) {
 		print_error (e, __FILE__, __FUNCTION__, __LINE__);

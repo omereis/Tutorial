@@ -17,5 +17,6 @@ WORKDIR /home/oe/
 ENV HOME=/home/oe/
 COPY ./ /home/oe
 
-# Make the 5000 port available from outside the container
+# Make the 8765 port available from outside the container
+EXPOSE 8765
 EXPOSE 5000

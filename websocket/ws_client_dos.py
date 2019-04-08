@@ -2,7 +2,7 @@ import asyncio
 import websockets
 import getopt, sys
 
-host = 'NCNR-R9nano.campus.nist.gov'
+host = 'localhost'
 port = 8765
 
 try:
@@ -37,5 +37,4 @@ async def hello():
         greeting = await websocket.recv()
         print("{}".format(greeting))
 
-input ('')
 asyncio.get_event_loop().run_until_complete(hello())

@@ -57,6 +57,7 @@ function openWSConnection(protocol, hostname, port, endpoint) {
         };
         webSocket.onerror = function (errorEvent) {
             console.log("WebSocket ERROR: " + JSON.stringify(errorEvent, null, 4));
+            document.getElementById("incomingMsgOutput").value += "message: " + wsMsg + "\n";
         };
         webSocket.onmessage = function (messageEvent) {
             var wsMsg = messageEvent.data;

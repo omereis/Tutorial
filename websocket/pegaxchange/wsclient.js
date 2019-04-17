@@ -43,6 +43,10 @@ function openWSConnection(protocol, hostname, port, endpoint) {
     console.log("openWSConnection::Connecting to: " + webSocketURL);
     try {
         webSocket = new WebSocket(webSocketURL);
+        webSocket.addEventListener('error', (event) => {
+            console.log('in addEventListener');
+            console.log(event);
+        });
         webSocket.onopen = function(openEvent) {
             console.log("WebSocket OPEN: " + JSON.stringify(openEvent, null, 4));
             document.getElementById("btnSend").disabled       = false;
@@ -56,8 +60,10 @@ function openWSConnection(protocol, hostname, port, endpoint) {
             document.getElementById("btnDisconnect").disabled = true;
         };
         webSocket.onerror = function (errorEvent) {
+            var msg = "WebSocket ERROR: " + JSON.stringify(errorEvent, null, 4);
             console.log("WebSocket ERROR: " + JSON.stringify(errorEvent, null, 4));
-            document.getElementById("incomingMsgOutput").value += "message: " + wsMsg + "\n";
+            console.log(msg);
+            document.getElementById("incomingMsgOutput").value += "message: " + msg + "\n";
         };
         webSocket.onmessage = function (messageEvent) {
             var wsMsg = messageEvent.data;

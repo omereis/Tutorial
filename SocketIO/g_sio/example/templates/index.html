@@ -88,6 +88,9 @@
                 return false;
             });
         });
+        function clearReceive () {
+            document.getElementById("log").innerText = "";
+        }
     </script>
 </head>
 <body>
@@ -124,6 +127,7 @@
         <input type="submit" value="Disconnect">
     </form>
     <h2>Receive:</h2>
+    <button onclick="clearReceive()">Clear Receive Log</button>
     <div id="log"></div>
 </body>
 </html>

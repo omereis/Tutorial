@@ -12,17 +12,23 @@ RUN ln -s /usr/bin/pip3 /usr/bin/pip
 RUN pip install flask
 RUN pip install flask-socketio
 
-ENV HOME=/home/oe/socket_io/flask_sockets
+RUN apt update
+RUN apt install -y nodejs npm
+RUN npm install --save express@4.15.2
+RUN npm install --save socket.io
+
+ENV HOME=/home/oe/socket_io/
 ENV export FLASK_APP=/home/oe/socket_io/flask_sockets/app.py
 
 # Set the directory for relative file paths
-WORKDIR /home/oe/socket_io/flask_sockets
+WORKDIR /home/oe/socket_io/chat
 
 # Install the app dependencies using pip
 #RUN pip install -U pip
 
 # Copy app files to the container
 COPY ./ /home/oe/socket_io
+COPY ./vimrc /etc/vim/vimrc
 
 # Make the 4000 port available from outside the container
 EXPOSE 4000

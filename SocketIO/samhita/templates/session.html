@@ -3,10 +3,11 @@
 <head>
   <title>Flask_Chat_App</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
   <script src="../static/js/sio.js"></script>
     <style>
 		table {
-		  border-collapse: collapse;*
+		  border-collapse: collapse;
 		}
 		th, td {
 		  border: 1px solid black;
@@ -15,7 +16,7 @@
 		}
 	  </style>
 </head>
-<body style="background-color: rgb(124, 213, 240);">
+<body style="background-color: rgb(248, 152, 129);">
 
 	<table  style="width: 100%;">
 		<tr>
@@ -34,16 +35,15 @@
 							Remote <b>port</b>:
 						</td>
 						<td style="text-align: left;">
-							<input type="text" value="4000" id="remote_4000">
+							<input type="text" value="4000" id="remote_port">
 						</td>
 					</tr>
 					<tr>
 						<td style="text-align: center;">
-							<input type="button" value="Connect" id="socket_connect">
+							<input type="button" value="Connect" onclick="sioConnect()" id="socket_connect">
 						</td>
 						<td style="text-align: center;">
-							<input type="button" value="Disconnect" onclide="wsDisconnect ()" id="socket_disconnect">
-							<button onclick="myFunction()">Click me</button>
+							<input type="button" value="Disconnect" onclick="sioDisconnect ()" id="socket_disconnect">
 						</td>
 					</tr>
 				</table>
@@ -65,7 +65,8 @@
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
-  <script type="text/javascript">
+<!--
+    <script type="text/javascript">
 	var socket = io.connect('http://' + document.domain + ':' + location.port);
 	socket.on( 'connect', function() {
 	  socket.emit( 'my event', {
@@ -98,6 +99,6 @@
 		}
 	})
   </script>
-
+-->
 </body>
 </html>

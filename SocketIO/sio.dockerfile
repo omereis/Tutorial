@@ -21,7 +21,7 @@ ENV HOME=/home/oe/socket_io/
 ENV export FLASK_APP=/home/oe/socket_io/flask_sockets/app.py
 
 # Set the directory for relative file paths
-WORKDIR /home/oe/socket_io/chat
+WORKDIR /home/oe/socket_io/samhita
 
 # Install the app dependencies using pip
 #RUN pip install -U pip

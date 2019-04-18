@@ -1,7 +1,103 @@
-<html>
-<title>Session</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Flask_Chat_App</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="../static/js/sio.js"></script>
+    <style>
+		table {
+		  border-collapse: collapse;*
+		}
+		th, td {
+		  border: 1px solid black;
+		  padding: 5px;
+		  text-align: left;
+		}
+	  </style>
 </head>
-	<body>
-		<p>Hello</p>
-	</body>
+<body style="background-color: rgb(124, 213, 240);">
+
+	<table  style="width: 100%;">
+		<tr>
+			<td style="vertical-align :top;">
+				<table width="100%" style="border: 0px;">
+					<tr>
+						<td style="text-align: right;">
+							Remote <b>server</b>:
+						</td>
+						<td style="text-align: left;">
+							<input type="text" value="localhost" id="remote_server">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">
+							Remote <b>port</b>:
+						</td>
+						<td style="text-align: left;">
+							<input type="text" value="4000" id="remote_4000">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<input type="button" value="Connect" id="socket_connect">
+						</td>
+						<td style="text-align: center;">
+							<input type="button" value="Disconnect" onclide="wsDisconnect ()" id="socket_disconnect">
+							<button onclick="myFunction()">Click me</button>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td width="50%">
+				<p hidden id="msg_flag">no_message</p> 
+				<p id="incomming_message">No message yet..</p>
+			</td>
+		</tr>
+	</table>
+  
+
+  <form action="" method="POST">
+	<input type="text" class="username" placeholder="User Name"/>
+	<input type="text" class="message" placeholder="Messages"/>
+	<input type="submit"/>
+  </form>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+  <script type="text/javascript">
+	var socket = io.connect('http://' + document.domain + ':' + location.port);
+	socket.on( 'connect', function() {
+	  socket.emit( 'my event', {
+		data: 'User Connected'
+	  } )
+	  var form = $( 'form' ).on( 'submit', function( e ) {
+		e.preventDefault()
+		var user_name = $( 'input.username' ).val();
+		var user_input = $( 'input.message' ).val();
+		socket.emit( 'my event', {
+		  user_name : user_name,
+		  message : user_input
+		} )
+		$( 'input.message' ).val( '' ).focus()
+	  } )
+	} )
+	socket.on( 'my response', function( msg ) {
+		var divMessage = document.getElementById("incomming_message");
+		console.log( msg )
+		if (msg.user_name != null) {
+			var f = $('#msg_flag');
+			if (f.html() == "no_message") {
+				divMessage.innerText="";
+				f.text("yes_message");
+				divMessage.style.fontSize = "12px";
+			}
+			if(divMessage.style.fontSize == "12px") {
+				$("#incomming_message").append('<b>' + msg.user_name + '</b>' + msg.message + '<br>');
+			}
+		}
+	})
+  </script>
+
+</body>
 </html>

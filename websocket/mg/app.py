@@ -4,6 +4,7 @@ from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 from get_host_port import get_host_port
+import sys, getopt
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
@@ -17,6 +18,8 @@ thread = None
 thread_lock = Lock()
 
 host,port = get_host_port ()
+remote_host = 'localhost'
+remote_port = 5000
 
 def background_thread():
     """Example of how to send server generated events to clients."""
@@ -31,7 +34,7 @@ def background_thread():
 
 @app.route('/')
 def index():
-    return render_template('index.html', async_mode=socketio.async_mode)
+    return render_template('index.html', async_mode=socketio.async_mode, host=remote_host, port=remote_port)
 #    return render_template('index.html', async_mode=socketio.async_mode, host=host, port=port)
 
 

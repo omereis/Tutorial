@@ -1,14 +1,9 @@
 import asyncio
 import websockets
 import getopt, sys
-from time import sleep
-import datetime
 
 #------------------------------------------------------------------------------
-#host = 'localhost'
-host = 'NCNR-R9nano.campus.nist.gov'
-host = 'p858547.campus.nist.gov'
-#host = 'localhost'
+host = 'localhost'
 port = 8765
 #------------------------------------------------------------------------------
 try:
@@ -31,32 +26,16 @@ for opt, arg in options:
     elif opt in ('-p', '--port'):
         port = arg.strip();
 #------------------------------------------------------------------------------
-def save_message (message):
-    file = open ("messages.txt", "a+")
-    file.write (message + "\n")
-    file.close()
-#------------------------------------------------------------------------------
 async def hello(websocket, path):
-    message = await websocket.recv()
-    strTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-#    save_message(strTime + ': '+ message)
-#    save_message(message)
+    name = await websocket.recv()
     source = "{}:{}".format(websocket.host, websocket.port)
-    try:
-        print("Sender: {}".format(websocket.remote_address))
-        print("Sender remote address[0]: {}".format(websocket.remote_address[0]))
-        print("Sender remote address[1]: {}".format(websocket.remote_address[1]))
-    except Exception as e:
-        print("Sender error: {}".format(e))
     print ("Just got a message from...")
     try:
         print ("    client in {}".format(source))
     except Exception as e:
-        print('Oops: {}'.format(e))
-    print(" {}".format(message))
-    greeting = "Hello {}, from {}:{}!".format(message, host, port)
-    sleep(1)
-    await websocket.send(greeting)
+        print('Oops: {}'.format(e.message))
+    print(" {}".format(name))
+    greeting = "Hello {}, from {}:{}!".format(name, host, port)
     await websocket.send(greeting)
     print(greeting)
 #------------------------------------------------------------------------------
@@ -66,6 +45,3 @@ start_server = websockets.serve(hello, host, port)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
-
-
-

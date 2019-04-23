@@ -1,0 +1,31 @@
+
+<!DOCTYPE html> 
+<html> 
+<body> 
+  
+  
+<button id="btn" onclick="fun()" style="color: blue;"> 
+                                GeeksForGeeks</button> 
+<button id="btn" onclick="stop()">Stop</button> 
+<script> 
+var t; 
+function color() { 
+    if(document.getElementById('btn').style.color=='blue') 
+    {document.getElementById('btn').style.color='green'; 
+    } 
+    else 
+        {document.getElementById('btn').style.color='blue';} 
+          
+} 
+  
+function fun() { 
+  t =setTimeout(color, 3000); 
+  
+} 
+  
+function stop() { 
+    clearTimeout(t); 
+} 
+</script> 
+</body> 
+</html> 

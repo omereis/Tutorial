@@ -10,15 +10,15 @@ RUN apt install -y tree curl
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py >>setup.py
 RUN python setup.py
+RUN apt install -y sqlite
 
-RUN pip install websockets
 RUN pip install sqlalchemy
 RUN pip install pymysql
+
+
 
 WORKDIR /home/oe/
 ENV HOME=/home/oe/
 COPY ./ /home/oe
 
 # Make the 5678 port available from outside the container
-EXPOSE 5678
-EXPOSE 5000

@@ -14,6 +14,7 @@ RUN python setup.py
 RUN pip install websockets
 RUN pip install sqlalchemy
 RUN pip install pymysql
+RUN pip install random_word
 
 WORKDIR /home/oe/
 ENV HOME=/home/oe/

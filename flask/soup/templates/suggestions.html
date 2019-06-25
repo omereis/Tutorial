@@ -1,0 +1,13 @@
+<label id="value_lable">
+    {% for suggestion in suggestions %}
+        {{ suggestion }}<br>
+    {% endfor %}
+</label>
+{% if input_text %}
+    <div id="result_div" value="{ { input_text } }">{ { input_text } }</div>
+    <div id="result_place"></div>
+    <script>
+        var d = document.getElementById('result_place');
+        d.value = "New thing";
+    </script>
+{% endif %}

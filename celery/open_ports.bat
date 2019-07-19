@@ -1,1 +1,0 @@
-docker inspect --format='{{range $p, $conf := .NetworkSettings.Ports}} {{$p}} -> {{(index $conf 0).HostPort}} {{end}}' celery_ubuntu

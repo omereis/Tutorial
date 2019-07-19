@@ -1,20 +1,19 @@
-FROM ubuntu:18.04
+FROM ubuntu:16.04
 
 RUN apt update -y
-# RUN apt upgrade -y
+RUN apt upgrade -y
 # RUN apt-get install -y python-pip python-dev build-essential
-# RUN apt install -y vim
+RUN apt install -y vim
 RUN apt install -y software-properties-common
 RUN add-apt-repository -y ppa:deadsnakes/ppa
-RUN apt install -y python3.6
+RUN apt install -y python3.5
 RUN apt -y install python3-pip
-RUN apt install -y vim man
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 RUN apt-get install -y mysql-client
-# RUN apt install -y tzdata && rm /etc/localtime
-# RUN dpkg-reconfigure -f noninteractive tzdata && apt-get clean
+RUN apt install -y tzdata && rm /etc/localtime
+RUN dpkg-reconfigure -f noninteractive tzdata && apt-get clean
 RUN apt install -y wget
 RUN apt install -y snapd
 
@@ -22,15 +21,12 @@ COPY ./ /home/flask
 COPY ./vimrc /etc/vim/vimrc
 WORKDIR /home/flask
 RUN pip install --upgrade pip
+RUN pip install --upgrade pip
 RUN pip install flask
 RUN pip install Flask-Session
 RUN pip install flask_menu
-RUN pip install --upgrade pip
 RUN pip install mysql-connector-python
-# RUN pip install -r requirements.txt
 
 ENV HOME=/home/flask
 
-# ENTRYPOINT ["python"]
-# CMD ["app.py"]
 

@@ -1,17 +1,17 @@
 from __future__ import absolute_import, unicode_literals
-from .celery import app
+from .celery import appCelery
 
 
-@app.task
+@appCelery.task
 def add(x, y):
     return x + y
 
 
-@app.task
-def mul(x, y):
+@appCelery.task
+def mult(x, y):
     return x * y
 
 
-@app.task
+@appCelery.task
 def xsum(numbers):
     return sum(numbers)

@@ -16,23 +16,24 @@ COPY get-pip.py /tmp
 RUN apt install -y python3-distutils
 RUN python /tmp/get-pip.py
 
-RUN pip install flask
+#RUN pip install flask
 RUN pip install redis
-RUN pip install flask_redis
-RUN pip install flask_jwt_extended
-RUN pip install flask_restful
-RUN pip install subprocess32
+#RUN pip install flask_redis
+#RUN pip install flask_jwt_extended
+#RUN pip install flask_restful
+#RUN pip install subprocess32
 
-RUN apt-get install -y iputils-ping
+RUN apt install -y iputils-ping git tree
 RUN pip install celery
 RUN pip install redis
-RUN pip install flask_wtf
-RUN apt-get install -y git
-RUN pip install git+https://github.com/omereis/bumps.git
-RUN pip install numpy
-RUN pip install scipy
-RUN pip install matplotlib
-RUN pip install mpld3
+#RUN pip install flask_wtf
+
+#RUN pip install git+https://github.com/omereis/bumps.git
+RUN pip install bumps numpy scipy matplotlib nest_asyncio
+#RUN pip install numpy
+#RUN pip install scipy
+#RUN pip install matplotlib
+#RUN pip install mpld3
 
 ENV CELERY_RESULT_BACKEND='amqp'
 ENV BROKER_URL='amqp://guest@rabbit.local//'

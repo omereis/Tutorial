@@ -1,0 +1,31 @@
+# Using the latest long-term-support Ubuntu OS
+FROM ubuntu:16.04
+
+RUN apt -y update
+RUN apt -y upgrade
+RUN apt install -y software-properties-common
+#  RUN add-apt-repository -y ppa:deadsnakes/ppa
+RUN apt install -y vim man
+RUN apt install -y tree curl
+RUN apt install -y git
+RUN apt install -y build-essential
+RUN apt install -y cmake
+
+ENV HOME=/home/oe/
+WORKDIR /home/oe/ws
+
+RUN apt update -y
+RUN apt install -y libasio-dev
+
+RUN git clone git://github.com/zaphoyd/websocketpp $WORKDIR
+RUN cd websocketpp && cmake . && make install
+RUN git clone https://github.com/adamrehn/websocket-server-demo /home/oe/ws/adam
+RUN cd /home/oe/ws/adam/server && cmake . && make
+COPY ./ /home/oe
+COPY ./vimrc /etc/vim/vimrc
+
+# ENV CPLUS_INCLUDE_PATH=/home/oe/ws/websocketpp/
+
+# Make the 5678 port available from outside the container
+#EXPOSE 5678
+EXPOSE 5000

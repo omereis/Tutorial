@@ -7,12 +7,13 @@ RUN apt install -y vim man
 RUN apt install -y tree curl
 RUN apt install -y git wget cmake
 
-RUN apt install -y g++ sdb
+RUN apt install -y g++ sdb libjsoncpp-dev
 
 ENV HOME=/home/oe
 
 WORKDIR /home/oe
 
 COPY ./ $HOME
+RUN mv vimrc .vimrc
 
 EXPOSE 5500

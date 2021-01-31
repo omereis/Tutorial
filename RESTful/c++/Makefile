@@ -1,5 +1,5 @@
 CPP = g++
-CFLAGS = -g -c
+CFLAGS = -g -c -ljsoncpp
 
 SERVER = server
 CLIENT = client

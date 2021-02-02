@@ -84,18 +84,30 @@ int main(int argc, char const *argv[])
 		perror("bind failed");
 		exit(EXIT_FAILURE);
 	}
+/*
+*/
+	fprintf (stderr, "Before listen\n");
 	if (listen(server_fd, 3) < 0) { 
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
-	if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0){ 
-		perror("accept");
-		exit(EXIT_FAILURE);
-	}
-	valread = read( new_socket , buffer, 1024);
-	printf("%s\n",buffer );
-	send(new_socket , hello , strlen(hello) , 0 );
-	printf("Hello message sent\n");
+	char szHello[1024];
+	//for (int n=0 ; n < 5 ; n++) {
+	int n=1;
+	do {
+		fprintf (stderr, "Before accept\n");
+		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0){ 
+			perror("accept");
+			exit(EXIT_FAILURE);
+		}
+		valread = read( new_socket , buffer, 1024);
+		printf("Message recieved: %s, valread=%d\n", buffer, valread);
+		memset (szHello, 0, sizeof (szHello));
+		sprintf (szHello, "Server Hello #%d", n++);
+		send (new_socket , szHello, strlen(szHello) ,0);
+		//send(new_socket , hello , strlen(hello) , 0 );
+		printf("Hello message sent\n");
+	} while (valread > 0);
 	return 0;
 }
 

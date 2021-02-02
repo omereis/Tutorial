@@ -35,6 +35,16 @@ void FindIP ()
 	g_fAddressFound = true;
 }
 //-----------------------------------------------------------------------------
+std::string FindHostIPByName (const std::string &strHostName)
+{
+	hostent* hostname = gethostbyname(strHostName.c_str());
+	std::string strAddress;
+
+	if(hostname)
+		strAddress = std::string(inet_ntoa(**(in_addr**)hostname->h_addr_list));
+	return (strAddress);
+}
+//-----------------------------------------------------------------------------
 std::string FindHostIP (const std::string &strHost, int nTimeout)
 {
 	g_strAddress = "";
@@ -72,7 +82,8 @@ int main (int argc, char *argv[])
 		if (f) {
 			cout << "Required host: '" << str << "'\n";
 			//h = gethostbyname (str.c_str());
-			cout << "FindHostIP result:\n'" << FindHostIP (str, 1000);
+			fprintf (stderr, "Testing FindHostIPByName : address of '%s' it '%s'\n", str.c_str(), FindHostIPByName (str).c_str());
+			//cout << "FindHostIP result:\n'" << FindHostIP (str, 1000);
 			//cout << "HostToIP result:\n'" << HostToIp (str) << "'\n";
 			f = true; // provide breakpoint
 		}

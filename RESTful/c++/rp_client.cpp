@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define PORT 5500
+//#define PORT 5500
 
 #include <string>
 #include <stdlib.h>
@@ -55,25 +55,30 @@ int main(int argc, char const *argv[])
 	struct sockaddr_in serv_addr;
 	const char *hello = "Hello from client";
 	char buffer[1024] = {0};
+	int nPort;
+	string strAddress, strErr;
 
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		printf("\n Socket creation error \n");
-		return -1;
-	}
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(PORT);
+	if (GetCliAddressPort (argc, argv, nPort, strAddress, strErr)) {
+		if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+			printf("\n Socket creation error \n");
+			return -1;
+		}
+		serv_addr.sin_family = AF_INET;
+		serv_addr.sin_port = htons(nPort);
 	// Convert IPv4 and IPv6 addresses from text to binary form 
-	if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <=0 ) { 
-		printf("\nInvalid address/ Address not supported \n");
-		return -1;
+		if(inet_pton(AF_INET, strAddress.c_str(), &serv_addr.sin_addr) <=0 ) {
+		//if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <=0 ) {
+			printf("\nInvalid address/ Address not supported \n");
+			return -1;
+		}
+		if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) { 
+			printf("\nConnection Failed \n");
+			return -1;
+		}
+		send(sock , hello , strlen(hello) , 0 );
+		printf("Hello message sent\n");
+		valread = read( sock , buffer, 1024);
+		printf("%s\n",buffer );
 	}
-	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) { 
-		printf("\nConnection Failed \n");
-		return -1;
-	}
-	send(sock , hello , strlen(hello) , 0 );
-	printf("Hello message sent\n");
-	valread = read( sock , buffer, 1024);
-	printf("%s\n",buffer );
 	return 0;
 } 

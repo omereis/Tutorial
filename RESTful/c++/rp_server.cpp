@@ -6,8 +6,56 @@
 #include <netinet/in.h> 
 #include <string.h> 
 
-#define PORT 5500
- 
+//#define PORT 5500
+
+#include "comm.h"
+
+//-----------------------------------------------------------------------------
+int GetCliPort (int argc, char const *argv[])
+{
+	int nPort;
+	
+	if (argc > 1)
+		nPort = atoi (argv[1]);
+	else
+		nPort = DEFAULT_PORT;
+	return (nPort);
+}
+//-----------------------------------------------------------------------------
+int OpenSocket (int nPort)
+{
+	struct sockaddr_in address; 
+	int opt = 1; 
+	int addrlen = sizeof(address); 
+	int nServerFd;
+
+	// Creating socket file descriptor 
+	if ((nServerFd = socket(AF_INET, SOCK_STREAM, 0)) == 0) { 
+		perror("socket failed"); 
+		exit(EXIT_FAILURE); 
+	} 
+
+	// Forcefully attaching socket to the port
+	if (setsockopt(nServerFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))  { 
+		perror("setsockopt"); 
+		exit(EXIT_FAILURE); 
+	} 
+	address.sin_family = AF_INET; 
+	address.sin_addr.s_addr = INADDR_ANY; 
+	address.sin_port = htons(nPort); 
+
+	// Forcefully attaching socket to the port
+	if (bind(nServerFd, (struct sockaddr *)&address, sizeof(address)) < 0) { 
+		perror("bind failed"); 
+		exit(EXIT_FAILURE); 
+	} 
+	if (listen(nServerFd, 3) < 0)  { 
+		perror("listen"); 
+		exit(EXIT_FAILURE); 
+	}
+	return (nServerFd);
+}
+//-----------------------------------------------------------------------------
 int main(int argc, char const *argv[])
 {
 	int server_fd, new_socket, valread;
@@ -16,6 +64,7 @@ int main(int argc, char const *argv[])
 	int addrlen = sizeof(address);
 	char buffer[1024] = {0};
 	const char *hello = "Hello from server";
+	int nPort = DEFAULT_PORT;
 
 	// Creating socket file descriptor
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -29,7 +78,7 @@ int main(int argc, char const *argv[])
 	}
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons( PORT );
+	address.sin_port = htons(nPort);
 	// Forcefully attaching socket to the port
 	if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
 		perror("bind failed");

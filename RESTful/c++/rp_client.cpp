@@ -1,18 +1,27 @@
 // Client side C/C++ program to demonstrate Socket programming 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
-
-//#define PORT 5500
+#include <netdb.h>
 
 #include <string>
-#include <stdlib.h>
 #include "comm.h"
 
 using namespace std;
 
+//-----------------------------------------------------------------------------
+std::string FindHostIPByName (const std::string &strHostName)
+{
+	hostent* hostname = gethostbyname(strHostName.c_str());
+	std::string strAddress;
+
+	if(hostname)
+		strAddress = std::string(inet_ntoa(**(in_addr**)hostname->h_addr_list));
+	return (strAddress);
+}
 //-----------------------------------------------------------------------------
 int SafeReadCliPort (const char *szPort)
 {
@@ -37,7 +46,8 @@ bool GetCliAddressPort (int argc, char const *argv[], int &nPort, string &strAdd
 		if (argc > 1)
 			nPort = SafeReadCliPort (argv[1]);
 		if (argc > 2)
-			strAddress = argv[2];
+			strAddress = FindHostIPByName (argv[2]);
+			//strAddress = argv[2];
 		f = true;
 	}
 	catch (exception &e){
@@ -59,6 +69,7 @@ int main(int argc, char const *argv[])
 	string strAddress, strErr;
 
 	if (GetCliAddressPort (argc, argv, nPort, strAddress, strErr)) {
+		printf ("Conecting to server %s:%d\n", strAddress.c_str(), nPort);
 		if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 			printf("\n Socket creation error \n");
 			return -1;

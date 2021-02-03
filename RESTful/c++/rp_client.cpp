@@ -9,6 +9,7 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 #include "comm.h"
 
 using namespace std;
@@ -94,6 +95,70 @@ int SendData (const std::string &strAddress, int nPort, const std::string &strDa
 	valread = read( sock , buffer, 1024);
 	printf("Server answer is: '%s'\n", buffer);
 }
+
+const char *aszMainMenu[] = {
+		"1. Compose Message",
+		"2. JSON File",
+		"3. Quite",
+		""
+	};
+//-----------------------------------------------------------------------------
+
+void PrintMenu()
+{
+	int n=0;
+	const char *sz;
+	
+	do {
+		sz = aszMainMenu[n++];
+		printf ("%s\n", sz);
+	} while (strlen(sz) > 0);
+}
+//-----------------------------------------------------------------------------
+
+std::string GetFileName ()
+{
+	std::string strFileName;
+	
+	printf ("Enter File name [.json], plase... ");
+	getline (cin, strFileName);
+	if (strFileName.find (".") == string::npos)
+		strFileName += ".json";
+	return (strFileName);
+}
+//-----------------------------------------------------------------------------
+
+std::string ReadJSONFile ()
+{
+	std::string strFileName, strLine, strData="";
+	
+	strFileName = GetFileName ();
+	std::fstream file;// (strFileName);
+	file.open (strFileName.c_str(), ios::in);
+	if (file) {
+		while (!file.eof()) {
+			getline(file, strLine);
+			strData += strLine + "\n";
+		}
+	}
+	return (strData);
+}
+//-----------------------------------------------------------------------------
+
+std::string GetDataToSend ()
+{
+	std::string strData;
+	PrintMenu();
+	getline (cin, strData);
+	int nData = atoi (strData.c_str());
+	if (nData == 1)
+		strData = "Compose Message";
+	else if (nData == 2)
+		strData = ReadJSONFile ();//"JSON File";
+	else
+		strData = "";
+	return (strData);
+}
 //-----------------------------------------------------------------------------
 
 int main(int argc, char const *argv[])
@@ -107,9 +172,10 @@ int main(int argc, char const *argv[])
 
 	if (GetCliAddressPort (argc, argv, nPort, strAddress, strErr)) {
 		do {
-			printf ("Data, please... ");
-			getline (cin, strData);
-			//if (strData.size() > 0)
+			strData = GetDataToSend();
+			//printf ("Data, please... ");
+			//getline (cin, strData);
+			if (strData.size() > 0)
 				SendData (strAddress, nPort, strData);
 		} while (strData.size() > 0);
 	}

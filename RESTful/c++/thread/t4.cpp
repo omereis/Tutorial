@@ -15,6 +15,7 @@ void thread_function(std::string &s)
 
 int main()
 {
+	std::cout << "Number of threads = " <<  std::thread::hardware_concurrency() << std::endl;
     std::string s = "Joe Smow";
 	std::thread t(&thread_function, std::ref(s));
 	sleep(1);

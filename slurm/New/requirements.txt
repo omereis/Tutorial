@@ -24,7 +24,7 @@ intervals==0.8.0
 ipaddress==1.0.18
 isort==4.2.15
 itsdangerous==0.24
-Jinja2==2.9.6
+Jinja2==2.11.3
 MarkupSafe==1.0
 matplotlib==2.0.2
 mod-wsgi==4.5.15

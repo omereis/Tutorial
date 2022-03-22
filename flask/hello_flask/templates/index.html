@@ -10,6 +10,14 @@
   </head>
   <body>
     <h2>Reflectivity under Flask</h2>
+
+    <form action="{{ url_for('handle_data') }}" method="post">
+      <input type="text" name="projectFilepath">
+      <input type="submit">
+    </form>
+  
+    <hr>
+    <b>{{ param }}</b>
     <hr>
     <a href="/calculator">My Calculator</a>
     <hr>

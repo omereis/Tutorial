@@ -7,7 +7,19 @@ APP = flask.Flask(__name__)
 def index():
     """ Displays the index page accessible at '/'
     """
-    return flask.render_template('index.html')
+    return flask.render_template('index.html', param='index.html')
+
+@APP.route('/handle_data', methods=['POST'])
+def handle_data():
+    projectpath=''
+    try:
+        projectpath = flask.request.form['projectFilepath']
+    except Exception as e:
+        projectpath = {e}
+    if len(projectpath) == 0:
+        projectpath = 'param not found'
+    return flask.render_template('index.html', param=projectpath)
+
 
 @APP.route('/calculator')
 def calculator():
@@ -28,5 +40,5 @@ if __name__ == '__main__':
     else:
         port = 5000
     APP.debug=True
-    APP.run(port=port)
+    APP.run(port=port, debug=True)
 

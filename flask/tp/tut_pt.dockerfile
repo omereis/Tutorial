@@ -1,24 +1,13 @@
 # Using the latest long-term-support Ubuntu OS
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 RUN apt -y update
 RUN apt -y upgrade
-RUN apt install -y python3
-RUN apt install -y python3-pip
-RUN ln -s /usr/bin/python3 /usr/bin/python
-RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
-RUN apt install -y vim
-COPY ./vimrc /etc/vim/vimrc
-
-RUN pip install --upgrade pip
-RUN pip install flask
-
-WORKDIR /home/oe/
-ENV HOME=/home/oe/
-COPY ./ /home/oe
-
-ENV FLASK_DEBUG=1
+RUN apt install -y software-properties-common
+RUN add-apt-repository -y ppa:deadsnakes/ppa
+#RUN apt install -y python3.7
+#apt install python3-pipRUN ln -s /usr/bin/python3.7 /usr/bin/python
 
 # Make the 5000 port available from outside the container
 EXPOSE 6000

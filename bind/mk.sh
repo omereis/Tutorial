@@ -1,4 +1,4 @@
-echo 'gcc -o server server.cpp -lzmq'
-gcc -o server server.cpp -lzmq
-echo 'gcc -o client client.cpp -lzmq'
-gcc -o client client.cpp -lzmq
+echo 'gcc -o srvr server.cpp -lzmq'
+gcc -o srvr server.cpp -lzmq
+echo 'gcc -o clnt client.cpp -lzmq'
+gcc -o clnt client.cpp -lzmq

@@ -19,6 +19,7 @@ int main (void)
         zmq_recv (requester, buffer, 10, 0);
         printf ("Received World %d\n", request_nbr);
     }
+    zmq_send (requester, "quit", 4, 0);
     zmq_close (requester);
     zmq_ctx_destroy (context);
     return 0;

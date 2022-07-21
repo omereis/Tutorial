@@ -28,5 +28,6 @@ RUN ln -s /usr/bin/python3.7 /usr/bin/python && \
 	ln -s /usr/bin/pip3.7 /usr/bin/pip
 
 # RUN pip install invoke
+RUN pip install pyzmq
 
 RUN mv vimrc .vimrc

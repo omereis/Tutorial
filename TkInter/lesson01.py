@@ -5,19 +5,11 @@ s = sys.version
 
 root = Tk()
 # creat the widge
-lbl = Label(root, text='Hi There')
+lblHi = Label(root, text='Hi There')
+lblHeb = Label(root, text='שלום עליכם')
 
-#pack the widget
-lbl.pack()
-
-#print(dir(lbl))
-
-lbl2 = Label(root, text=s)
-lbl2.pack()
-
-lbl3 = Label(root)
-lbl3.text="___+++___"
-lbl3.pack()
+lblHi.grid(row=1, column=2)
+lblHeb.grid(row=2, column=3)
 
 #Start the main loop
 root.mainloop()
